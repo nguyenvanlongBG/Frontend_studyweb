@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <body>
     <div class="header">
     Phần đăng kí đăng nhập, tìm kiếm 
@@ -74,7 +74,6 @@
   body{
     font-family: "Roboto", sans-serif;
   }
-  
  body .signature{
   font-style: italic;
   font-size: 12px;
@@ -89,7 +88,7 @@ color: white;
     position: relative; 
     display: flex;
     align-items: center;
-    padding: 20px; 
+    padding: 20px;
     background-color: #222;
     box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.25);
     color: white;
@@ -195,4 +194,4 @@ font-size: 8px;
   opacity: 0 !important;
   transform: translate(50px, 0);
 }
-</style> -->
+</style>
