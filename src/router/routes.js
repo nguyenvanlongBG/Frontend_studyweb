@@ -5,23 +5,47 @@ const routes = [
   {
     path: "",
     name: "Home",
-    component: () => import("../components/DashBoard.vue"),
-    redirect: "/home",
+    redirect: "/library",
     children: [
       {
-        path: "/home",
-        name: "home",
-        component: () => import("../components/HomeComponent.vue"),
-      },
-      {
         path: "/library",
-        name: "library",
-        component: () => import("../components/Library.vue"),
+        name: "Library",
+        redirect: {name: 'DocumentsComponent'},
+        children: [
+          {
+            path: 'documents',
+            name: 'DocumentsComponent',
+            component: ()=> import('../components/DocumentsComponent.vue')
+          },
+           {
+            path: 'video',
+            name: 'VideoComponent',
+            component: ()=> import('../components/VideoComponent.vue')
+          },
+
+        ]
       },
       {
-        path: "/exam",
-        name: "exam",
-        component: () => import("../components/ExamComponent.vue"),
+        path: "/forum",
+        name: "forum",
+        component: () => import("../components/ForumComponent.vue"),
+      },
+      {
+        path: "/exams",
+        name: "exams",
+        redirect: "",
+        children: [
+          {
+          path: "",
+          name: "listTest",
+          component: () => import("../components/TestsComponent.vue"),
+          },
+          {
+          path: ":idTest",
+          name: "TestInfo",
+          component: () => import("../components/TestComponent.vue"),
+          },
+        ]
       },
       {
         path: "/charts",
@@ -33,6 +57,8 @@ const routes = [
         name: "introduce",
         component: () => import("../components/IntroduceComponent.vue"),
       },
+      
+      
     ],
   },
 

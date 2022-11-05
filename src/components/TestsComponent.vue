@@ -1,0 +1,155 @@
+<template>
+  <div class="container grid-container">
+    <!-- Giao diện chọn các bộ đề -->
+    <RouterLink :to="{ name: 'TestInfo', params: { idTest: 1 } }" class="grid-item" v-for="exam in data" :key="exam.id">
+      <div class="header-exam">
+        <div class="information-user">
+          <!-- Khối thông tin User -->
+          <div class="avatar">
+            <a href="" class="circle">
+              <img width="64" height="64" src="http://www.gravatar.com/avatar/9017a5f22556ae0eb7fb0710711ec125?s=128" />
+            </a>
+          </div>
+
+          <div class="information">
+            <!-- Thông tin tên, giờ post bài -->
+            <span>
+              Nguyễn Văn A
+            </span>
+            <span>
+              10/01/2022
+            </span>
+          </div>
+        </div>
+        <!-- Khối thông tin người tạo đề thi -->
+      </div>
+      <div>
+        Kì thi: {{ exam.name }}
+      </div>
+      <div>
+        Mã đề thi: {{ exam.id }}
+      </div>
+      <div>
+        Số câu hỏi
+      </div>
+      <div>
+        Thời gian
+      </div>
+      <div>
+        Thời gian mở đề: {{ exam.time_start }}
+      </div>
+      <div>
+        Ghi chú
+      </div>
+      <div>
+        Tên kỳ thi
+      </div>
+      <div>
+        Nút bấm làm bài
+      </div>
+      <div>
+        Số học sinh tham gia
+      </div>
+
+    </RouterLink>
+
+
+
+
+
+
+
+
+
+  </div>
+</template>
+<script>
+import { getTests } from "../services/test"
+export default {
+  name: 'TestsComponent',
+  data() {
+    return {
+      data: []
+    }
+  },
+  mounted() {
+    this.getListExam()
+  },
+  methods: {
+    async getListExam() {
+      const response = await getTests()
+      const responseTests = response.data
+      this.data = responseTests
+    },
+  }
+}
+</script>
+<style>
+.container {
+  margin: 0 15%;
+}
+
+.share {
+  font-size: 22px;
+}
+
+.information-user {
+  display: flex;
+}
+
+.information {
+  display: flex;
+  flex-direction: column;
+
+}
+
+.circle {
+  display: inline-block;
+  height: 64px;
+  width: 64px;
+  border: 4px solid rgba(200, 200, 200, 0.4);
+  border-radius: 50%;
+}
+
+.circle img {
+  border-radius: 50%;
+}
+
+.circle:hover {
+  transition: ease-out 0.2s;
+  border: 4px solid rgba(203, 31, 31, 0.25);
+}
+
+.grid-container {
+  display: grid;
+  /* grid-template-columns: auto auto auto; */
+  /* background-color: #212121; */
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 20px;
+}
+
+.grid-item {
+  box-sizing: border-box;
+  background-color: #222;
+  border: 2px solid #ea4f4c;
+  width: 24%;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 20px;
+  padding-top: 10px;
+  font-size: 20px;
+  text-align: center;
+  margin-left: 2px;
+  margin-top: 5px;
+  text-decoration: none;
+}
+
+.header-exam {
+  display: flex;
+  justify-content: space-between;
+}
+</style>

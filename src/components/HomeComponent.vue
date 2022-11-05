@@ -1,7 +1,5 @@
 <template>
-  <div v-for="i in data" :key="i">
-    <span>{{i}}</span>
-  </div>
+  OK
 </template>
 <script>
 export default {

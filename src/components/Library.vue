@@ -1,10 +1,10 @@
 <template>
-OK Library
+    OK Library
 
 </template>
 
 <script>
-export default{
+export default {
     name: "LibraryComponent"
 }
 </script>

@@ -1,15 +1,15 @@
 <template>
-  <DashBoard />
-
+  <MenuComponent />
+  <router-view></router-view>
 </template>
 
 <script>
-import DashBoard from './components/DashBoard.vue';
+import MenuComponent from './components/MenuComponent.vue';
 
 export default {
   name: 'App',
   components: {
-    DashBoard
+    MenuComponent
   }
 }
 </script>
