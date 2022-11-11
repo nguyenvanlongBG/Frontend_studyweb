@@ -11,6 +11,7 @@ const routes = [
         path: "/library",
         name: "Library",
         redirect: {name: 'DocumentsComponent'},
+        
         children: [
           {
             path: 'documents',

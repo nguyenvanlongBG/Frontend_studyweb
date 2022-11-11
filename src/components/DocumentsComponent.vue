@@ -20,7 +20,10 @@
                         <div class="information-questioner">
                             <!-- Thông tin tên, giờ post bài -->
                             <span class="name-questioner">
-                                Nguyễn Văn A
+                                <!-- <math-field virtual-keyboard-mode="manual">
+
+                                </math-field> -->
+                                <vue-mathjax :formula="formula"></vue-mathjax>
                             </span>
                             <span class="time-post">
                                 10/01/2022
@@ -71,16 +74,20 @@
 </template>
 <script>
 import { getDocument } from "../services/document"
-
 import ModalSolution from "../components/ModalSolution.vue"
+import VueMathjax from 'vue-mathjax-next';
 export default {
     name: "DocumentsComponent",
     components: {
-        ModalSolution
+        'vue-mathjax': VueMathjax,
+        ModalSolution,
+
     },
+
     data() {
         return {
             // solution: {},
+            formula: '$$x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}.$$',
             dataModal: {
                 visible: false,
                 image: ''

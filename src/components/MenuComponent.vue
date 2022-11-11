@@ -1,7 +1,7 @@
 <template>
 
-    <head>
-        <div class="header">
+    <head class="header">
+        <div class="login-logout">
             Phần đăng kí đăng nhập, tìm kiếm
         </div>
         <nav class="navigationWrapper">
@@ -91,6 +91,10 @@ head {
     /* height: 100vh; */
 }
 
+.login-logout {
+    background-color: #ea4f4c;
+}
+
 body .signature {
     font-style: italic;
     font-size: 12px;
@@ -103,9 +107,16 @@ body .signature:hover {
     color: white;
 }
 
+.header {
+    position: sticky;
+    top: 0;
+}
+
 .navigationWrapper {
     position: relative;
+
     display: flex;
+    width: 100%;
     align-items: center;
     padding: 20px;
     background-color: #222;

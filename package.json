@@ -13,9 +13,11 @@
     "axios": "^0.27.2",
     "bootstrap": "^5.2.0",
     "core-js": "^3.8.3",
+    "mathlive": "^0.84.0",
     "usemodal-vue3": "^0.3.6",
     "vue": "^3.2.13",
     "vue-mathjax": "^0.1.1",
+    "vue-mathjax-next": "^0.0.4",
     "vue-router": "^4.1.5"
   },
   "devDependencies": {
