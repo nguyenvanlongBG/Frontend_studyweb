@@ -45,8 +45,8 @@ export default {
     margin-right: 20%; */
     text-align: center;
     background-color: white;
-    height: 800px;
-    width: 800px;
+    min-height: 800px;
+    min-width: 800px;
 
     padding: 20px 0;
     border-radius: 10px;
@@ -54,10 +54,13 @@ export default {
 
 .close {
     display: flex;
+
     justify-content: center;
+    position: relative;
+    top: auto;
     margin: 30px 0 0 2px;
-    width: 20px;
-    height: 20px;
+    /* width: 20px;
+    height: 20px; */
     border-radius: 50%;
     cursor: pointer;
     background-color: blueviolet;

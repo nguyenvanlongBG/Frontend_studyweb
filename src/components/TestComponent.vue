@@ -1,4 +1,7 @@
 <template>
+    <ModalCreateQuestion v-if="modalCreateQuestion.visible" @close="modalCreateQuestion.visible = false">
+
+    </ModalCreateQuestion>
     <div class="exam">
         <div class="overview-exam">
             <span class="nameUser">
@@ -105,10 +108,22 @@
 
         </div>
         <div class="info-list-question">
-
+            <button class="tool-button-test" @click="createQuestion" v-if="!myTests">
+                Thêm câu hỏi
+            </button>
             <div class="info-question" v-for="q in  questions" :key="q.id">
+                <div class="action-question">
+                    <button class="tool-button-test" @click="createTest" v-if="!myTests">
+                        Sửa
+                    </button>
+                    <button class="tool-button-test" @click="createTest" v-if="!myTests">
+                        Xóa
+                    </button>
+                </div>
                 <span class="question-content">
-                    Câu : {{ q.question.content }}
+                    Câu :
+                    <vue-mathjax :formula="formula"></vue-mathjax>
+
                 </span>
                 <div class="list-choice">
                     <label class="choice" @click="choiceAnswer(1)" for="1" v-for="choice in q.choices" :key="choice.id">
@@ -139,9 +154,14 @@
 import { useRoute } from 'vue-router';
 import { getQuestionTest } from '../services/questionTest'
 import { getInfoTestById } from "../services/test";
+import ModalCreateQuestion from "../components/ModalCreateQuestion.vue"
+
 // import { answerTest } from '../services/answerTest'
 export default {
     name: "TestComponent",
+    components: {
+        ModalCreateQuestion,
+    },
     data() {
         const idTest = useRoute().params.idTest
 
@@ -149,6 +169,10 @@ export default {
             idTest,
             infoTest: {},
             questions: [],
+            modalCreateQuestion: {
+                visible: false,
+            },
+            formula: 'Giải phương trình $$x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}.$$',
         }
     },
     mounted() {
@@ -167,7 +191,10 @@ export default {
         choiceAnswer($id) {
             var answer = document.getElementById("question_" + $id);
             answer.classList.add("answer-content-choice");
-        }
+        },
+        createQuestion() {
+            this.modalCreateQuestion.visible = true;
+        },
     },
 }
 </script>
@@ -205,8 +232,9 @@ export default {
 }
 
 .info-list-question {
-    width: 78%;
+    width: 79%;
     margin-top: 10px;
+    margin-right: 2px;
     position: absolute;
     right: 0;
 }
@@ -218,11 +246,13 @@ export default {
     padding: 15px;
     border-style: solid;
     border-color: #ea4f4c;
+    /* padding: px; */
 }
 
 .list-choice {
     display: flex;
     flex-wrap: wrap;
+    padding: auto;
 }
 
 .nameUser {
@@ -235,7 +265,7 @@ export default {
 
 .choice {
     display: block;
-    width: 45%;
+    width: 48%;
     margin-left: 5px;
     margin-top: 5px;
     min-height: 60px;
@@ -286,5 +316,24 @@ input.hidden-radio:checked+span.choice-label {
     background-color: #222;
     border-color: #222;
     color: white;
+}
+
+.tool-button-test {
+    margin-left: 2px;
+    margin-top: 2px;
+    height: 35px;
+    border-radius: 5px;
+    border: 2px solid #ea4f4c;
+    background-color: #222;
+    color: white;
+    text-align: center;
+    justify-content: center;
+    text-decoration: none;
+
+}
+
+.action-question {
+    display: flex;
+    justify-content: flex-end;
 }
 </style>

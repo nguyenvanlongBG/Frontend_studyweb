@@ -21,3 +21,11 @@ return request({
     method: 'get',
 })
 }
+export function getTestsByIdUser($userId){
+    // console.log(params)
+return request({
+    url: '/getQuestionsTest',
+    method: 'get',
+    params: {'userId': $userId}
+})
+}

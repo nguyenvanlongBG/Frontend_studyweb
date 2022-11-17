@@ -4,9 +4,17 @@
     <ModalCreateTest v-if="modalCreateTest.visible" @close="modalCreateTest.visible = false">
 
     </ModalCreateTest>
-    <button class="create-test" @click="createTest">
-      Create Test
-    </button>
+    <div class="header-tests">
+      <h1 v-if="!myTests" class="myListTestTitle">Bộ đề của tôi</h1>
+
+      <button class="tool-button-test" @click="createTest" v-if="!myTests">
+        Create Test
+      </button>
+      <button class="tool-button-test" @click="getMyListTests" v-if="myTests">
+        Bộ đề của tôi
+      </button>
+
+    </div>
     <div class="grid-container">
       <RouterLink :to="{ name: 'TestInfo', params: { idTest: 1 } }" class="grid-item" v-for="exam in data"
         :key="exam.id">
@@ -288,7 +296,7 @@
   </div>
 </template>
 <script>
-import { getTests } from "../services/test"
+import { getTests, getTestsByIdUser } from "../services/test"
 import ModalCreateTest from "../components/ModalCreateTest.vue"
 export default {
   name: 'TestsComponent',
@@ -300,8 +308,8 @@ export default {
       data: [],
       modalCreateTest: {
         visible: false,
-
       },
+      myTests: true
     }
   },
   mounted() {
@@ -309,12 +317,23 @@ export default {
   },
   methods: {
     async getListExam() {
-      const response = await getTests()
-      const responseTests = response.data
+      let responseTests
+      if (this.myTests) {
+        const response = await getTests()
+        responseTests = response.data
+      } else {
+        const response = await getTestsByIdUser(1)
+        responseTests = response.data
+      }
+
       this.data = responseTests
     },
     createTest() {
       this.modalCreateTest.visible = true
+    },
+    getMyListTests() {
+      this.myTests = false
+      this.mounted()
     }
   }
 }
@@ -326,11 +345,21 @@ export default {
 
 }
 
-.create-test {
+.myListTestTitle {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 15px;
+}
+
+.header-tests {
+  display: flex;
+  align-items: center;
+}
+
+.tool-button-test {
   display: block;
   margin-left: auto;
   margin-top: 2px;
-  width: 10%;
   height: 35px;
   border-radius: 5px;
   border: 2px solid #ea4f4c;
@@ -339,6 +368,7 @@ export default {
   text-align: center;
   justify-content: center;
   text-decoration: none;
+
 }
 
 .share {
