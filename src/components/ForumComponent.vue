@@ -1,7 +1,7 @@
 <template>
 
   <body>
-    <ModalSolution v-if="dataModal.visible" @close="dataModal.visible=false" @image="dataModal.image">
+    <ModalSolution v-if="dataModal.visible" @close="dataModal.visible = false" @image="dataModal.image">
       <template v-slot:image>
         <img :src="dataModal.image" />
       </template>

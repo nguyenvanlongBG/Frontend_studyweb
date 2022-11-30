@@ -75,11 +75,10 @@
 <script>
 import { getDocument } from "../services/document"
 import ModalSolution from "../components/ModalSolution.vue"
-import VueMathjax from 'vue-mathjax-next';
 export default {
     name: "DocumentsComponent",
     components: {
-        'vue-mathjax': VueMathjax,
+
         ModalSolution,
 
     },

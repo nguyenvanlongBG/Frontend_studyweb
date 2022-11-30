@@ -10,10 +10,8 @@
                     </td>
                     <td>
 
-                        <math-field default-mode="math" id="formula" mathModeSpace="\," virtual-keyboard-mode="onfocus">
 
-                            x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}\,\,\,\,\,\,aaaaaaaa
-                        </math-field>
+                        x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}\,\,\,\,\,\,aaaaaaaa
 
                     </td>
                 </tr>
@@ -60,24 +58,7 @@ export default {
         Datepicker
     },
     mounted() {
-        const mf = document.getElementById('formula');
-        mf.addEventListener('input', () => {
-            // document.getElementById('latex').value = mf.value;
-            // console.log(mf.HTMLSpanElement);
-            // if (ev.inputType == "insertLineBreak") {
 
-
-            //     console.log(mf);
-            //     mf.ariaLabel = "math textarea field";
-            //     mf.ariaMultiLine = true;
-            //     mf.defaultMode = "text";
-            //     // ev.preventDefault();
-
-            // }
-            mf.virtualKeyboardMode = "onfocus"
-
-            // mf.mathModeSpace = "\,";
-        });
     },
     data() {
         return {
