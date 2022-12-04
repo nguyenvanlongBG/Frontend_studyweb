@@ -1,10 +1,6 @@
-import request from '../utils/request'
+import request from '../utils/request';
+export function getAnswer($id) {
 
-export function getAnswer(params){
-    // console.log(params)
-return request({
-    url: '/getAnswerByIdQuestionNormal',
-    method: 'get',
-    params: params
-})
+    console.log($id);
+    return request({ url: '/questionNormal/' + $id+'/answers', method: 'get'})
 }

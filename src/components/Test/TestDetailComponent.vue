@@ -4,24 +4,24 @@
     </ModalCreateQuestion>
     <div class="exam">
         <NavbarListComponent />
-        <TestLayout :questions="questions" :idTest="idTest" />
+        <StatusTestComponent />
     </div>
 </template>
 <script>
 import { useRoute } from 'vue-router';
-import { getQuestionTest } from '../services/questionTest'
-import { getInfoTestById } from "../services/test";
-import ModalCreateQuestion from "../components/ModalCreateQuestion.vue"
-import TestLayout from "../components/layouts/TestLayout.vue"
-import NavbarListComponent from "../components/Test/NavbarListComponent.vue"
+import { getQuestionTest } from '../../services/questionTest'
+
+import ModalCreateQuestion from "../ModalCreateQuestion.vue"
+import NavbarListComponent from "../Test/NavbarListComponent.vue"
+import StatusTestComponent from './StatusTestComponent.vue';
 
 // import { answerTest } from '../services/answerTest'
 export default {
-    name: "TestComponent",
+    name: "TestDetailComponent",
     components: {
         ModalCreateQuestion,
-        TestLayout,
-        NavbarListComponent
+        NavbarListComponent,
+        StatusTestComponent
     },
     data() {
         const idTest = useRoute().params.idTest
@@ -33,6 +33,7 @@ export default {
             modalCreateQuestion: {
                 visible: false,
             },
+            hasRole: false,
             formula: 'Giải phương trình $$x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}.$$',
         }
     },
@@ -41,11 +42,8 @@ export default {
     },
     methods: {
         async getData() {
-            this.infoTest = await getInfoTestById(this.idTest);
-            var params = {
-                'idTest': this.idTest
-            }
-            var responseQuestions = await getQuestionTest(params);
+
+            var responseQuestions = await getQuestionTest(this.idTest);
             this.questions = responseQuestions.data
             console.log(this.questions.data)
         },

@@ -35,7 +35,7 @@
                     <a class="link" href="/forum">Diễn đàn</a>
                 </li>
                 <li class="parent">
-                    <a class="link" href="/exams">Kỳ thi</a>
+                    <a class="link" href="/test">Kỳ thi</a>
                 </li>
                 <li class="parent">
                     <a class="link">

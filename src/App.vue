@@ -1,15 +1,14 @@
 <template>
-  <MenuComponent />
-  <router-view></router-view>
+  <DefaultLayout />
 </template>
 
 <script>
-import MenuComponent from './components/MenuComponent.vue';
+import DefaultLayout from './components/layouts/DefaultLayout.vue';
 
 export default {
   name: 'App',
   components: {
-    MenuComponent
+    DefaultLayout
   }
 }
 </script>

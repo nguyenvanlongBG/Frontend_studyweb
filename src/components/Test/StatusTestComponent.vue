@@ -1,14 +1,15 @@
 <template>
+    <NavbarListComponent />
     <div class="info-list-question">
-        <button class="tool-button-test" @click="createQuestion" v-if="!myTests">
+        <button class="tool-button-test" @click="createQuestion" v-if="hasRole">
             Thêm câu hỏi
         </button>
         <div class="info-question" v-for="q in  questions" :key="q.id">
             <div class="action-question">
-                <button class="tool-button-test" @click="createTest" v-if="!myTests">
+                <button class="tool-button-test" @click="createTest" v-if="hasRole">
                     Sửa
                 </button>
-                <button class="tool-button-test" @click="createTest" v-if="!myTests">
+                <button class="tool-button-test" @click="createTest" v-if="hasRole">
                     Xóa
                 </button>
             </div>
@@ -33,20 +34,16 @@
 </template>
 <script>
 export default {
-    name: "TestLayout",
-    props: [
-        'questions',
-        'idTest'
-    ],
-    data() {
-
-        return {
-
-        }
-    },
-
+    name: "StatusTestComponent",
     methods: {
-
+        async getData() {
+            // var params = {
+            //     'idTest': this.idTest
+            // }
+            // var responseQuestions = await getQuestionTest(params);
+            // this.questions = responseQuestions.data
+            // console.log(this.questions.data)
+        },
         choiceAnswer($id) {
             var answer = document.getElementById("question_" + $id);
             answer.classList.add("answer-content-choice");
@@ -54,10 +51,6 @@ export default {
         createQuestion() {
             this.modalCreateQuestion.visible = true;
         },
-    },
+    }
 }
-
 </script>
-<style>
-
-</style>

@@ -7,117 +7,8 @@
       </template>
     </ModalSolution>
     <div class="container">
-      <div v-for="question in data" :key="question.id">
-        <div>
-          <div class="information-user-questioner">
-            <!-- Khối thông tin User -->
-            <div class="avatar-questioner">
-              <a href="" class="circle-questioner">
-                <img width="128" height="128"
-                  src="http://www.gravatar.com/avatar/9017a5f22556ae0eb7fb0710711ec125?s=128" />
-              </a>
-            </div>
-            <div class="information-questioner">
-              <!-- Thông tin tên, giờ post bài -->
-              <span class="name-questioner">
-                Nguyễn Văn A
-              </span>
-              <span class="time-post">
-                10/01/2022
-              </span>
-            </div>
-          </div>
-
-          <div>
-
-            <div>
-              <!-- <img src="image/logo.png" class="img-question" /> -->
-              <img v-bind:src="question.content" class="img-question" />
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="submit-star-file">
-            <div class="stars">
-              <span class="evalue">Đánh giá</span>
-              <form action="" class="list-star" id="post1">
-                <input class="star star-1" id="post1_star-1" type="radio" name="star" />
-                <label class="star star-1" for="post1_star-1"></label>
-                <input class="star star-2" id="post1_star-2" type="radio" name="star" />
-                <label class="star star-2" for="post1_star-2"></label>
-                <input class="star star-3" id="post1_star-3" type="radio" name="star" />
-                <label class="star star-3" for="post1_star-3"></label>
-                <input class="star star-4" id="post1_star-4" type="radio" name="star" />
-                <label class="star star-4" for="post1_star-4"></label>
-                <input class="star star-5" id="post1_star-5" type="radio" name="star" />
-                <label class="star star-5" for="post1_star-5"></label>
-              </form>
-            </div>
-            <div class="upload-file">
-              <label for="custom-file-upload" class="filupp">
-                <span class="filupp-file-name js-value">
-                  Brower Files
-                </span>
-                <input type="file" name="attachment-file" id="custom-file-upload" />
-              </label>
-              <button @click="uploadSolution(question.id)">OK</button>
-            </div>
-          </div>
-          <div>
-
-            <div v-for="answer in question.answers" :key="answer.id">
-              <div class="information-user">
-                <!-- Khối thông tin User -->
-                <div class="avatar">
-                  <a href="" class="circle">
-                    <img width="64" height="64"
-                      src="http://www.gravatar.com/avatar/9017a5f22556ae0eb7fb0710711ec125?s=128" />
-                  </a>
-                </div>
-                <div class="information">
-                  <!-- Thông tin tên, giờ post bài -->
-                  <span>
-                    Nguyễn Văn A
-                  </span>
-                  <span>
-                    10/01/2022
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <!-- Khối bài giải -->
-                <div>
-                  <!-- Ảnh  -->
-                  <div class="solution">
-                    <div class="see-solution" @click="seeAnswer(answer.content)">Xem</div>
-                  </div>
-                  <div class="stars">
-                    <form action="" class="list-star" id="answer1">
-                      <input class="star star-1" id="answer1_star-1" type="radio" name="star" />
-                      <label class="star star-1" for="answer1_star-1"></label>
-                      <input class="star star-2" id="answer1_star-2" type="radio" name="star" />
-                      <label class="star star-2" for="answer1_star-2"></label>
-                      <input class="star star-3" id="answer1_star-3" type="radio" name="star" />
-                      <label class="star star-3" for="answer1_star-3"></label>
-                      <input class="star star-4" id="answer1_star-4" type="radio" name="star" />
-                      <label class="star star-4" for="answer1_star-4"></label>
-                      <input class="star star-5" id="answer1_star-5" type="radio" name="star" />
-                      <label class="star star-5" for="answer1_star-5"></label>
-                    </form>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-
-            <div>
-              Các khối thông tin tham khảo khác
-            </div>
-          </div>
-
-        </div>
-      </div>
+      <QuestionComponent v-for="question in data" :question="question" :key="question.id">
+      </QuestionComponent>
     </div>
   </body>
 </template>
@@ -126,11 +17,14 @@
 import { getAnswer } from "../services/answer"
 import { getQuestion } from "../services/question"
 import ModalSolution from "../components/ModalSolution.vue"
+import QuestionComponent from "./Question/QuestionComponent.vue"
+
 const axios = require('axios')
 export default {
   name: "ForumComponent",
   components: {
-    ModalSolution
+    ModalSolution,
+    QuestionComponent
   },
   data() {
     return {
@@ -143,6 +37,7 @@ export default {
       solutions: [],
     }
   },
+
   mounted() {
     // console.log("OK")
     this.getListPost()
@@ -180,10 +75,10 @@ export default {
           // console.log(question.id)
           var pushedData = { ...question }
 
-          const params = {
-            'id': question.id
-          }
-          const response = await getAnswer(params)
+          // const params = {
+          //   'id': question.id
+          // }
+          const response = await getAnswer(question.id)
           const answers = response.data
           pushedData.answers = answers
           // console.log("Before")
@@ -230,6 +125,11 @@ export default {
 .img-question {
   width: 100%;
 
+}
+
+.block-question {
+  margin-top: 20px;
+  border: #dd4040 solid 2px;
 }
 
 .submit-star-file {
@@ -430,46 +330,6 @@ form.list-star {
   border-radius: 50%;
 }
 
-.circle-questioner img {
-  border-radius: 50%;
-}
-
-.circle-questioner:hover {
-  transition: ease-out 0.2s;
-  border: 8px solid rgba(203, 31, 31, 0.25);
-}
-
-.information-user-questioner {
-  display: flex;
-}
-
-.information-questioner {
-  display: flex;
-  flex-direction: column;
-}
-
-.information-questioner {
-  margin: 10px 15px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.circle {
-  display: inline-block;
-  height: 64px;
-  width: 64px;
-  border: 4px solid rgba(200, 200, 200, 0.4);
-  border-radius: 50%;
-}
-
-.circle img {
-  border-radius: 50%;
-}
-
-.circle:hover {
-  transition: ease-out 0.2s;
-  border: 4px solid rgba(203, 31, 31, 0.25);
-}
 
 .answer {
   display: flex;
