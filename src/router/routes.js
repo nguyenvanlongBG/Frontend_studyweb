@@ -49,11 +49,13 @@ const routes = [
                             {
                                 path: 'do',
                                 name: 'doTest',
-                                component: () => import ("../components/Test/StatusTestComponent.vue")
+                                component: () => import ("../components/Test/DoTestComponent.vue")
+
+                                // component: () => import ("../components/TestComponent.vue")
                             }, {
                                 path: 'update',
                                 name: 'updateTest',
-                                component: () => import ("../components/Test/StatusTestComponent.vue"),
+                                component: () => import ("../components/Test/UpdateTestComponent.vue"),
                                 props: {
                                     status: 1
                                 }
@@ -61,7 +63,7 @@ const routes = [
                             }, {
                                 path: 'history',
                                 name: 'historyTest',
-                                component: () => import ("../components/Test/StatusTestComponent.vue"),
+                                component: () => import ("../components/Test/HistoryTestComponent.vue"),
                                 props: {
                                     status: 2
                                 }

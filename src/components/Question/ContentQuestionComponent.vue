@@ -1,13 +1,6 @@
 <template>
-    <div>
-
-        <div>
-            <!-- <img src="image/logo.png" class="img-question" /> -->
-            <LatexComponent :questionDetail="questionDetail"></LatexComponent>
-
-        </div>
-    </div>
-
+    <!-- <img src="image/logo.png" class="img-question" /> -->
+    <LatexComponent :questionDetail="questionDetail"></LatexComponent>
 </template>
 <script>
 import LatexComponent from "../LatexComponent.vue"
@@ -16,6 +9,7 @@ export default {
     components: {
         LatexComponent
     },
-    props: ['questionDetail']
+    props: ['questionDetail'],
+
 }
 </script>

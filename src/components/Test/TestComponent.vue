@@ -4,17 +4,17 @@
 
         <div class="header-test">
             <div class="mask">
-                <button class="tool-button" @click="tryTest">
+                <button class="tool-button" @click="tryTest(test.id)">
                     Thi thử
                 </button>
-                <button class="tool-button-do" @click="doTest">
+                <button class="tool-button-do" @click="doTest(test.id)">
                     <span class="fee">5 xu</span>
                     <span class="do">Làm đề</span>
                 </button>
-                <button class="tool-button" @click="updateTest">
+                <button class="tool-button" @click="updateTest(test.id)">
                     Sửa
                 </button>
-                <button class="tool-button" @click="deleteTest">
+                <button class="tool-button" @click="deleteTest(test.id)">
                     Xóa
                 </button>
             </div>
@@ -73,15 +73,15 @@ export default {
         tryTest() {
 
         },
-        doTest() {
-            console.log("Click")
-            router.push({ name: 'testDetail', params: { idTest: 1 } })
+        doTest(testId) {
+            console.log(testId)
+            router.push({ name: 'doTest', params: { idTest: testId } })
         },
-        updateTest() {
-
+        updateTest(testId) {
+            router.push({ name: 'updateTest', params: { idTest: testId } })
         },
-        deleteTest() {
-
+        deleteTest(testId) {
+            router.push({ name: 'deleteTest', params: { idTest: testId } })
         },
 
     }

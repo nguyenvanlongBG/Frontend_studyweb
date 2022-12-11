@@ -24,9 +24,6 @@
                         A: {{ choice.content }}
                     </span>
                 </label>
-
-
-
             </div>
         </div>
     </div>

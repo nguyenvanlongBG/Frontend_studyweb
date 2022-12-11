@@ -4,16 +4,19 @@
     </ModalCreateQuestion>
     <div class="exam">
         <NavbarListComponent />
-        <StatusTestComponent />
+        <!-- <DoTestComponent /> -->
+        <RouterView></RouterView>
+        <!-- <QuestionComponent v-for="question in questions" :key="question.question_id" :question="question" /> -->
     </div>
 </template>
 <script>
-import { useRoute } from 'vue-router';
-import { getQuestionTest } from '../../services/questionTest'
+// import { useRoute } from 'vue-router';
+// import { getQuestionTest } from '../../services/questionTest'
 
 import ModalCreateQuestion from "../ModalCreateQuestion.vue"
 import NavbarListComponent from "../Test/NavbarListComponent.vue"
-import StatusTestComponent from './StatusTestComponent.vue';
+// import DoTestComponent from './DoTestComponent.vue';
+// import QuestionComponent from '../Question/QuestionComponent.vue';
 
 // import { answerTest } from '../services/answerTest'
 export default {
@@ -21,13 +24,13 @@ export default {
     components: {
         ModalCreateQuestion,
         NavbarListComponent,
-        StatusTestComponent
+        // DoTestComponent,
+        // QuestionComponent
     },
     data() {
-        const idTest = useRoute().params.idTest
+
 
         return {
-            idTest,
             infoTest: {},
             questions: [],
             modalCreateQuestion: {
@@ -43,9 +46,7 @@ export default {
     methods: {
         async getData() {
 
-            var responseQuestions = await getQuestionTest(this.idTest);
-            this.questions = responseQuestions.data
-            console.log(this.questions.data)
+
         },
         choiceAnswer($id) {
             var answer = document.getElementById("question_" + $id);
@@ -68,7 +69,7 @@ export default {
 
 .info-list-question {
     width: 79%;
-    margin-top: 10px;
+    margin-top: 3px;
     margin-right: 2px;
     position: absolute;
     right: 0;
@@ -78,7 +79,7 @@ export default {
     background-color: #222;
     color: white;
     margin-top: 15px;
-    padding: 15px;
+    padding: 5px 15px;
     border-style: solid;
     border-color: #ea4f4c;
     /* padding: px; */
@@ -166,6 +167,7 @@ input.hidden-radio:checked+span.choice-label {
 }
 
 .action-question {
+    margin-top: 2px;
     display: flex;
     justify-content: flex-end;
 }
