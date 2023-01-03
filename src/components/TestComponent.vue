@@ -64,28 +64,6 @@ export default {
     display: flex;
 }
 
-
-
-
-
-.info-list-question {
-    width: 79%;
-    margin-top: 10px;
-    margin-right: 2px;
-    position: absolute;
-    right: 0;
-}
-
-.info-question {
-    background-color: #222;
-    color: white;
-    margin-top: 15px;
-    padding: 15px;
-    border-style: solid;
-    border-color: #ea4f4c;
-    /* padding: px; */
-}
-
 .list-choice {
     display: flex;
     flex-wrap: wrap;

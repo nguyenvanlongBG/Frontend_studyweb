@@ -1,28 +1,24 @@
 <template>
-    <div class="list-choice">
-        <label class="choice" @click="choiceAnswer(1)" for="1" v-for="(choice, index) in choiceQuestion"
-            :key="choice.id">
-            <span class="closeChoice" v-if="isUpdate" @click="deleteChoose(index)">X</span>
-            <input type="radio" class="hidden-radio" id="1" name="ID_Cau_Hoi_1">
-            <span class="choice-label">
-                <LatexComponent :content="choice.content" :isUpdate="isUpdate"
-                    @update="data => updateChoose(index, data)" />
-                <!-- A: {{ choice.content }} -->
-            </span>
-        </label>
+    <div class="list-choice" v-if="render">
+
+        <template v-for="(choice, index) in choiceQuestion" :key="index">
+            <input type="radio" class="hidden-radio" :id="choice.id" :name="'question_' + question" value="index"
+                :disabled="!canChoose" />
+            <label :class="(isUpdate ? 'choice' : 'choice nohover') + (isUpdate ? 'choice' : 'choice nohover')" @click="canChoose ? choiceAnswer(choice.id) : ''"
+                :for="choice.id">
+                <span class="closeChoice" v-if="isUpdate" @click="deleteChoose($event, index)">X</span>
+                <span :class="isUpdate || doTest ? 'choice-label' : ''">
+                    <!-- Lỗi dấu cách -->
+                    <!-- <LatexComponent :content="choice.content" :isUpdate="isUpdate"
+                    @update="data => updateChoose(index, data)" /> -->
+                    <!-- Fix lỗi dấu cách -->
+                    <LatexComponent :content="choice.content" :isUpdate="isUpdate"
+                        @update="updateChoose($event, index)" />
+                </span>
+            </label>
+        </template>
 
         <!-- List câu trả lời mới tạo -->
-        <label class="choice" v-for="(newChoose, index) in newChooses" :key="index">
-            <span class="closeChoice" @click="deleteNewChoose(index)" v-if="isUpdate">X</span>
-            <input type="radio" class="hidden-radio" id="1" name="ID_Cau_Hoi_1">
-            <span class="choice-label">
-
-                <LatexComponent :content="newChoose" :isUpdate="isUpdate"
-                    @update="data => updateNewChoose(index, data)" />
-                <!-- A: {{ choice.content }} -->
-            </span>
-        </label>
-
 
 
         <button class="create-answer" v-if="isUpdate" @click="createChoose">
@@ -36,47 +32,64 @@ import { ref } from 'vue';
 import LatexComponent from '../LatexComponent.vue'
 export default {
     name: "ChooseComponent",
-    props: ['choices', 'isUpdate'],
+    props: ['choices', 'isUpdate', 'linkNavbar', 'doTest', 'canChoose', 'question'],
     components: {
         LatexComponent
     },
     setup() {
-        const choiceQuestion = ref([])
         const newAnswer = ref("")
         const isCreate = ref(false)
         const newChooses = ref([])
-        return { choiceQuestion, newAnswer, newChooses, isCreate }
+        const render = ref(true)
+        const indexNewChoose = ref(0)
+        return { newAnswer, render, newChooses, isCreate, indexNewChoose }
     },
-    created() {
-        this.choiceQuestion = this.choices
+    data() {
+        return {
+            // copy data from array not reference
+            choiceQuestion: this.choices.slice()
+        }
     },
+
+
     methods: {
-        choiceAnswer($id) {
-            var answer = document.getElementById("question_" + $id);
-            answer.classList.add("answer-content-choice");
+        choiceAnswer(id) {
+
+            this.$emit('chooseAnswer', id)
+
+
         },
-        updateChoose($index, $data) {
-            // this.choiceQuestion[$index] = $data
-            this.choiceQuestion[$index] = $data
-            // this.$emit('update', $index, $data)
+        updateChoose(content, index) {
+
+            this.choiceQuestion[index].content = content
+            let data = {
+                'id': this.choiceQuestion[index].id,
+                'content': content
+            }
+            this.$emit('update', data)
+
         },
-        deleteChoose($index) {
-            this.choiceQuestion.splice($index, 1)
-            // this.choiceQuestion[$index] = $data
-            // this.$emit('deleteChoose', $index)
+        deleteChoose(event, index) {
+
+            event.stopImmediatePropagation()
+            // console.log("Click delete")
+            let id = this.choiceQuestion[index].id
+            this.choiceQuestion.splice(index, 1)
+            // console.log(this.choiceQuestion)
+            this.render = false
+
+            this.$nextTick(() => {
+                this.render = true
+            })
+            this.$emit('delete', id)
         },
         createChoose() {
-            // console.log(this.isUpdate)
-            var content = ""
-            this.newChooses.push(content)
-            // this.$emit('createChoose', $data)
-        },
-        updateNewChoose($index, $data) {
-            this.newChooses[$index] = $data
-        },
-        deleteNewChoose($index) {
-            this.newChooses.splice($index, 1)
-        },
+            let data = { 'id': this.question + '_new_choose_' + this.indexNewChoose, 'content': "" }
+            this.indexNewChoose++
+            this.choiceQuestion.push(data)
+            this.$emit('create', data)
+        }
+
 
     }
 }
@@ -87,7 +100,7 @@ export default {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    padding: auto;
+    /* padding: auto;    */
 }
 
 .closeChoice {
@@ -135,38 +148,54 @@ export default {
     margin-left: 5px;
     margin-top: 5px;
     min-height: 60px;
+    border: 4px solid white;
+    border-radius: 2px;
+    background-color: white;
+    box-sizing: border-box;
+}
+
+
+
+.choice:not(.nohover):hover {
+    display: block;
+    position: relative;
+    width: 48%;
+    margin-left: 5px;
+    margin-top: 5px;
+    min-height: 60px;
+    border: 4px solid #6108f2;
+    border-radius: 2px;
+    background-color: rgb(166, 172, 172);
+    box-sizing: border-box;
 }
 
 .choice-label {
     display: block;
     width: 100%;
     height: 100%;
-    box-sizing: border-box;
     border-radius: 5px;
     border-style: solid;
+    border: 0px;
     border-color: #e2d5d5;
-
-}
-
-.choice-label:hover {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-style: solid;
-    border-radius: 5px;
-    border-color: #05a317;
-    background-color: rgb(166, 172, 172);
-    box-sizing: border-box;
 }
 
 
-input.hidden-radio:checked+span.choice-label {
+
+input.hidden-radio {
+    display: none;
+
+}
+
+
+.hidden-radio:checked+.choice {
     display: block;
-    width: 100%;
-    height: 100%;
-    border-style: solid;
+    position: relative;
+    width: 48%;
+    margin-left: 5px;
+    margin-top: 5px;
+    min-height: 60px;
+    border: 4px solid #6108f2;
     border-radius: 5px;
-    border-color: #05a317;
     background-color: rgb(166, 172, 172);
     box-sizing: border-box;
 }

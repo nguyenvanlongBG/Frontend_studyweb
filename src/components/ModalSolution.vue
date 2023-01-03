@@ -1,22 +1,39 @@
 <template>
     <div class="modal-answer-overlay" style="overflow-y: scroll">
-        <div class="image-solution">
-            <slot name="image">
-            </slot>
+        <div class="solution-modal">
+            <LatexComponent :content="answer.content" @update="answerQuestion" />
+            <button @click="close()" class="close">X</button>
         </div>
-        <button @click="close()" class="close">X</button>
-
 
     </div>
 </template>
 
 <script>
+import { ref } from 'vue';
+import LatexComponent from './LatexComponent.vue';
+import { getNormalAnswer } from '../services/answer'
 export default {
-    data() {
-
+    components: {
+        LatexComponent
     },
+    setup() {
+        const answer = ref({})
+        return {
+            answer
+        }
+    },
+    mounted() {
+        this.handleGetData()
+    },
+    props: ['idAnswer'],
     methods: {
+        async handleGetData() {
+            const response = await getNormalAnswer(this.idAnswer)
+            this.answer = response.data.data
+            console.log(this.answer)
+        },
         close() {
+
             this.$emit("close")
         }
     }
@@ -37,20 +54,14 @@ export default {
     z-index: 10;
 }
 
-
-.image-solution img {
-
-    /* margin-top: 20%;
-    margin-left: 20%;
-    margin-right: 20%; */
-    text-align: center;
-    background-color: white;
+.solution-modal {
     min-height: 800px;
     min-width: 800px;
 
     padding: 20px 0;
     border-radius: 10px;
 }
+
 
 .close {
     display: flex;

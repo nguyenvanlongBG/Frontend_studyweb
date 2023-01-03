@@ -1,5 +1,5 @@
 <template>
-    <div class="overview-exam">
+    <div class="overview-exam" v-if="render">
         <span class="nameUser">
             Họ và tên: Nguyễn Văn A
         </span>
@@ -7,97 +7,13 @@
             <span class="navbar-list-question">
                 Danh sách câu hỏi
             </span>
-            <div class="list-numberical-question">
-                <div class="stt-question" id="question_1">
-                    1
-                </div>
-                <div class="stt-question" id="question_2">
-                    2
-                </div>
-                <div class="stt-question" id="question_3">
-                    3
-                </div>
-                <div class="stt-question" id="question_4">
-                    4
-                </div>
-                <div class="stt-question">
-                    5
-                </div>
-                <div class="stt-question">
-                    6
-                </div>
-                <div class="stt-question">
-                    7
-                </div>
-                <div class="stt-question">
-                    8
-                </div>
-                <div class="stt-question">
-                    9
-                </div>
-                <div class="stt-question">
-                    10
-                </div>
-                <div class="stt-question">
-                    11
-                </div>
-                <div class="stt-question">
-                    12
-                </div>
-                <div class="stt-question">
-                    13
-                </div>
-                <div class="stt-question">
-                    14
-                </div>
-                <div class="stt-question">
-                    15
-                </div>
-                <div class="stt-question">
-                    16
-                </div>
-                <div class="stt-question">
-                    17
-                </div>
-                <div class="stt-question">
-                    18
-                </div>
-                <div class="stt-question">
-                    19
-                </div>
-                <div class="stt-question">
-                    20
-                </div>
-                <div class="stt-question">
-                    21
-                </div>
-                <div class="stt-question">
-                    22
-                </div>
-                <div class="stt-question">
-                    23
-                </div>
-                <div class="stt-question">
-                    24
-                </div>
-                <div class="stt-question">
-                    25
-                </div>
-                <div class="stt-question">
-                    26
-                </div>
-                <div class="stt-question">
-                    27
-                </div>
-                <div class="stt-question">
-                    28
-                </div>
-                <div class="stt-question">
-                    29
-                </div>
-                <div class="stt-question">
-                    30
-                </div>
+            <div class="list-numerical-question">
+                <template v-for="(question, index) in numericalQuestion.data" :key="index">
+                    <div :class="classType[parseInt(question.type)]" :id="'link_' + question.id"
+                        @click="moveToQuestion(question.page, question.id)">
+                        {{ index + 1 }}
+                    </div>
+                </template>
 
             </div>
         </div>
@@ -106,24 +22,41 @@
 
 </template>
 <script>
+import { ref } from 'vue';
+
 export default {
     name: "NavbarListComponent",
-    methods: {
+    props: ['numericalQuestion'],
+    setup() {
+        // console.log(this.questions)
+        const render = ref(true)
+        const classType = ref(['stt-question answer-content-choice', 'stt-question answer-content-choice-checked', 'stt-question answer-content-choice-true', 'stt-question answer-content-choice-wrong'])
+        return {
+            classType, render
+        }
+    },
 
+
+    methods: {
+        moveToQuestion(page, id) {
+            console.log("In navbar")
+            console.log("Navbar page " + page)
+            this.$emit('moveQuestion', page, 'question_' + id);
+
+            // this.$emit('clickQuestion', page, index);
+        }
     }
 }
 </script>
 <style>
 .overview-exam {
-
     width: 20%;
-
     position: fixed;
     border-style: solid;
     /* border-top: 5px solid #ea4f4c; */
 }
 
-.list-numberical-question {
+.list-numerical-question {
     display: grid;
     grid-template-columns: repeat(5, 20%);
     margin-top: 10px;
@@ -144,5 +77,29 @@ export default {
     height: 40px;
     border-style: solid;
     border-radius: 5px;
+}
+
+.answer-content-choice {
+    background-color: white;
+    border-color: #222;
+    color: #222;
+}
+
+.answer-content-choice-checked {
+    background-color: #222;
+    border-color: #222;
+    color: white;
+}
+
+.answer-content-choice-true {
+    background-color: rgb(24, 247, 13);
+    border-color: #222;
+    color: white;
+}
+
+.answer-content-choice-wrong {
+    background-color: rgb(236, 10, 10);
+    border-color: #222;
+    color: white;
 }
 </style>

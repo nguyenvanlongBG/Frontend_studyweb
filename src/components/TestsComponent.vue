@@ -23,25 +23,10 @@
           Tất cả
         </button>
       </div>
-
-
     </div>
     <div class="grid-container">
       <TestComponent :test="test" v-for="test in data" :key="test.id" />
-
-
-
-
-
     </div>
-
-
-
-
-
-
-
-
   </div>
 </template>
 <script>
@@ -83,8 +68,8 @@ export default {
       // }
       const response = await getTests(this.filter)
       this.data = response.data
-      var myListTest = document.getElementById("myListTest");
-      myListTest.classList.add("");
+      // var myListTest = document.getElementById("myListTest");
+      // myListTest.classList.add("");
     },
     createTest() {
       this.modalCreateTest.visible = true

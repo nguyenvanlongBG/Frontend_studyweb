@@ -1,7 +1,7 @@
 <template>
     <div class="styleEditor">
         <div v-if="render">
-            <ckeditor :disabled="disabled" :editor="editor" v-model="editorData" :config="editorConfig" id="editor">
+            <ckeditor :disabled="disabled" :editor="editor" v-model="editorData" :config="editorConfig">
                 {{ editorData }}
             </ckeditor>
         </div>
@@ -12,46 +12,57 @@
 
 // import ClassicEditor from 'ckeditor5-build-classic-mathtype';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
+import { ref } from 'vue'
 // import ClassicEditor from '@wiris/mathtype-ckeditor5'
 export default {
     name: 'LatexComponent',
-    props: ['isUpdate', 'content'],
+    props: ['isUpdate', 'content', 'isAnswer'],
     watch: {
         isUpdate() {
-            console.log("isUpdate " + this.isUpdate)
             this.disabled = !this.isUpdate
+        },
+        disabled() {
             this.render = false
             this.editorConfig.toolbar = this.disabled ? [] : ['Mathtype', 'uploadImage'];
             this.$nextTick(() => {
                 this.render = true
             })
         },
-
         editorData() {
+            console.log(this.editorData)
             this.$emit('update', this.editorData)
         }
 
     },
-    data() {
+    setup() {
+        const editor = ref(ClassicEditor);
         return {
-            // toolbars: this.isUpdate ? ['Mathtype', 'Image'] : [],
-            editor: ClassicEditor,
-            // editorData: this.questionDetail,
-            editorData: '<p><math xmlns="http://www.w3.org/1998/Math/MathML"><msubsup><mo>∫</mo><mn>1</mn><mn>2</mn></msubsup><mi>x</mi><mo>d</mo><mi>x</mi></math></p>',
+            editor
+        }
+    },
+    // Lần đầu tiên phải mout cho disabled
+    mounted() {
+        this.disabled = !this.isUpdate
+    },
+    data() {
+
+        return {
+            editorData: this.content,
+            // editorData: "<a href='#' onclick='alert('XSS')'>Test</a>",
             editorConfig: {
                 toolbar: [],
             },
             disabled: true,
             render: true
-
-        };
+        }
     },
-    // mounted() {
-    //     console.log("EditorData " + this.editorData)
-    // },
-
     methods: {
-
+        reRender() {
+            this.render = false
+            this.$nextTick(() => {
+                this.render = true
+            })
+        }
 
     },
 

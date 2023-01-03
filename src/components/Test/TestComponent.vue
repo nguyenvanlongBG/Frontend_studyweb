@@ -14,6 +14,9 @@
                 <button class="tool-button" @click="updateTest(test.id)">
                     Sửa
                 </button>
+                <button class="tool-button" @click="historyTest(test.id)">
+                    Lịch sử
+                </button>
                 <button class="tool-button" @click="deleteTest(test.id)">
                     Xóa
                 </button>
@@ -79,6 +82,9 @@ export default {
         },
         updateTest(testId) {
             router.push({ name: 'updateTest', params: { idTest: testId } })
+        },
+        historyTest(testId) {
+            router.push({ name: 'historyTest', params: { idTest: testId } })
         },
         deleteTest(testId) {
             router.push({ name: 'deleteTest', params: { idTest: testId } })

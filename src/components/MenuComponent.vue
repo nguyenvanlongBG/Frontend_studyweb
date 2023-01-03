@@ -1,21 +1,22 @@
 <template>
 
     <head class="header">
-        <div class="login-logout">
-            Phần đăng kí đăng nhập, tìm kiếm
-        </div>
         <nav class="navigationWrapper">
             <div class="logoWrapper">
                 <span class="stylish">
-                    LongBG
+                    Edu
                 </span>
                 <span class="logo">
-                    OK
+                    Network
                 </span>
             </div>
 
             <ul class="navigation">
-
+                <li class="parent">
+                    <a class="link" href="/login">
+                        Trang chủ
+                    </a>
+                </li>
                 <li class="parent" id="library" @click="clickLibrary">
                     <a class="link" href="#">
                         <i class="fas fa-minus"></i>
@@ -47,6 +48,7 @@
                         Giới thiệu
                     </a>
                 </li>
+
             </ul>
 
         </nav>
@@ -135,7 +137,7 @@ body .signature:hover {
 }
 
 .navigationWrapper .logoWrapper .logo {
-    padding-left: 4px;
+    padding-left: 1px;
     color: #ea4f4c;
 }
 
@@ -155,7 +157,7 @@ body .signature:hover {
 }
 
 .navigationWrapper .navigation .parent {
-    padding: 0 10px;
+    padding: 4px 10px;
     cursor: pointer;
 }
 

@@ -1,55 +1,98 @@
-<template>
+<template  v-if="render">
     <!-- <NavbarListComponent /> -->
+    <NavbarListComponent :numericalQuestion="numericalQuestion" @moveQuestion="moveQuestion" />
     <div class="info-list-question">
-        <button class="update-create-question-button" @click="createQuestion" v-if="hasRole">
-            Thêm câu hỏi
-        </button>
+        <LoadingComponent v-if="isLoading"></LoadingComponent>
+        <template v-else>
+            <div class="page">
 
-        <QuestionComponent v-for="question in  questions" :key="question.id" :question="question"
-            @update="updateQuestion()" @delete="deleteQuestion()" />
-        <button class="update-create-question-button" @click="createQuestion" v-if="hasRole">
-            Cập nhật
-        </button>
-        <paginate :page-count="pages" :page-range="3" :margin-pages="2" :click-handler="clickCallback"
-            :prev-text="'Prev'" :next-text="'Next'" :container-class="'pagination'" :page-class="'page-item'"
-            :active-class="'active-class'">
-        </paginate>
+                <h2>
+                    Trang {{ currentPage }}
+                </h2>
+            </div>
+            <QuestionComponent v-for="(question, index) in  questions" :key="index" :question="question"
+                :ref="'question_' + question.question.question_id" :id="'question_' + question.question.question_id"
+                :index="startIndex + index" :type="3" @send="sendData" />
+            <div class="end-action">
+
+            </div>
+            <paginate :page-count="pages" :page-range="3" :margin-pages="2" :click-handler="clickCallback"
+                :prev-text="'Prev'" :next-text="'Next'" :container-class="'pagination'" :page-class="'page-item'"
+                :active-class="'active-class'">
+            </paginate>
+        </template>
     </div>
 
 </template>
 <script>
 import QuestionComponent from '../Question/QuestionComponent.vue';
 import Paginate from 'vuejs-paginate-next';
-import { getQuestionTest } from '../../services/questionTest'
+import { getQuestionTestUpdate } from '../../services/question'
+import { getNumericalQuestion } from '../../services/test'
 import { ref } from '@vue/reactivity'
 import { useRoute } from 'vue-router';
-
+import LoadingComponent from '../common/LoadingComponent.vue';
+import NavbarListComponent from "../Test/NavbarListComponent.vue"
 export default {
     name: "HistoryTestComponent",
     components: {
         QuestionComponent,
         paginate: Paginate,
+        NavbarListComponent,
+        LoadingComponent
     },
     setup() {
-        const idTest = useRoute().params.idTest
+        const idTest = parseInt(useRoute().params.idTest)
         const isLoading = ref(false)
-        const hasRole = ref(true)
+        const canUpdate = ref(true)
+        const isUpdateEssay = ref(false)
         const questions = ref([])
-        const page = ref(1)
-        const pages = ref(1)
-        const listQuestionUpdate = ref([])
-        const listQuestionDelete = ref([])
+        const currentPage = ref(1)
+        const totalPage = ref(1)
+        const startIndex = ref(1)
+        const numericalQuestion = ref([])
+        const moveTo = ref("")
+        const listQuestionFollow = ref(new Set())
+        const questionsDelete = ref([])
+        const render = ref(true)
+        const indexNewQuestion = ref(0)
+        const sendData = ref({
+            'questions': {
+                'create': [],
+                'update': [],
+                'delete': [],
+                'deleteResults': [], // Question fill and essay
+                'updateResults': [] // Question fill and essay
+
+            },
+            'choices': {
+                'create': [],
+                'update': [],
+                'delete': [],
+            }
+        })
+        // const answersUpdate = ref([])
+        // const answersDelete = ref([])
+        // const answersCreate = ref([])
         return {
             idTest,
             isLoading,
-            hasRole,
+            canUpdate,
+            isUpdateEssay,
             questions,
-            page,
-            pages,
-            listQuestionUpdate,
-            listQuestionDelete
+            currentPage,
+            totalPage,
+            startIndex,
+            numericalQuestion,
+            moveTo,
+            listQuestionFollow,
+            questionsDelete,
+            sendData,
+            indexNewQuestion,
+            render
         }
     },
+
     create() {
         this.$watch(
             () => this.$route.query,
@@ -62,30 +105,63 @@ export default {
         this.handleGetData()
     },
     methods: {
+        refreshData() {
+            this.listQuestionFollow = new Set(),
+                this.questionsDelete = [],
+                this.sendData = {
+                    'questions': {
+                        'create': [],
+                        'update': [],
+                        'delete': [],
+                        'deleteResult': [], // Question fill and essay
+                        'updateResults': [] // Question fill and essay
+                    },
+                    'choices': {
+                        'create': [],
+                        'update': [],
+                        'delete': [],
+                    }
+                }
+        },
         async handleGetData() {
-            console.log(this.questions)
-            console.log(this.idTest)
-            var params = {
-                page: this.page
+
+            var paramsQuestion = {
+                current_page: this.currentPage
             };
             try {
-                const responseQuestions = await getQuestionTest(this.idTest, params);
+                const responseQuestions = await getQuestionTestUpdate(this.idTest, paramsQuestion);
+
                 if (responseQuestions) {
-                    this.questions = responseQuestions.data.questions;
-                    this.pages = responseQuestions.data.pages.totalPages
+
+                    this.questions = responseQuestions.data?.data?.questions
+                    this.pages = responseQuestions.data?.data?.pages
+                    this.startIndex = this.pages.startIndex
+                }
+                var paramsNumerical = {
+                    current_page: this.currentPage,
+                    type: 2
+                    // 1: Do 2: Update 3: History
+                };
+                const responseNumerical = await getNumericalQuestion(this.idTest, paramsNumerical)
+                if (responseNumerical) {
+                    this.numericalQuestion = responseNumerical.data
+
                 }
             } finally {
                 this.isLoading = false
             }
         },
-
-        choiceAnswer($id) {
-            var answer = document.getElementById("question_" + $id);
+        addlistQuestionFollow(id) {
+            // Add id question to list question update
+            console.log(id)
+            this.listQuestionFollow.add(id);
+        },
+        choiceAnswer(id) {
+            var answer = document.getElementById("question_" + id);
             answer.classList.add("answer-content-choice");
         },
         clickCallback(pageNum) {
-            this.page = pageNum
-            console.log(this.page)
+            this.currentPage = pageNum
             this.handleGetData()
         },
         Next(pageNum) {
@@ -97,23 +173,85 @@ export default {
             this.handleGetData()
         },
         createQuestion() {
-            this.modalCreateQuestion.visible = true;
-        },
-        updateQuestion() {
+            let newQuestion = {
+            }
+            newQuestion.question = { 'question_id': 'new_' + this.indexNewQuestion, 'page': this.currentPage, "type": 2, 'index': this.questions.length, 'result_id': "", 'contentResult': "", 'scope': 1, 'dependence_id': this.idTest }
+            this.indexNewQuestion++
+            newQuestion.choices = []
+            this.questions.push(newQuestion)
+            let item = { 'id': newQuestion.question.question_id, 'page': this.currentPage, 'index': this.questions.length, 'type': 2 }
+            this.numericalQuestion.data.splice(this.startIndex + this.questions.length - 2, 0, item);
 
+            setTimeout(() => {
+                let question = document.getElementById('question_' + newQuestion.question.question_id);
+                question.scrollIntoView();
+            }, 500)
         },
-        deleteQuestion() {
-            this.listQuestionDelete.push();
+
+        deleteQuestion(deleteQuestion) {
+
+            // this.questions
+            this.render = false
+            this.questions.splice(deleteQuestion.index - this.startIndex, 1)
+            this.numericalQuestion.data.splice(deleteQuestion.index, 1)
+            // console.log("Delete " + ('' + deleteQuestion.id).includes('new_'))
+            let q = this.$refs['question_' + deleteQuestion.id][0]
+            // console.log("Ref")
+            // console.log(q)
+            if (deleteQuestion.result != undefined) {
+                this.sendData.deleteResults.push(deleteQuestion.result)
+            }
+            if (('' + deleteQuestion.id).includes('new_')) {
+                if (this.questionsCreate.get(deleteQuestion.id) !== undefined) {
+                    this.questionsCreate.delete(deleteQuestion.id)
+                }
+            } else {
+
+                this.sendData.choices.delete = [...Array.from(q.chooseDelete)]
+                this.questionsDelete.push(deleteQuestion.id)
+            }
+            this.$nextTick(() => {
+                this.render = true
+            })
+        },
+        moveQuestion(page, id) {
+
+            if (page == this.currentPage) {
+                this.moveTo = id;
+                let question = document.getElementById(id);
+                question.scrollIntoView();
+            } else {
+                this.currentPage = page;
+                this.moveTo = id;
+                this.handleGetData();
+                setTimeout(() => {
+                    let question = document.getElementById(id);
+                    question.scrollIntoView();
+                }, 1000)
+
+
+            }
         }
     }
 }
 </script>
 <style>
+.page {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+}
+
 .margin-bottom10px {
     margin-bottom: 10px;
 }
 
-.update-create-question-button {
+.create-button-first {
     margin-left: 2px;
     margin-top: 2px;
     height: 35px;
@@ -125,6 +263,37 @@ export default {
     text-align: center;
     justify-content: center;
     text-decoration: none;
+}
+
+.update-create-question-button {
+    margin-left: 5px;
+    margin-top: 2px;
+    height: 45px;
+    padding: 5px;
+    font-size: 20px;
+    font-weight: 400;
+    box-shadow: 0 8px #999;
+    border-radius: 5px;
+    border: 2px solid #ea4f4c;
+    background-color: #222;
+    color: white;
+    text-align: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.info-list-question {
+    width: 79%;
+    margin-top: 3px;
+    margin-right: 2px;
+    position: absolute;
+    right: 0;
+}
+
+.end-action {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
 }
 
 @import "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css";

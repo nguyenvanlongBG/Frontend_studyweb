@@ -13,7 +13,6 @@ const routes = [
                 redirect: {
                     name: 'DocumentsComponent'
                 },
-
                 children: [
                     {
                         path: 'documents',
@@ -24,7 +23,6 @@ const routes = [
                         name: 'VideoComponent',
                         component: () => import ('../components/VideoComponent.vue')
                     },
-
                 ]
             },
             {
@@ -50,27 +48,15 @@ const routes = [
                                 path: 'do',
                                 name: 'doTest',
                                 component: () => import ("../components/Test/DoTestComponent.vue")
-
-                                // component: () => import ("../components/TestComponent.vue")
                             }, {
                                 path: 'update',
                                 name: 'updateTest',
-                                component: () => import ("../components/Test/UpdateTestComponent.vue"),
-                                props: {
-                                    status: 1
-                                }
-
+                                component: () => import ("../components/Test/UpdateTestComponent.vue")
                             }, {
                                 path: 'history',
                                 name: 'historyTest',
-                                component: () => import ("../components/Test/HistoryTestComponent.vue"),
-                                props: {
-                                    status: 2
-                                }
-
+                                component: () => import ("../components/Test/HistoryTestComponent.vue")
                             }
-
-
                         ]
                     },
                 ]
@@ -84,15 +70,13 @@ const routes = [
                 name: "introduce",
                 component: () => import ("../components/IntroduceComponent.vue")
             },
-
-
         ]
     }, {
         name: "login",
         path: "/login",
         component: LoginComponent
     }, {
-        name: "register",
+        name: "RegisterComponent",
         path: "/register",
         component: RegisterComponent
     },

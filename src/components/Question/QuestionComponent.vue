@@ -1,7 +1,10 @@
 <template>
-    <div class="info-question" v-if="render">
-
+    <div :class="styleQuestion" v-if="render">
         <div class="action-question">
+            <button class="tool-button-test" :style="pressUpdate ? styleObject : null" @click="publicQuestion"
+                v-if="canUpdate">
+                Diễn đàn
+            </button>
             <button class="tool-button-test" :style="pressUpdate ? styleObject : null" @click="updateQuestion"
                 v-if="canUpdate">
                 Sửa
@@ -10,102 +13,243 @@
                 Xóa
             </button>
         </div>
-        <h3 v-if="!isNormal">Câu : {{ parseInt(index) + 1 }}</h3>
-        <LatexComponent @updateField="updateQuestion" :content="infoQuestion.question.content" :isUpdate="pressUpdate"
-            @update="updateQuestion" />
+        <h3 v-if="type != 0">Câu {{ index }}: </h3>
+        <h3 v-if="type == 0">Câu hỏi: </h3>
+        <LatexComponent :content="infoQuestion.question.content" :isUpdate="pressUpdate" @update="updateContentQuestion"
+            :id="'question_' + infoQuestion.question.question_id" />
         <!-- <CommentQuestionComponent :answers="question.answers" /> -->
-        <h3>Đáp án của bạn là:</h3>
-        <span v-if="canUpdate">Bạn hãy nhập đáp án của câu hỏi</span>
-        <ChooseComponent :choices="infoQuestion.choices" :isUpdate="pressUpdate" @update="updateChoose"
-            @createChoose="createChoose" v-if="(infoQuestion.question.type == 2)" />
-        <LatexComponent :isUpdate="pressUpdate" v-if="(infoQuestion.question.type == 1)"
-            @update="data => updateResultEssay(infoQuestion.question.result_id, data)" />
+        <h3 v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 3 || type == 2)">Đáp
+            án đúng:</h3>
+        <LatexComponent :isUpdate="canEssay" @update="answerQuestion"
+            v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 3 || type == 2)"
+            class="border-green" />
+        <h3 v-if="type != 2 && type != 0">Đáp án của bạn là:</h3>
+        <span v-if="canUpdate && type != 2 && type != 0">Bạn hãy nhập đáp án của câu hỏi</span>
+        <LatexComponent :isUpdate="!canEssay" @update="answerQuestion"
+            v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 1 || type == 2)" />
+        <ChooseComponent :ref="'chooses_' + infoQuestion.question.question_id" :choices="infoQuestion.choices"
+            :isUpdate="pressUpdate" doTest="true" @update="updateChoose" @create="createChoose" @delete="deleteAnswer"
+            @chooseAnswer="answerQuestion" v-if="(infoQuestion.question.type == 2)"
+            :result_id="infoQuestion.question.result_id"
+            :linkNavbar="'page_' + infoQuestion.question.page + '_' + index"
+            :question="infoQuestion.question.question_id" :canChoose="canChoose" />
+        <!-- <LatexComponent v-if="(infoQuestion.question.type == 1)" :isUpdate="isUpdateEssay"
+            @update="data => updateResultEssay(infoQuestion.question.result_id, data)" /> -->
+
         <div class="action-question" v-if="pressUpdate">
             <button class="tool-button-test" @click="back">
                 Trở lại
             </button>
             <button class="tool-button-test margin-bottom6px" @click="confirmUpdate">
-                OK
+                Lưu
             </button>
         </div>
         <ConfirmComponent v-if="confirmModal" content="Bạn có chắc chắn muốn xóa?" @close="confirmModal = false"
             @confirm="confirmDelete" />
+        <CommentQuestionComponent v-if="this.infoQuestion.question.scope == 0" />
+
     </div>
 
 </template>
 <script>
 import ChooseComponent from "./ChooseComponent.vue";
+import CommentQuestionComponent from "./CommentQuestionComponent.vue";
 import LatexComponent from "../LatexComponent.vue";
 import ConfirmComponent from '../common/ConfirmComponent.vue'
-import { ref } from "vue";
+import { ref } from '@vue/reactivity'
+import { handleQuestionTest } from '../../services/question'
 export default {
     name: "QuestionComponent",
     components: {
         ChooseComponent,
         LatexComponent,
-        ConfirmComponent
+        ConfirmComponent,
+        CommentQuestionComponent,
     },
-    props: ['question', 'canUpdate', 'index', 'isNormal'],
+    props: ['question', 'isUpdateEssay', 'index', 'isNormal', 'type', 'send'],
+    // watch: {
+    //     send() {
+    //         data = {
+
+    //         }
+    //         this.$emit('send')
+    //     }
+    // },
     setup() {
         const render = ref(true)
         const confirmModal = ref(false)
         const infoQuestion = ref([])
         const pressUpdate = ref(false)
+        const canEssay = ref(false)
+        const canUpdate = ref(false)
+        const handleQuestion = ref({ 'question': {}, 'answer': {} })
+        const writeResult = ref({})
+        const result = ref(-1)
+        const essayAnswer = ref({})
+        const answerUpdate = ref(new Map())
+        const answerDelete = ref(new Set())
+        const answerCreate = ref(new Map())
+        const page = ref(1)
+        const canChoose = ref(false)
+        const answer = ref(-1)
         const styleObject = ref({
             "box-shadow": "0 5px #666",
             "transform": "translateY(4px)"
         })
+        const styleQuestion = ref("info-question")
         return {
-            render, confirmModal, pressUpdate, styleObject, infoQuestion
+            render, result, writeResult, handleQuestion, essayAnswer, answerUpdate, answerDelete, answerCreate, styleQuestion, confirmModal, pressUpdate, page, styleObject, infoQuestion, canEssay, canUpdate, canChoose, answer
         }
     },
+
     created() {
-        this.infoQuestion = this.question
+        // Câu hỏi thường
+        if (this.type == 0) {
+            this.canEssay = this.isUpdateEssay;
+            this.canChoose = false;
+
+        }
+        // Câu hỏi thi
+        if (this.type == 1) {
+            this.canUpdate = false
+            this.canEssay = this.isUpdateEssay
+            this.canChoose = true;
+        }
+        // Câu hỏi cập nhật
+        if (this.type == 2) {
+            this.canUpdate = true
+            this.canEssay = this.isUpdateEssay
+            this.canChoose = true;
+        }
+        // Câu hỏi lịch sử làm bài
+        if (this.type == 3) {
+            this.canEssay = this.isUpdateEssay
+            this.canChoose = false
+        }
+
+        this.canEssay = this.isUpdateEssay
+        this.infoQuestion = JSON.parse(JSON.stringify(this.question));
+        if (("" + this.infoQuestion.question.question_id).includes("new") && this.infoQuestion.question.type != 2) {
+            this.answerCreate.set(this.infoQuestion.question.question_id + "new_answer", { 'id': this.infoQuestion.question.question_id + "new_answer", 'content': "" });
+        }
+        this.handleQuestion.question = this.question.question
+        this.page = this.question.page
     },
     methods: {
+
         back() {
             this.pressUpdate = false
+            this.canEssay = false
             this.render = false
+            this.canChoose = false
+            this.handleQuestion = ref({})
+            this.writeResult = ref({})
+            this.essayAnswer = ref({})
+            this.answerUpdate = ref(new Map())
+            this.answerDelete = ref(new Set())
+            this.answerCreate = ref(new Map())
+            this.answer = ref(-1)
             this.$nextTick(() => {
                 this.render = true
             })
         },
+        answerQuestion(answer) {
+            this.answer = answer
+        },
+        publicQuestion() {
 
-        updateQuestion($content) {
+        },
+        updateQuestion() {
             this.pressUpdate = true;
-            this.$emit("update", { 'id': this.question.question.question_id, 'content': $content });
+            this.canEssay = true;
+            this.canChoose = true
         },
-        updateResultEssay($idAnswerEssay, $data) {
-            // this.infoQuestion.
-            console.log($idAnswerEssay)
-            console.log($data)
+        updateContentQuestion(data) {
+            // this.questionUpdate.id = this.infoQuestion.question.question_id
+            this.handleQuestion.question.content = data
+            // this.questionUpdate.id = this.infoQuestion.question.question_id
         },
-        updateChoose($index, $data) {
-            console.log($index)
-            console.log($data)
-            // console.log("Before " + this.infoQuestion.choices[$index])
-            // this.infoQuestion.choices[$index] = $data
-            // console.log("After " + this.infoQuestion.choices[$index])
+        updateChoose(choose) {
+            if (('' + choose.id).includes('new')) {
+                choose.question_id = this.infoQuestion.question.question_id
+                this.answerCreate.set(choose.id, choose)
+            } else {
+                choose.question_id = this.infoQuestion.question.question_id
+                this.answerUpdate.set(choose.id, choose)
+            }
         },
-        createChoose($data) {
-            this.infoQuestion.choices.append($data)
+
+        createChoose(data) {
+            data.question_id = this.infoQuestion.question.question_id
+            this.answerCreate.set(data.id, data)
+        },
+        deleteAnswer(id) {
+            if (this.infoQuestion.question.type == 2) {
+                if (id == this.infoQuestion.question.result_id || this.infoQuestion.question.result_id == null) {
+                    this.answer = null
+                }
+            }
+            if (('' + id).includes('new')) {
+                // Xóa câu hỏi trắc nghiệm mới tạo
+                this.answerCreate.delete(id)
+            } else {
+                if (this.answerUpdate.get(id) != undefined) {
+                    this.answerUpdate.delete(id)
+                }
+                this.answerDelete.add(id)
+            }
+
         },
         deleteQuestion() {
             this.pressUpdate = false;
             this.confirmModal = true;
         },
         confirmDelete() {
-            const idQuestion = this.question.question.id
+            const idQuestion = this.question.question.question_id
             const deleteQuestion = {
                 'id': idQuestion,
-                'index': this.index
+                'index': this.index,
+            }
+            if (this.infoQuestion.question.type == 2) {
+                this.infoQuestion.choices.forEach(choose => {
+                    this.deleteAnswer(choose.id)
+                });
+            } else {
+                this.deleteAnswer(this.infoQuestion.question.result_id)
+
             }
             this.$emit("delete", deleteQuestion);
             this.confirmModal = false;
-
         },
-        confirmUpdate() {
+        async confirmUpdate() {
+            this.pressUpdate = false
+            this.canEssay = false
+            this.canChoose = false
+            if (this.infoQuestion.question.type == 2) {
+                this.handleQuestion.question.result_id = this.answer
 
+            } else {
+                this.handleQuestion.question.contentResult = this.answer
+                this.answerUpdate.get(this.infoQuestion.question.result_id).content = this.answer
+            }
+            this.handleQuestion.answer.create = Array.from(this.answerCreate.values())
+            // console.log("Create choose")
+            // console.log(this.answerCreate)
+            this.handleQuestion.answer.update = Array.from(this.answerUpdate.values())
+            console.log("Update choose")
+            console.log(this.handleQuestion.answer.update)
+            this.handleQuestion.answer.delete = Array.from(this.answerDelete.values())
+            // console.log("Delete choose")
+            // console.log(this.answerDelete)
+            // this.handleQuestion.question.
+            console.log("Send Data")
+            console.log(this.handleQuestion)
+            const response = await handleQuestionTest(this.handleQuestion)
+            this.infoQuestion = response.data.data
+            this.render = false
+            this.$nextTick(() => {
+                this.render = true
+            })
         }
     }
 }
@@ -117,7 +261,27 @@ export default {
     margin-top: 15px;
     padding: 15px;
     border-style: solid;
-    border-color: #ea4f4c;
+    border-color: #666363;
+    /* padding: px; */
+}
+
+.info-question-correct {
+    background-color: #222;
+    color: white;
+    margin-top: 15px;
+    padding: 15px;
+    border-style: solid;
+    border-color: #666363;
+    /* padding: px; */
+}
+
+.info-question-false {
+    background-color: #222;
+    color: white;
+    margin-top: 15px;
+    padding: 15px;
+    border-style: solid;
+    border-color: #666363;
     /* padding: px; */
 }
 
@@ -143,5 +307,9 @@ export default {
 
 .margin-bottom6px {
     margin-bottom: 6px;
+}
+
+.border-green {
+    border: 2px solid rgb(8, 196, 40);
 }
 </style>
