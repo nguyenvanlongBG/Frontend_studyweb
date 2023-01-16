@@ -33,12 +33,12 @@
                          <label>Vai trò</label>
                          <div class="role">
                               <div class="radio-role">
-                                   <input type="radio" id="role_student" v-model="user.role" name="role" value="1"
+                                   <input type="radio" id="role_student" v-model="user.role" name="role" value="6"
                                         class="radio" />
                                    <label for="role_student" class="label-role">Học sinh</label>
                               </div>
                               <div class="radio-role">
-                                   <input type="radio" id="role_teacher" v-model="user.role" name="role" value="2"
+                                   <input type="radio" id="role_teacher" v-model="user.role" name="role" value="4"
                                         class="radio" />
                                    <label for="role_teacher" class="label-role">Giáo viên</label>
                               </div>
@@ -53,8 +53,8 @@
 </template>
 
 <script>
-import axios from 'axios';
-
+import router from '@/router';
+import { register } from '../services/auth'
 
 export default {
      name: "RegisterComponent",
@@ -69,17 +69,11 @@ export default {
           }
      },
      methods: {
-          handleSubmit() {
-               console.log(this.user)
-               axios.post('http://localhost:8000/api/auth/register', this.user)
-                    .then(response => {
-                         window.localStorage.setItem('token', response.data.token)
-                         console.log(response)
-                    })
-                    .catch(response => {
-                         console.log(response)
-                    }
-                    )
+          async handleSubmit() {
+               const response = await register(this.user)
+               if (response.success) {
+                    router.push({ name: 'login' })
+               }
           }
      }
 }

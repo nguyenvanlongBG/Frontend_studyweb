@@ -4,20 +4,26 @@
 
         <div class="header-test">
             <div class="mask">
-                <button class="tool-button" @click="tryTest(test.id)">
+                <button class="tool-button" @click="tryTest(test.id)" v-if="displayTry">
                     Thi thử
                 </button>
-                <button class="tool-button-do" @click="doTest(test.id)">
+                <button class="tool-button-do" @click="doTest(test.id)" v-if="displayDo">
                     <span class="fee">5 xu</span>
                     <span class="do">Làm đề</span>
                 </button>
-                <button class="tool-button" @click="updateTest(test.id)">
+                <button class="tool-button" @click="continueTest(test.id)" v-if="displayContinue">
+                    Làm tiếp
+                </button>
+                <button class="tool-button" @click="markTest(test.id)" v-if="displayMark">
+                    Chấm điểm
+                </button>
+                <button class="tool-button" @click="updateTest(test.id)" v-if="displayUpdate">
                     Sửa
                 </button>
-                <button class="tool-button" @click="historyTest(test.id)">
+                <button class="tool-button" @click="historyTest(test.id)" v-if="displayHistory">
                     Lịch sử
                 </button>
-                <button class="tool-button" @click="deleteTest(test.id)">
+                <button class="tool-button" @click="deleteTest(test.id)" v-if="displayDelete">
                     Xóa
                 </button>
             </div>
@@ -68,17 +74,60 @@
 </template>
 <script>
 import router from '@/router';
-
+import { createExam } from '@/services/exam';
+import { ref } from 'vue';
 export default {
     name: "TestComponent",
-    props: ['test'],
+    props: ['test', 'type'],
+    setup() {
+        const displayDo = ref(false)
+        const displayUpdate = ref(false)
+        const displayDelete = ref(false)
+        const displayTry = ref(false)
+        const displayContinue = ref(false)
+        const displayHistory = ref(false)
+        const displayMark = ref(false)
+        return {
+            displayDo, displayUpdate, displayDelete, displayTry, displayContinue, displayHistory, displayMark
+        }
+    },
+    created() {
+        if (this.type == 0) {
+            this.displayDo = true
+            this.displayHistory = true
+            this.displayUpdate = true
+            this.displayMark = true
+        }
+        if (this.type == 1) {
+            this.displayHistory = true
+            this.displayDo = true
+            this.displayUpdate = true
+            this.displayMark = true
+        }
+        if (this.type == 2) {
+            this.displayContinue = true
+            this.displayHistory = true
+            this.displayUpdate = true
+            this.displayMark = true
+        }
+
+    },
+
     methods: {
+
         tryTest() {
 
         },
-        doTest(testId) {
-            console.log(testId)
-            router.push({ name: 'doTest', params: { idTest: testId } })
+        async doTest(testId) {
+            // console.log(testId)
+            await createExam({ 'test_id': testId })
+            router.push({ name: 'doExam', params: { idTest: testId } })
+        },
+        continueTest(testId) {
+            router.push({ name: 'doExam', params: { idTest: testId } })
+        },
+        markTest(testId) {
+            router.push({ name: 'listExam', params: { idTest: testId } })
         },
         updateTest(testId) {
             router.push({ name: 'updateTest', params: { idTest: testId } })

@@ -2,10 +2,18 @@ import request from '../utils/request';
 export function getTests(data) { // console.log(params)
     return request({url: '/test/list', method: 'get', data: data})
 }
-export function getDetailTest($id) { // console.log(params)
+export function createTest(data) { // console.log(params)
+    return request({url: '/test/create', method: 'post', data: data})
+}
+
+export function updateTest(data) { // console.log(params)
+    return request({url: '/test/update', method: 'put', data: data})
+}
+
+export function getDetailTest(id) { // console.log(params)
 
     return request({
-        url: '/test/' + $id + '/do',
+        url: '/test/' + id + '/do',
         method: 'get'
     })
 }
@@ -26,24 +34,24 @@ export function markTest(id, data) { // console.log(params)
     })
 }
 
-export function getNumericalQuestion($id, $params) {
+export function getNumericalQuestion(id, params) {
 
     return request({
-        url: '/test/' + $id + '/nummericalQuestion',
+        url: '/test/' + id + '/nummericalQuestion',
         method: 'get',
-        params: $params
+        params: params
     })
 }
 export function getQuestionsByIdTest() { // console.log(params)
     return request({url: '/getQuestionsTest ', method: ' get '})
 
 }
-export function getTestsByIdUser($userId) { // console.log(params)
+export function getTestsByIdUser(userId) { // console.log(params)
     return request({
         url: '/tests',
         method: 'get',
         params: {
-            'userId': $userId
+            'userId': userId
         }
     })
 }

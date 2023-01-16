@@ -1,38 +1,52 @@
-<template>
-    <div class="overview-exam" v-if="render">
-        <span class="nameUser">
-            Họ và tên: Nguyễn Văn A
-        </span>
-        <div>
-            <span class="navbar-list-question">
-                Danh sách câu hỏi
+<template v-if="reload">
+    <div class="nav-question">
+        <div class="overview-exam" v-if="displayShrink">
+            <span class="nameUser">
+                Họ và tên: Nguyễn Văn A
             </span>
-            <div class="list-numerical-question">
-                <template v-for="(question, index) in numericalQuestion.data" :key="index">
-                    <div :class="classType[parseInt(question.type)]" :id="'link_' + question.id"
-                        @click="moveToQuestion(question.page, question.id)">
-                        {{ index + 1 }}
-                    </div>
-                </template>
+            <div>
+                <span class="navbar-list-question">
+                    Danh sách câu hỏi
+                </span>
+                <div class="list-numerical-question">
+                    <template v-for="(question, index) in numericalQuestion.data" :key="index">
+                        <div :class="classType[parseInt(question.type)]" :id="'link_' + question.id"
+                            @click="moveToQuestion(question.page, question.id)">
+                            {{ index + 1 }}
+                        </div>
+                    </template>
 
+                </div>
             </div>
         </div>
-
+        <div class="nav-hiden-display" @click="displayShrink = !displayShrink">
+            <i class="fa-solid fa-caret-left" v-if="displayShrink"></i>
+            <i class="fa-solid fa-caret-right" v-if="!displayShrink"></i>
+        </div>
     </div>
-
 </template>
 <script>
 import { ref } from 'vue';
 
 export default {
     name: "NavbarListComponent",
-    props: ['numericalQuestion'],
+    props: ['numericalQuestion', 'render'],
+    watch: {
+        render() {
+            this.reload = false
+            console.log("OK")
+            this.$nextTick(() => {
+                this.reload = true
+            })
+        }
+    },
     setup() {
         // console.log(this.questions)
-        const render = ref(true)
+        const reload = ref(true)
         const classType = ref(['stt-question answer-content-choice', 'stt-question answer-content-choice-checked', 'stt-question answer-content-choice-true', 'stt-question answer-content-choice-wrong'])
+        const displayShrink = ref(true)
         return {
-            classType, render
+            classType, reload, displayShrink
         }
     },
 
@@ -49,10 +63,29 @@ export default {
 }
 </script>
 <style>
-.overview-exam {
-    width: 20%;
-    position: fixed;
+.nav-question {
+    display: flex;
     border-style: solid;
+    min-height: 250px;
+    position: fixed;
+}
+
+.nav-hiden-display {
+    position: absolute;
+    text-align: center;
+    overflow-x: hidden;
+    height: 100%;
+    display: flex;
+    flex-basis: 2px;
+    justify-content: center;
+    align-items: center;
+    background-color: #e2dfdf;
+    right: 0px;
+}
+
+.overview-exam {
+    border-style: solid;
+    /* position: fixed; */
     /* border-top: 5px solid #ea4f4c; */
 }
 
@@ -75,6 +108,7 @@ export default {
     align-items: center;
     margin: 1px;
     height: 40px;
+    min-width: 60px;
     border-style: solid;
     border-radius: 5px;
 }

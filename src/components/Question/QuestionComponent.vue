@@ -21,16 +21,19 @@
         <h3 v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 3 || type == 2)">Đáp
             án đúng:</h3>
         <LatexComponent :isUpdate="canEssay" @update="answerQuestion"
+            :content="infoQuestion.question.contentResult != null ? infoQuestion.question.contentResult : ''"
+            :id="infoQuestion.question.question_id + '_result_' + infoQuestion.question.result_id"
             v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 3 || type == 2)"
             class="border-green" />
         <h3 v-if="type != 2 && type != 0">Đáp án của bạn là:</h3>
         <span v-if="canUpdate && type != 2 && type != 0">Bạn hãy nhập đáp án của câu hỏi</span>
-        <LatexComponent :isUpdate="!canEssay" @update="answerQuestion"
-            v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 1 || type == 2)" />
+        <LatexComponent :isUpdate="canEssay" @update="answerQuestion"
+            :content="infoQuestion.question.answer != null ? infoQuestion.question.answer : ''"
+            :id="infoQuestion.question.question_id + '_answer'"
+            v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 1 || type == 3)" />
         <ChooseComponent :ref="'chooses_' + infoQuestion.question.question_id" :choices="infoQuestion.choices"
             :isUpdate="pressUpdate" doTest="true" @update="updateChoose" @create="createChoose" @delete="deleteAnswer"
-            @chooseAnswer="answerQuestion" v-if="(infoQuestion.question.type == 2)"
-            :result_id="infoQuestion.question.result_id"
+            @chooseAnswer="answerQuestion" v-if="(infoQuestion.question.type == 2)" :type="type"
             :linkNavbar="'page_' + infoQuestion.question.page + '_' + index"
             :question="infoQuestion.question.question_id" :canChoose="canChoose" />
         <!-- <LatexComponent v-if="(infoQuestion.question.type == 1)" :isUpdate="isUpdateEssay"
@@ -67,14 +70,6 @@ export default {
         CommentQuestionComponent,
     },
     props: ['question', 'isUpdateEssay', 'index', 'isNormal', 'type', 'send'],
-    // watch: {
-    //     send() {
-    //         data = {
-
-    //         }
-    //         this.$emit('send')
-    //     }
-    // },
     setup() {
         const render = ref(true)
         const confirmModal = ref(false)
@@ -112,28 +107,89 @@ export default {
         // Câu hỏi thi
         if (this.type == 1) {
             this.canUpdate = false
-            this.canEssay = this.isUpdateEssay
+            this.canEssay = true
             this.canChoose = true;
         }
         // Câu hỏi cập nhật
         if (this.type == 2) {
             this.canUpdate = true
-            this.canEssay = this.isUpdateEssay
+            this.canEssay = true
             this.canChoose = true;
         }
         // Câu hỏi lịch sử làm bài
         if (this.type == 3) {
-            this.canEssay = this.isUpdateEssay
+            this.canEssay = false
             this.canChoose = false
         }
 
         this.canEssay = this.isUpdateEssay
         this.infoQuestion = JSON.parse(JSON.stringify(this.question));
-        if (("" + this.infoQuestion.question.question_id).includes("new") && this.infoQuestion.question.type != 2) {
-            this.answerCreate.set(this.infoQuestion.question.question_id + "new_answer", { 'id': this.infoQuestion.question.question_id + "new_answer", 'content': "" });
-        }
+        // if (("" + this.infoQuestion.question.question_id).includes("new") && this.infoQuestion.question.type != 2) {
+        //     this.answerCreate.set(this.infoQuestion.question.question_id + "new_answer", { 'id': this.infoQuestion.question.question_id + "new_answer", 'content': "" });
+        // }
         this.handleQuestion.question = this.question.question
         this.page = this.question.page
+    },
+    mounted() {
+
+        if (this.type == 1) {
+            if (this.question.question.type == 2) {
+                if (this.question.question?.answer != null) {
+                    let choose = document.getElementById(this.question.question.question_id + '_choose_' + this.question.question.answer)
+                    choose.click()
+                }
+            }
+        }
+
+        if (this.type == 2) {
+            if (this.question.question.type == 2) {
+                if (this.question.question?.result_id != null) {
+                    let choose = document.getElementById(this.question.question.question_id + '_choose_' + this.question.question.result_id)
+                    choose.click()
+                }
+            }
+        }
+
+        if (this.type == 3) {
+            if (this.question.question?.result_id != null) {
+                if (this.question.question.type == 2) {
+                    if (this.question.question.answer != null) {
+                        console.log("OK")
+                        if (this.question.question.result_id == this.question.question.answer) {
+                            let choose = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.answer)
+                            choose.style.border = "4px solid rgb(16, 249, 4)"
+                            let question = document.getElementById("question_" + this.question.question.question_id)
+                            question.style.border = "4px solid rgb(16, 249, 4)"
+                        } else {
+                            let chooseCorrect = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.result_id)
+                            chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
+                            let chooseFalse = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.answer)
+                            chooseFalse.style.border = "4px solid red"
+
+                            let question = document.getElementById("question_" + this.question.question.question_id)
+                            question.style.border = "4px solid red"
+                        }
+                    } else {
+                        let chooseCorrect = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.result_id)
+                        chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
+                    }
+                }
+                if (this.question.question.type == 1) {
+                    if (this.question.question.contentResult == this.question.question.answer) {
+                        let chooseCorrect = document.getElementById(this.question.question.question_id + '_result_' + this.infoQuestion.question.result_id)
+                        chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
+                        let chooseAnswer = document.getElementById(this.question.question.question_id + '_answer')
+                        chooseAnswer.style.border = "4px solid rgb(16, 249, 4)"
+                    } else {
+                        let chooseCorrect = document.getElementById(this.question.question.question_id + '_result_' + this.infoQuestion.question.result_id)
+                        chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
+                        let chooseFalse = document.getElementById(this.question.question.question_id + '_answer')
+                        chooseFalse.style.border = "4px solid red"
+                    }
+
+                }
+            }
+        }
     },
     methods: {
 
@@ -227,25 +283,33 @@ export default {
             this.canChoose = false
             if (this.infoQuestion.question.type == 2) {
                 this.handleQuestion.question.result_id = this.answer
-
             } else {
                 this.handleQuestion.question.contentResult = this.answer
-                this.answerUpdate.get(this.infoQuestion.question.result_id).content = this.answer
+                if (Number.isInteger(this.infoQuestion.question.result_id)) {
+                    let data = {
+                        question_id: this.infoQuestion.question.question_id,
+                        id: this.infoQuestion.question.result_id,
+                        content: this.answer
+                    }
+                    this.answerUpdate.set(this.infoQuestion.question.result_id, data)
+                } else {
+                    let data = {
+                        question_id: this.infoQuestion.question.question_id,
+                        id: this.infoQuestion.question.result_id,
+                        content: this.answer
+                    }
+                    this.answerCreate.set(this.infoQuestion.question.result_id, data)
+                }
             }
             this.handleQuestion.answer.create = Array.from(this.answerCreate.values())
-            // console.log("Create choose")
-            // console.log(this.answerCreate)
             this.handleQuestion.answer.update = Array.from(this.answerUpdate.values())
             console.log("Update choose")
             console.log(this.handleQuestion.answer.update)
             this.handleQuestion.answer.delete = Array.from(this.answerDelete.values())
-            // console.log("Delete choose")
-            // console.log(this.answerDelete)
-            // this.handleQuestion.question.
             console.log("Send Data")
             console.log(this.handleQuestion)
             const response = await handleQuestionTest(this.handleQuestion)
-            this.infoQuestion = response.data.data
+            this.infoQuestion = response.data
             this.render = false
             this.$nextTick(() => {
                 this.render = true
@@ -262,7 +326,6 @@ export default {
     padding: 15px;
     border-style: solid;
     border-color: #666363;
-    /* padding: px; */
 }
 
 .info-question-correct {
@@ -272,7 +335,6 @@ export default {
     padding: 15px;
     border-style: solid;
     border-color: #666363;
-    /* padding: px; */
 }
 
 .info-question-false {
@@ -282,7 +344,6 @@ export default {
     padding: 15px;
     border-style: solid;
     border-color: #666363;
-    /* padding: px; */
 }
 
 .tool-button-test {

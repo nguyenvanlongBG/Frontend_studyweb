@@ -18,6 +18,9 @@
                 <button class="update-create-question-button" @click="save" v-if="canUpdate">
                     Lưu câu trả lời
                 </button>
+                <button class="update-create-question-button" @click="save" v-if="currentPage == totalPage">
+                    Nộp bài
+                </button>
             </div>
             <paginate :page-count="totalPage" :page-range="3" :margin-pages="2" :click-handler="clickCallback"
                 :prev-text="'Prev'" :next-text="'Next'" :container-class="'pagination'" :page-class="'page-item'"
@@ -30,14 +33,16 @@
 <script>
 import QuestionComponent from '../Question/QuestionComponent.vue';
 import Paginate from 'vuejs-paginate-next';
-import { getQuestionTestUpdate } from '../../services/question'
+import { getQuestionTestDo } from '../../services/question'
 import { getNumericalQuestion } from '../../services/test'
+import { updateExam } from '../../services/exam'
 import { ref } from '@vue/reactivity'
 import { useRoute } from 'vue-router';
 import LoadingComponent from '../common/LoadingComponent.vue';
 import NavbarListComponent from "../Test/NavbarListComponent.vue"
 export default {
-    name: "DoTestComponent",
+    name: "DoExamComponent",
+    inheritAttrs: false,
     components: {
         QuestionComponent,
         paginate: Paginate,
@@ -57,24 +62,8 @@ export default {
         const moveTo = ref("")
         const render = ref(true)
         const indexNewQuestion = ref(0)
-        const sendData = ref({
-            'questions': {
-                'create': [],
-                'update': [],
-                'delete': [],
-                'deleteResults': [], // Question fill and essay
-                'updateResults': [] // Question fill and essay
-
-            },
-            'choices': {
-                'create': [],
-                'update': [],
-                'delete': [],
-            }
-        })
-        // const answersUpdate = ref([])
-        // const answersDelete = ref([])
-        // const answersCreate = ref([])
+        const answersData = ref([])
+        const sendData = ref({ 'answers': new Set() })
         return {
             idTest,
             isLoading,
@@ -86,13 +75,19 @@ export default {
             startIndex,
             numericalQuestion,
             moveTo,
-            sendData,
             indexNewQuestion,
+            answersData,
+            sendData,
             render
         }
     },
+    data() {
+        return {
+            examId: null
+        }
+    },
+    created() {
 
-    create() {
         this.$watch(
             () => this.$route.query,
             () => {
@@ -106,21 +101,8 @@ export default {
     methods: {
         refreshData() {
             this.listQuestionFollow = new Set(),
-                this.questionsDelete = [],
-                this.sendData = {
-                    'questions': {
-                        'create': [],
-                        'update': [],
-                        'delete': [],
-                        'deleteResult': [], // Question fill and essay
-                        'updateResults': [] // Question fill and essay
-                    },
-                    'choices': {
-                        'create': [],
-                        'update': [],
-                        'delete': [],
-                    }
-                }
+                this.questionsDelete = []
+            this.sendData = { 'answers': new Set() }
         },
         async handleGetData() {
 
@@ -128,22 +110,25 @@ export default {
                 current_page: this.currentPage
             };
             try {
-                const responseQuestions = await getQuestionTestUpdate(this.idTest, paramsQuestion);
-                // console.log(responseQuestions)
+                const responseQuestions = await getQuestionTestDo(this.idTest, paramsQuestion);
                 if (responseQuestions) {
                     this.questions = responseQuestions.data?.questions
+                    this.answersData = responseQuestions.data?.answers
+                    this.examId = responseQuestions.data?.exam_id
+                    console.log(responseQuestions.data?.pages)
                     let pages = responseQuestions.data?.pages
                     this.startIndex = pages.startIndex
                     this.totalPage = pages.totalPage
                 }
                 var paramsNumerical = {
+                    exam_id: this.examId,
                     current_page: this.currentPage,
                     type: 1
                     // 1: Do 2: Update 3: History
                 };
                 const responseNumerical = await getNumericalQuestion(this.idTest, paramsNumerical)
                 if (responseNumerical) {
-                    this.numericalQuestion = responseNumerical
+                    this.numericalQuestion = responseNumerical.data
 
                 }
             } finally {
@@ -151,10 +136,10 @@ export default {
             }
         },
 
-        choiceAnswer(id) {
-            var answer = document.getElementById("question_" + id);
-            answer.classList.add("answer-content-choice");
-        },
+        // choiceAnswer(id) {
+        //     var answer = document.getElementById("question_" + id);
+        //     answer.classList.add("answer-content-choice");
+        // },
         clickCallback(pageNum) {
             this.currentPage = pageNum
             this.handleGetData()
@@ -184,17 +169,30 @@ export default {
 
             }
         },
-        save() {
-            let sendData = { 'exam_id': 2, 'answers': new Set() }
+        async save() {
             this.questions.forEach(question => {
                 let q = this.$refs['question_' + question.question.question_id]
                 if (q[0].answer != -1) {
-                    let answer = { 'question_id': question.question.question_id, 'answer': q[0].answer }
-                    sendData.answers.add(answer)
+                    let answer = {
+                        question_id: question.question.question_id,
+                        exam_id: this.examId,
+                        answer: q[0].answer
+                    }
+                    // let answer = []
+                    // answer['question_id'] = question.question.question_id
+                    // answer['exam_id'] = this.examId
+                    // answer['answer'] = q[0].answer
+                    this.sendData.answers.add(answer)
                 }
-
             });
-            console.log(Array.from(sendData.answers))
+            console.log(Array.from(this.sendData.answers))
+            await updateExam(Array.from(this.sendData.answers))
+            this.handleGetData()
+            this.refreshData()
+            this.render = false
+            this.$nextTick(() => {
+                this.render = true
+            })
         }
     }
 }

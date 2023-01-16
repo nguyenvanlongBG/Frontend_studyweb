@@ -5,7 +5,6 @@ export function getQuestionNormal() { // console.log(params)
 
 }
 export function getQuestionTestDo(idTest, params) { // console.log(params)
-    console.log(params)
     return request({
         url: '/test/' + idTest + '/do',
         method: 'get',
@@ -13,7 +12,6 @@ export function getQuestionTestDo(idTest, params) { // console.log(params)
     })
 }
 export function getQuestionTestUpdate(idTest, params) {
-
     return request({
         url: '/test/' + idTest + '/update',
         method: 'get',

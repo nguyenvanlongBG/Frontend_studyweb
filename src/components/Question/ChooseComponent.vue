@@ -2,10 +2,10 @@
     <div class="list-choice" v-if="render">
 
         <template v-for="(choice, index) in choiceQuestion" :key="index">
-            <input type="radio" class="hidden-radio" :id="choice.id" :name="'question_' + question" value="index"
+            <input type="radio" class="hidden-radio" :id="choice.id" :name="'question_' + question" :value="choice.id"
                 :disabled="!canChoose" />
-            <label :class="(isUpdate ? 'choice' : 'choice nohover') + (isUpdate ? 'choice' : 'choice nohover')" @click="canChoose ? choiceAnswer(choice.id) : ''"
-                :for="choice.id">
+            <label :class="canChoose ? 'choice' : 'choice nohover'" :id="question + '_choose_' + choice.id"
+                @click="canChoose ? choiceAnswer(choice.id) : ''" :for="choice.id">
                 <span class="closeChoice" v-if="isUpdate" @click="deleteChoose($event, index)">X</span>
                 <span :class="isUpdate || doTest ? 'choice-label' : ''">
                     <!-- Lỗi dấu cách -->
@@ -32,7 +32,7 @@ import { ref } from 'vue';
 import LatexComponent from '../LatexComponent.vue'
 export default {
     name: "ChooseComponent",
-    props: ['choices', 'isUpdate', 'linkNavbar', 'doTest', 'canChoose', 'question'],
+    props: ['choices', 'isUpdate', 'linkNavbar', 'doTest', 'canChoose', 'question', 'type'],
     components: {
         LatexComponent
     },
@@ -42,22 +42,21 @@ export default {
         const newChooses = ref([])
         const render = ref(true)
         const indexNewChoose = ref(0)
-        return { newAnswer, render, newChooses, isCreate, indexNewChoose }
+        const classChoose = ref("choice")
+        return { newAnswer, render, newChooses, isCreate, indexNewChoose, classChoose }
     },
     data() {
+        let choices = this.choices
         return {
             // copy data from array not reference
-            choiceQuestion: this.choices.slice()
+            choiceQuestion: choices
         }
     },
 
 
     methods: {
         choiceAnswer(id) {
-
             this.$emit('chooseAnswer', id)
-
-
         },
         updateChoose(content, index) {
 
@@ -145,7 +144,6 @@ export default {
     display: block;
     position: relative;
     width: 48%;
-    margin-left: 5px;
     margin-top: 5px;
     min-height: 60px;
     border: 4px solid white;
@@ -160,7 +158,6 @@ export default {
     display: block;
     position: relative;
     width: 48%;
-    margin-left: 5px;
     margin-top: 5px;
     min-height: 60px;
     border: 4px solid #6108f2;
@@ -191,7 +188,6 @@ input.hidden-radio {
     display: block;
     position: relative;
     width: 48%;
-    margin-left: 5px;
     margin-top: 5px;
     min-height: 60px;
     border: 4px solid #6108f2;

@@ -1,8 +1,7 @@
 <template>
     <div class="styleEditor">
         <div v-if="render">
-            <ckeditor :disabled="disabled" :editor="editor" v-model="editorData" :config="editorConfig">
-                {{ editorData }}
+            <ckeditor :editor="editor" v-model="editorData" :config="editorConfig" :disabled="disabled">
             </ckeditor>
         </div>
     </div>
@@ -10,10 +9,8 @@
 
 <script>
 
-// import ClassicEditor from 'ckeditor5-build-classic-mathtype';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { ref } from 'vue'
-// import ClassicEditor from '@wiris/mathtype-ckeditor5'
 export default {
     name: 'LatexComponent',
     props: ['isUpdate', 'content', 'isAnswer'],
@@ -23,13 +20,15 @@ export default {
         },
         disabled() {
             this.render = false
-            this.editorConfig.toolbar = this.disabled ? [] : ['Mathtype', 'uploadImage'];
+            this.editorConfig.toolbar = this.disabled ? { items: [] } : {
+                items: ['Mathtype', "bold",
+                    "italic", "imageUpload", "insertTable"]
+            };
             this.$nextTick(() => {
                 this.render = true
             })
         },
         editorData() {
-            console.log(this.editorData)
             this.$emit('update', this.editorData)
         }
 
@@ -68,9 +67,34 @@ export default {
 
 }
 </script>
-<style>
+
+<style scoped>
 .styleEditor {
     /* margin-top: 5px; */
     color: #222;
+}
+
+.ck .ck-reset .ck-editor .ck-rounded-corners {
+    min-height: 500px !important;
+    border: 2px dotted olive !important;
+    background-color: yellow !important;
+}
+
+.ck-editor__editable {
+    min-height: 500px !important;
+    border: 2px dotted green !important;
+    background-color: yellow !important;
+}
+
+.ck-editor__editable_inline {
+    min-height: 500px !important;
+    border: 2px dotted blue;
+    background-color: yellow !important;
+}
+
+:host ::ng-deep .ck-editor__editable_inline {
+    min-height: 500px !important;
+    border: 2px dotted red !important;
+    background-color: yellow !important;
 }
 </style>

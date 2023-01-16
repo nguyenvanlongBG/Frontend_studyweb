@@ -36,9 +36,9 @@
 </template>
 
 <script>
-import axios from 'axios';
-
-
+import { setAccessToken } from '@/utils/cookies';
+import { login } from '@/services/auth'
+import router from '@/router';
 export default {
     name: "LoginComponent",
     data() {
@@ -46,22 +46,25 @@ export default {
             account: {
                 email: '',
                 password: '',
-            }
+            },
+            isSubmiting: false
         }
     },
     methods: {
-        handleSubmit() {
-            this.submited = true;
-            axios.post('http://localhost:8000/api/auth/login', this.account)
-                .then(response => {
-                    window.localStorage.setItem('token', response.data.token)
-                    console.log(response)
-                })
-                .catch(response => {
-                    console.log(response)
-                })
+        async handleSubmit() {
+            this.isSubmiting = true;
+            try {
+                const response = await login(this.account)
+                if (response?.data) {
+                    setAccessToken(response.data, {
+                        expires: new Date(Date.now() + 1000000000),
+                    })
+                    router.push({ name: 'forum' })  
+                }
+            } finally {
+                this.isSubmiting = false
 
-
+            }
 
         }
     }

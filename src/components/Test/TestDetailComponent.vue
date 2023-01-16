@@ -1,88 +1,24 @@
 <template>
-    <!-- <ModalCreateQuestion v-if="modalCreateQuestion.visible" @close="modalCreateQuestion.visible = false">
-
-    </ModalCreateQuestion> -->
-    <div class="exam">
-
-        <!-- <DoTestComponent /> -->
+    <div>
         <RouterView></RouterView>
-        <!-- <QuestionComponent v-for="question in questions" :key="question.question_id" :question="question" /> -->
     </div>
 </template>
 <script>
-// import { useRoute } from 'vue-router';
-// import { getQuestionTest } from '../../services/questionTest'
-
-// import ModalCreateQuestion from "../ModalCreateQuestion.vue"
-
-// import DoTestComponent from './DoTestComponent.vue';
-// import QuestionComponent from '../Question/QuestionComponent.vue';
-
-// import { answerTest } from '../services/answerTest'
 export default {
     name: "TestDetailComponent",
     components: {
-        // ModalCreateQuestion,
-        // NavbarListComponent,
-        // DoTestComponent,
-        // QuestionComponent
-    },
-    data() {
 
-
-        return {
-            infoTest: {},
-            questions: [],
-            modalCreateQuestion: {
-                visible: false,
-            },
-            hasRole: false,
-            formula: 'Giải phương trình $$x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}.$$',
-        }
     },
+
     mounted() {
-        this.getData();
+
     },
     methods: {
-        async getData() {
 
-
-        },
-        choiceAnswer($id) {
-            var answer = document.getElementById("question_" + $id);
-            answer.classList.add("answer-content-choice");
-        },
-        createQuestion() {
-            this.modalCreateQuestion.visible = true;
-        },
     },
 }
 </script>
 <style>
-.exam {
-    display: flex;
-}
-
-
-
-
-
-
-
-.nameUser {
-    font-weight: bold;
-}
-
-
-
-
-
-
-
-
-
-
-
 /* 
 .answer-content-choice {
     background-color: #222;

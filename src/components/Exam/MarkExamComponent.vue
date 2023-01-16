@@ -1,59 +1,24 @@
 <template  v-if="render">
     <!-- <NavbarListComponent /> -->
+
     <NavbarListComponent :numericalQuestion="numericalQuestion" @moveQuestion="moveQuestion" />
+
     <div class="info-list-question">
-        <h1>Chỉnh sửa đề thi</h1>
+        <h1>Làm bài thi</h1>
         <LoadingComponent v-if="isLoading"></LoadingComponent>
         <template v-else>
             <div class="page">
-
                 <h2>
                     Trang {{ currentPage }}
                 </h2>
-                <div class="menu-create">
-                    <div class="choice-type-create" v-if="displayTypeCreateFirst">
-                        <div class="create-button-type" @click="createQuestion(2)" v-if="canUpdate">
-                            Trắc nghiệm
-                        </div>
-                        <div class="create-button-type" @click="createQuestion(1)" v-if="canUpdate">
-                            Điền đáp án
-                        </div>
-                        <div class="create-button-type" @click="createQuestion(3)" v-if="canUpdate">
-                            Tự luận
-                        </div>
-                    </div>
-                    <button class="create-button-first" @click="displayCreateQuestionTypeFirst" v-if="canUpdate">
-                        Thêm câu hỏi
-                    </button>
-                </div>
             </div>
             <QuestionComponent v-for="(question, index) in  questions" :key="index" :question="question"
-                :ref="'question_' + question.question.question_id" @create="createQuestion" @update="updateQuestion()"
-                @delete="deleteQuestion" @addlistQuestionFollow="addlistQuestionFollow"
-                :id="'question_' + question.question.question_id" :index="startIndex + index" :type="2" :send="sendData"
-                @send="sendData" />
+                :ref="'question_' + question.question.question_id" :id="'question_' + question.question.question_id"
+                :index="startIndex + index" :type="1" :send="sendData" />
             <div class="end-action">
-                <div class="menu-create-end">
-                    <div class="choice-type-create" v-if="displayTypeCreateEnd">
-                        <div class="create-button-type" @click="createQuestion(2)" v-if="canUpdate">
-                            Trắc nghiệm
-                        </div>
-                        <div class="create-button-type" @click="createQuestion(1)" v-if="canUpdate">
-                            Điền đáp án
-                        </div>
-                        <div class="create-button-type" @click="createQuestion(3)" v-if="canUpdate">
-                            Tự luận
-                        </div>
-                    </div>
-                    <button class="update-create-question-button" @click="displayCreateQuestionTypeEnd"
-                        v-if="canUpdate">
-                        Thêm câu hỏi
-                    </button>
-                </div>
 
-                <button class="update-create-question-button" @click="addPage"
-                    v-if="canUpdate && currentPage == totalPage">
-                    Thêm trang
+                <button class="update-create-question-button" @click="save" v-if="canUpdate">
+                    Lưu câu trả lời
                 </button>
             </div>
             <paginate :page-count="totalPage" :page-range="3" :margin-pages="2" :click-handler="clickCallback"
@@ -68,13 +33,13 @@
 import QuestionComponent from '../Question/QuestionComponent.vue';
 import Paginate from 'vuejs-paginate-next';
 import { getQuestionTestUpdate } from '../../services/question'
-import { getNumericalQuestion, updateTest } from '../../services/test'
+import { getNumericalQuestion } from '../../services/test'
 import { ref } from '@vue/reactivity'
 import { useRoute } from 'vue-router';
 import LoadingComponent from '../common/LoadingComponent.vue';
 import NavbarListComponent from "../Test/NavbarListComponent.vue"
 export default {
-    name: "UpdateTestComponent",
+    name: "MarkTestComponent",
     components: {
         QuestionComponent,
         paginate: Paginate,
@@ -83,6 +48,7 @@ export default {
     },
     setup() {
         const idTest = parseInt(useRoute().params.idTest)
+        const idExam = parseInt(useRoute().params.idExam)
         const isLoading = ref(false)
         const canUpdate = ref(true)
         const isUpdateEssay = ref(false)
@@ -92,12 +58,8 @@ export default {
         const startIndex = ref(1)
         const numericalQuestion = ref([])
         const moveTo = ref("")
-        const listQuestionFollow = ref(new Set())
-        const questionsDelete = ref([])
         const render = ref(true)
         const indexNewQuestion = ref(0)
-        const displayTypeCreateFirst = ref(false)
-        const displayTypeCreateEnd = ref(false)
         const sendData = ref({
             'questions': {
                 'create': [],
@@ -118,6 +80,7 @@ export default {
         // const answersCreate = ref([])
         return {
             idTest,
+            idExam,
             isLoading,
             canUpdate,
             isUpdateEssay,
@@ -127,12 +90,8 @@ export default {
             startIndex,
             numericalQuestion,
             moveTo,
-            listQuestionFollow,
-            questionsDelete,
             sendData,
             indexNewQuestion,
-            displayTypeCreateFirst,
-            displayTypeCreateEnd,
             render
         }
     },
@@ -174,122 +133,45 @@ export default {
             };
             try {
                 const responseQuestions = await getQuestionTestUpdate(this.idTest, paramsQuestion);
-
+                // console.log(responseQuestions)
                 if (responseQuestions) {
-
                     this.questions = responseQuestions.data?.questions
                     let pages = responseQuestions.data?.pages
                     this.startIndex = pages.startIndex
-                    this.currentPage = pages.currentPage
                     this.totalPage = pages.totalPage
                 }
                 var paramsNumerical = {
                     current_page: this.currentPage,
-                    type: 2
+                    exam_id: this.idExam,
+                    type: 3
                     // 1: Do 2: Update 3: History
                 };
                 const responseNumerical = await getNumericalQuestion(this.idTest, paramsNumerical)
                 if (responseNumerical) {
                     this.numericalQuestion = responseNumerical.data
-
                 }
             } finally {
                 this.isLoading = false
             }
         },
-        addlistQuestionFollow(id) {
-            // Add id question to list question update
-            console.log(id)
-            this.listQuestionFollow.add(id);
-        },
+
         choiceAnswer(id) {
             var answer = document.getElementById("question_" + id);
             answer.classList.add("answer-content-choice");
         },
         clickCallback(pageNum) {
-            console.log(pageNum)
             this.currentPage = pageNum
             this.handleGetData()
         },
-        async addPage() {
-            this.totalPage += 1
-            let data = {
-                'id': this.idTest,
-                'total_page': this.totalPage
-            }
-            try {
-                await updateTest(data);
-                this.clickCallback(parseInt(this.currentPage) + 1)
-            } catch (error) {
-                console.log(error)
-            } finally {
-                this.refreshData()
-            }
-
-        },
         Next(pageNum) {
-            this.currentPage = pageNum
+            this.page = pageNum
             this.handleGetData()
         },
         Prev(pageNum) {
-
-            this.currentPage = pageNum
+            this.page = pageNum
             this.handleGetData()
         },
-        displayCreateQuestionTypeFirst() {
-            this.displayTypeCreateFirst = !this.displayTypeCreateFirst
-        },
-        displayCreateQuestionTypeEnd() {
-            this.displayTypeCreateEnd = !this.displayTypeCreateEnd
-        },
-        createQuestion(type) {
-            let newQuestion = {
-            }
-            newQuestion.question = { 'question_id': 'new_' + this.indexNewQuestion, 'page': this.currentPage, "type": type, 'index': this.questions.length, 'result_id': "", 'contentResult': "", 'scope': 1, 'dependence_id': this.idTest }
-            if (type == 1 || type == 3) {
-                newQuestion.question.result_id = "new"
-            }
-            this.indexNewQuestion++
-            newQuestion.choices = []
-            this.questions.push(newQuestion)
-            let item = { 'id': newQuestion.question.question_id, 'page': this.currentPage, 'index': this.questions.length, 'type': 0 }
-            this.numericalQuestion.data.splice(this.startIndex + this.questions.length - 2, 0, item);
-            setTimeout(() => {
-                let question = document.getElementById('question_' + newQuestion.question.question_id);
-                this.displayTypeCreateFirst = false
-                this.displayTypeCreateEnd = false
-                question.scrollIntoView();
-            }, 500)
-        },
-
-        deleteQuestion(deleteQuestion) {
-
-            // this.questions
-            this.render = false
-            this.questions.splice(deleteQuestion.index - this.startIndex, 1)
-            this.numericalQuestion.data.splice(deleteQuestion.index, 1)
-            // console.log("Delete " + ('' + deleteQuestion.id).includes('new_'))
-            let q = this.$refs['question_' + deleteQuestion.id][0]
-            // console.log("Ref")
-            // console.log(q)
-            if (deleteQuestion.result != undefined) {
-                this.sendData.deleteResults.push(deleteQuestion.result)
-            }
-            if (('' + deleteQuestion.id).includes('new_')) {
-                if (this.questionsCreate.get(deleteQuestion.id) !== undefined) {
-                    this.questionsCreate.delete(deleteQuestion.id)
-                }
-            } else {
-
-                this.sendData.choices.delete = [...Array.from(q.chooseDelete)]
-                this.questionsDelete.push(deleteQuestion.id)
-            }
-            this.$nextTick(() => {
-                this.render = true
-            })
-        },
         moveQuestion(page, id) {
-
             if (page == this.currentPage) {
                 this.moveTo = id;
                 let question = document.getElementById(id);
@@ -305,6 +187,18 @@ export default {
 
 
             }
+        },
+        save() {
+            let sendData = { 'exam_id': 2, 'answers': new Set() }
+            this.questions.forEach(question => {
+                let q = this.$refs['question_' + question.question.question_id]
+                if (q[0].answer != -1) {
+                    let answer = { 'question_id': question.question.question_id, 'answer': q[0].answer }
+                    sendData.answers.add(answer)
+                }
+
+            });
+            console.log(Array.from(sendData.answers))
         }
     }
 }
@@ -316,42 +210,8 @@ export default {
     justify-content: space-between;
 }
 
-.menu-create {
-    display: flex;
-    align-items: center;
-}
-
-.menu-create-end {
-    display: flex;
-}
-
-.pagination {
-    display: flex;
-    justify-content: center;
-}
-
 .margin-bottom10px {
     margin-bottom: 10px;
-}
-
-.choice-type-create {
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
-}
-
-.create-button-type {
-    margin-left: 2px;
-    margin-top: 2px;
-    padding: 2px 4px;
-    height: 35px;
-    border-radius: 5px;
-    border: 2px solid #ea4f4c;
-    background-color: #222;
-    color: white;
-    text-align: center;
-    justify-content: center;
-    text-decoration: none;
 }
 
 .create-button-first {
@@ -366,11 +226,6 @@ export default {
     text-align: center;
     justify-content: center;
     text-decoration: none;
-}
-
-.create-button-first:active {
-    box-shadow: 0 2px #666;
-    transform: translateY(4px);
 }
 
 .update-create-question-button {
@@ -388,11 +243,6 @@ export default {
     text-align: center;
     justify-content: center;
     text-decoration: none;
-}
-
-.update-create-question-button:active {
-    box-shadow: 0 2px #666;
-    transform: translateY(4px);
 }
 
 .info-list-question {

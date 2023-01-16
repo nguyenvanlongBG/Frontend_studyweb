@@ -1,80 +1,41 @@
 <template  v-if="render">
     <!-- <NavbarListComponent /> -->
-    <NavbarListComponent :numericalQuestion="numericalQuestion" @moveQuestion="moveQuestion" />
-    <div class="info-list-question">
-        <h1>Chỉnh sửa đề thi</h1>
-        <LoadingComponent v-if="isLoading"></LoadingComponent>
-        <template v-else>
-            <div class="page">
-
-                <h2>
-                    Trang {{ currentPage }}
-                </h2>
-                <div class="menu-create">
-                    <div class="choice-type-create" v-if="displayTypeCreateFirst">
-                        <div class="create-button-type" @click="createQuestion(2)" v-if="canUpdate">
-                            Trắc nghiệm
-                        </div>
-                        <div class="create-button-type" @click="createQuestion(1)" v-if="canUpdate">
-                            Điền đáp án
-                        </div>
-                        <div class="create-button-type" @click="createQuestion(3)" v-if="canUpdate">
-                            Tự luận
-                        </div>
-                    </div>
-                    <button class="create-button-first" @click="displayCreateQuestionTypeFirst" v-if="canUpdate">
-                        Thêm câu hỏi
-                    </button>
+    <div class="history-exam">
+        <NavbarListComponent :numericalQuestion="numericalQuestion" @moveQuestion="moveQuestion" />
+        <div class="info-list-question">
+            <slot name="tabs"></slot>
+            <LoadingComponent v-if="isLoading"></LoadingComponent>
+            <template v-else>
+                <div class="page">
+                    <h2>
+                        Trang {{ currentPage }}
+                    </h2>
                 </div>
-            </div>
-            <QuestionComponent v-for="(question, index) in  questions" :key="index" :question="question"
-                :ref="'question_' + question.question.question_id" @create="createQuestion" @update="updateQuestion()"
-                @delete="deleteQuestion" @addlistQuestionFollow="addlistQuestionFollow"
-                :id="'question_' + question.question.question_id" :index="startIndex + index" :type="2" :send="sendData"
-                @send="sendData" />
-            <div class="end-action">
-                <div class="menu-create-end">
-                    <div class="choice-type-create" v-if="displayTypeCreateEnd">
-                        <div class="create-button-type" @click="createQuestion(2)" v-if="canUpdate">
-                            Trắc nghiệm
-                        </div>
-                        <div class="create-button-type" @click="createQuestion(1)" v-if="canUpdate">
-                            Điền đáp án
-                        </div>
-                        <div class="create-button-type" @click="createQuestion(3)" v-if="canUpdate">
-                            Tự luận
-                        </div>
-                    </div>
-                    <button class="update-create-question-button" @click="displayCreateQuestionTypeEnd"
-                        v-if="canUpdate">
-                        Thêm câu hỏi
-                    </button>
-                </div>
+                <QuestionComponent v-for="(question, index) in  questions" :key="index" :question="question"
+                    :ref="'question_' + question.question.question_id" :id="'question_' + question.question.question_id"
+                    :index="startIndex + index" :type="3" @send="sendData" />
+                <div class="end-action">
 
-                <button class="update-create-question-button" @click="addPage"
-                    v-if="canUpdate && currentPage == totalPage">
-                    Thêm trang
-                </button>
-            </div>
-            <paginate :page-count="totalPage" :page-range="3" :margin-pages="2" :click-handler="clickCallback"
-                :prev-text="'Prev'" :next-text="'Next'" :container-class="'pagination'" :page-class="'page-item'"
-                :active-class="'active-class'">
-            </paginate>
-        </template>
+                </div>
+                <paginate :page-count="pages" :page-range="3" :margin-pages="2" :click-handler="clickCallback"
+                    :prev-text="'Prev'" :next-text="'Next'" :container-class="'pagination'" :page-class="'page-item'"
+                    :active-class="'active-class'">
+                </paginate>
+            </template>
+        </div>
     </div>
-
 </template>
 <script>
 import QuestionComponent from '../Question/QuestionComponent.vue';
 import Paginate from 'vuejs-paginate-next';
-import { getQuestionTestUpdate } from '../../services/question'
-import { getNumericalQuestion, updateTest } from '../../services/test'
+import { getNumericalQuestion } from '../../services/test'
 import { ref } from '@vue/reactivity'
 import { useRoute } from 'vue-router';
 import LoadingComponent from '../common/LoadingComponent.vue';
 import NavbarListComponent from "../Test/NavbarListComponent.vue"
+import { getExamHistory } from '@/services/exam';
 export default {
-    name: "UpdateTestComponent",
+    name: "HistoryExamComponent",
     components: {
         QuestionComponent,
         paginate: Paginate,
@@ -92,12 +53,8 @@ export default {
         const startIndex = ref(1)
         const numericalQuestion = ref([])
         const moveTo = ref("")
-        const listQuestionFollow = ref(new Set())
-        const questionsDelete = ref([])
         const render = ref(true)
         const indexNewQuestion = ref(0)
-        const displayTypeCreateFirst = ref(false)
-        const displayTypeCreateEnd = ref(false)
         const sendData = ref({
             'questions': {
                 'create': [],
@@ -127,12 +84,8 @@ export default {
             startIndex,
             numericalQuestion,
             moveTo,
-            listQuestionFollow,
-            questionsDelete,
             sendData,
             indexNewQuestion,
-            displayTypeCreateFirst,
-            displayTypeCreateEnd,
             render
         }
     },
@@ -144,6 +97,11 @@ export default {
                 this.handleGetData()
             }
         )
+    },
+    data() {
+        return {
+            examId: ""
+        }
     },
     mounted() {
         this.handleGetData()
@@ -170,28 +128,29 @@ export default {
         async handleGetData() {
 
             var paramsQuestion = {
+                idExam: this.examId,
                 current_page: this.currentPage
             };
             try {
-                const responseQuestions = await getQuestionTestUpdate(this.idTest, paramsQuestion);
-
+                const responseQuestions = await getExamHistory(this.idTest, paramsQuestion);
                 if (responseQuestions) {
-
                     this.questions = responseQuestions.data?.questions
+                    this.answersData = responseQuestions.data?.answers
+                    this.examId = responseQuestions.data?.exam_id
+                    console.log(responseQuestions.data?.pages)
                     let pages = responseQuestions.data?.pages
                     this.startIndex = pages.startIndex
-                    this.currentPage = pages.currentPage
                     this.totalPage = pages.totalPage
                 }
                 var paramsNumerical = {
+                    exam_id: this.examId,
                     current_page: this.currentPage,
-                    type: 2
+                    type: 3
                     // 1: Do 2: Update 3: History
                 };
                 const responseNumerical = await getNumericalQuestion(this.idTest, paramsNumerical)
                 if (responseNumerical) {
                     this.numericalQuestion = responseNumerical.data
-
                 }
             } finally {
                 this.isLoading = false
@@ -207,57 +166,29 @@ export default {
             answer.classList.add("answer-content-choice");
         },
         clickCallback(pageNum) {
-            console.log(pageNum)
             this.currentPage = pageNum
             this.handleGetData()
         },
-        async addPage() {
-            this.totalPage += 1
-            let data = {
-                'id': this.idTest,
-                'total_page': this.totalPage
-            }
-            try {
-                await updateTest(data);
-                this.clickCallback(parseInt(this.currentPage) + 1)
-            } catch (error) {
-                console.log(error)
-            } finally {
-                this.refreshData()
-            }
-
-        },
         Next(pageNum) {
-            this.currentPage = pageNum
+            this.page = pageNum
             this.handleGetData()
         },
         Prev(pageNum) {
-
-            this.currentPage = pageNum
+            this.page = pageNum
             this.handleGetData()
         },
-        displayCreateQuestionTypeFirst() {
-            this.displayTypeCreateFirst = !this.displayTypeCreateFirst
-        },
-        displayCreateQuestionTypeEnd() {
-            this.displayTypeCreateEnd = !this.displayTypeCreateEnd
-        },
-        createQuestion(type) {
+        createQuestion() {
             let newQuestion = {
             }
-            newQuestion.question = { 'question_id': 'new_' + this.indexNewQuestion, 'page': this.currentPage, "type": type, 'index': this.questions.length, 'result_id': "", 'contentResult': "", 'scope': 1, 'dependence_id': this.idTest }
-            if (type == 1 || type == 3) {
-                newQuestion.question.result_id = "new"
-            }
+            newQuestion.question = { 'question_id': 'new_' + this.indexNewQuestion, 'page': this.currentPage, "type": 2, 'index': this.questions.length, 'result_id': "", 'contentResult': "", 'scope': 1, 'dependence_id': this.idTest }
             this.indexNewQuestion++
             newQuestion.choices = []
             this.questions.push(newQuestion)
-            let item = { 'id': newQuestion.question.question_id, 'page': this.currentPage, 'index': this.questions.length, 'type': 0 }
+            let item = { 'id': newQuestion.question.question_id, 'page': this.currentPage, 'index': this.questions.length, 'type': 2 }
             this.numericalQuestion.data.splice(this.startIndex + this.questions.length - 2, 0, item);
+
             setTimeout(() => {
                 let question = document.getElementById('question_' + newQuestion.question.question_id);
-                this.displayTypeCreateFirst = false
-                this.displayTypeCreateEnd = false
                 question.scrollIntoView();
             }, 500)
         },
@@ -316,15 +247,6 @@ export default {
     justify-content: space-between;
 }
 
-.menu-create {
-    display: flex;
-    align-items: center;
-}
-
-.menu-create-end {
-    display: flex;
-}
-
 .pagination {
     display: flex;
     justify-content: center;
@@ -332,26 +254,6 @@ export default {
 
 .margin-bottom10px {
     margin-bottom: 10px;
-}
-
-.choice-type-create {
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
-}
-
-.create-button-type {
-    margin-left: 2px;
-    margin-top: 2px;
-    padding: 2px 4px;
-    height: 35px;
-    border-radius: 5px;
-    border: 2px solid #ea4f4c;
-    background-color: #222;
-    color: white;
-    text-align: center;
-    justify-content: center;
-    text-decoration: none;
 }
 
 .create-button-first {
@@ -366,11 +268,6 @@ export default {
     text-align: center;
     justify-content: center;
     text-decoration: none;
-}
-
-.create-button-first:active {
-    box-shadow: 0 2px #666;
-    transform: translateY(4px);
 }
 
 .update-create-question-button {
@@ -388,11 +285,6 @@ export default {
     text-align: center;
     justify-content: center;
     text-decoration: none;
-}
-
-.update-create-question-button:active {
-    box-shadow: 0 2px #666;
-    transform: translateY(4px);
 }
 
 .info-list-question {

@@ -8,24 +8,24 @@
       <h1 class="myListTestTitle">{{ title }}</h1>
       <div class="list-tool-button-test">
         <button class="tool-button-test" @click="createTest" v-if="hasRole" id="create">
-          Create Test
+          Tạo đề thi
         </button>
         <button class="tool-button-test" @click="getMyListTests" :disabled="hasRole" id="doingTest">
-          Đang thi
+          Chưa hoàn thành
         </button>
-        <button class="tool-button-test" @click="getMyListTests" :disabled="displayButton" id="history">
-          Lịch sử
+        <button class="tool-button-test" @click="getMyListTests" :disabled="hasRole" id="doingTest">
+          Đã hoàn thành
         </button>
-        <button class="tool-button-test" @click="getMyListTests" v-if="hasMyTests" id="myListTest">
+        <button class="tool-button-test" @click="getMyListTests" id="myListTest">
           Bộ đề của tôi
         </button>
         <button class="tool-button-test" @click="getMyListTests" :disabled="!hasMyTests" id="all">
-          Tất cả
+          Bộ đề khác
         </button>
       </div>
     </div>
     <div class="grid-container">
-      <TestComponent :test="test" v-for="test in data" :key="test.id" />
+      <TestComponent :test="test" v-for="test in data" :key="test.id" :type="type" />
     </div>
   </div>
 </template>
@@ -33,12 +33,19 @@
 import { getTests } from "../services/test"
 import ModalCreateTest from "../components/ModalCreateTest.vue"
 import TestComponent from "../components/Test/TestComponent.vue"
+import { ref } from "vue"
 
 export default {
   name: 'TestsComponent',
   components: {
     ModalCreateTest,
     TestComponent,
+  },
+  setup() {
+    const type = ref(0)
+    return {
+      type
+    }
   },
   data() {
     return {
@@ -47,7 +54,7 @@ export default {
         visible: false,
       },
       hasMyTests: false,
-      hasRole: false,
+      hasRole: true,
       displayButton: true,
       filter: {},
       title: "Tất cả bộ đề"
@@ -58,18 +65,8 @@ export default {
   },
   methods: {
     async getListTest() {
-      // let responseTests
-      // if (!this.myTests) {
-      //   const response = await getTests()
-      //   responseTests = response.data
-      // } else {
-      //   const response = await getTestsByIdUser(0)
-      //   responseTests = response.data
-      // }
       const response = await getTests(this.filter)
-      this.data = response.data
-      // var myListTest = document.getElementById("myListTest");
-      // myListTest.classList.add("");
+      this.data = response
     },
     createTest() {
       this.modalCreateTest.visible = true
@@ -104,10 +101,10 @@ export default {
 }
 
 .tool-button-test {
-  display: block;
-  margin-left: auto;
+  margin-left: 2px;
   margin-top: 2px;
   height: 35px;
+  box-shadow: 0 8px #999;
   border-radius: 5px;
   border: 2px solid #ea4f4c;
   background-color: #222;
@@ -117,18 +114,10 @@ export default {
   text-decoration: none;
 }
 
-.tool-button-test-click {
-  display: block;
-  margin-left: auto;
-  margin-top: 2px;
-  height: 35px;
-  border-radius: 5px;
-  border: 2px solid #ea4f4c;
-  background-color: #222;
-  color: white;
-  text-align: center;
-  justify-content: center;
-  text-decoration: none;
+.tool-button-test:active {
+
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
 }
 
 .share {
