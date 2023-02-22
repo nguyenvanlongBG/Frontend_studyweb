@@ -1,7 +1,5 @@
 <template>
-
     <div class="grid-item">
-
         <div class="header-test">
             <div class="mask">
                 <button class="tool-button" @click="tryTest(test.id)" v-if="displayTry">
@@ -16,6 +14,9 @@
                 </button>
                 <button class="tool-button" @click="markTest(test.id)" v-if="displayMark">
                     Chấm điểm
+                </button>
+                <button class="tool-button" @click="reportTest(test.id)" v-if="displayMark">
+                    Báo cáo
                 </button>
                 <button class="tool-button" @click="updateTest(test.id)" v-if="displayUpdate">
                     Sửa
@@ -121,7 +122,7 @@ export default {
         async doTest(testId) {
             // console.log(testId)
             await createExam({ 'test_id': testId })
-            router.push({ name: 'doExam', params: { idTest: testId } })
+            router.push({ name: 'detailTest', params: { idTest: testId } })
         },
         continueTest(testId) {
             router.push({ name: 'doExam', params: { idTest: testId } })
@@ -129,11 +130,14 @@ export default {
         markTest(testId) {
             router.push({ name: 'listExam', params: { idTest: testId } })
         },
+        reportTest(testId) {
+            router.push({ name: 'reportTest', params: { idTest: testId } })
+        },
         updateTest(testId) {
             router.push({ name: 'updateTest', params: { idTest: testId } })
         },
         historyTest(testId) {
-            router.push({ name: 'historyTest', params: { idTest: testId } })
+            router.push({ name: 'layoutHistoryTest', params: { idTest: testId } })
         },
         deleteTest(testId) {
             router.push({ name: 'deleteTest', params: { idTest: testId } })
@@ -242,8 +246,8 @@ export default {
 
 .circle {
     display: inline-block;
-    height: 64px;
-    width: 64px;
+    /* height: 64px;
+    width: 64px; */
     border: 4px solid rgba(200, 200, 200, 0.4);
     border-radius: 50%;
 }

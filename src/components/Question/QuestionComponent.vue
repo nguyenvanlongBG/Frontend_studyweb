@@ -1,56 +1,129 @@
 <template>
     <div :class="styleQuestion" v-if="render">
-        <div class="action-question">
-            <button class="tool-button-test" :style="pressUpdate ? styleObject : null" @click="publicQuestion"
-                v-if="canUpdate">
-                Diễn đàn
-            </button>
-            <button class="tool-button-test" :style="pressUpdate ? styleObject : null" @click="updateQuestion"
-                v-if="canUpdate">
-                Sửa
-            </button>
-            <button class="tool-button-test" @click="deleteQuestion" v-if="canUpdate">
-                Xóa
-            </button>
-        </div>
-        <h3 v-if="type != 0">Câu {{ index }}: </h3>
-        <h3 v-if="type == 0">Câu hỏi: </h3>
-        <LatexComponent :content="infoQuestion.question.content" :isUpdate="pressUpdate" @update="updateContentQuestion"
-            :id="'question_' + infoQuestion.question.question_id" />
-        <!-- <CommentQuestionComponent :answers="question.answers" /> -->
-        <h3 v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 3 || type == 2)">Đáp
-            án đúng:</h3>
-        <LatexComponent :isUpdate="canEssay" @update="answerQuestion"
-            :content="infoQuestion.question.contentResult != null ? infoQuestion.question.contentResult : ''"
-            :id="infoQuestion.question.question_id + '_result_' + infoQuestion.question.result_id"
-            v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 3 || type == 2)"
-            class="border-green" />
-        <h3 v-if="type != 2 && type != 0">Đáp án của bạn là:</h3>
-        <span v-if="canUpdate && type != 2 && type != 0">Bạn hãy nhập đáp án của câu hỏi</span>
-        <LatexComponent :isUpdate="canEssay" @update="answerQuestion"
-            :content="infoQuestion.question.answer != null ? infoQuestion.question.answer : ''"
-            :id="infoQuestion.question.question_id + '_answer'"
-            v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 1 || type == 3)" />
-        <ChooseComponent :ref="'chooses_' + infoQuestion.question.question_id" :choices="infoQuestion.choices"
-            :isUpdate="pressUpdate" doTest="true" @update="updateChoose" @create="createChoose" @delete="deleteAnswer"
-            @chooseAnswer="answerQuestion" v-if="(infoQuestion.question.type == 2)" :type="type"
-            :linkNavbar="'page_' + infoQuestion.question.page + '_' + index"
-            :question="infoQuestion.question.question_id" :canChoose="canChoose" />
-        <!-- <LatexComponent v-if="(infoQuestion.question.type == 1)" :isUpdate="isUpdateEssay"
+        <div class="question-not-note">
+            <div class="action-question">
+                <button class="tool-button-test" :style="pressUpdate ? styleObject : null" @click="publicQuestion"
+                    v-if="canUpdate">
+                    Diễn đàn
+                </button>
+                <button class="tool-button-test" :style="pressUpdate ? styleObject : null" @click="updateQuestion"
+                    v-if="canUpdate">
+                    Sửa
+                </button>
+                <button class="tool-button-test" @click="deleteQuestion" v-if="canUpdate">
+                    Xóa
+                </button>
+
+            </div>
+            <div class="select-item-subject">
+                <h3 v-if="type != 0 && type != 5">Câu {{ index }}: </h3>
+                <div class="values-items-subject">
+                    <VueMultiselect :disabled="!pressUpdate" v-model="infoQuestion.items"
+                        :options="listItemsSubject ? listItemsSubject : []" :multiple="true" :close-on-select="false"
+                        :clear-on-select="false" :preserve-search="true" placeholder="Chương" label="name"
+                        track-by="name" :preselect-first="true" @select="selectItems" @remove="removeItems"
+                        v-if="type == 2">
+                    </VueMultiselect>
+                </div>
+            </div>
+            <h3 v-if="type == 0">Câu hỏi: </h3>
+            <h3 v-if="type == 5">Câu hỏi: {{ typeQuestion[infoQuestion.question.type] }}</h3>
+            <LatexComponent :content="infoQuestion.question.content" :isUpdate="pressUpdate"
+                @update="updateContentQuestion" :id="'question_' + infoQuestion.question.question_id" />
+            <!-- <CommentQuestionComponent :answers="question.answers" /> -->
+            <h3 v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 3 || type == 2)">
+                Đáp
+                án câu hỏi:</h3>
+            <LatexComponent :isUpdate="canEssay" @update="answerQuestion"
+                :content="infoQuestion.question.contentResult != null ? infoQuestion.question.contentResult : ''"
+                :id="infoQuestion.question.question_id + '_result_' + infoQuestion.question.result_id"
+                v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 3 || type == 2)"
+                class="border-green" />
+            <div v-if="(type == 1 || type == 3 || type == 4 || type == 5)">
+                <h3>Đáp án của bạn là:</h3>
+                <span v-if="question.question.type == 2">Lựa chọn phương án đúng nhất</span>
+                <span v-if="question.question.type == 1">Bạn hãy điền đáp án câu hỏi</span>
+                <span v-if="question.question.type == 3">Bạn hãy điền lời giải</span>
+                <span v-if="canUpdate && type != 2 && type != 0">Bạn hãy nhập đáp án của câu hỏi</span>
+            </div>
+            <LatexComponent :isUpdate="canEssay" @update="answerQuestion"
+                :content="infoQuestion.question.answer != null ? infoQuestion.question.answer : ''"
+                :id="infoQuestion.question.question_id + '_answer'"
+                v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 1 || type == 3 || type == 5)" />
+            <ChooseComponent :ref="'chooses_' + infoQuestion.question.question_id" :choices="infoQuestion.choices"
+                :isUpdate="pressUpdate" doTest="true" @update="updateChoose" @create="createChoose"
+                @delete="deleteAnswer" @chooseAnswer="answerQuestion" v-if="(infoQuestion.question.type == 2)"
+                :type="type" :linkNavbar="'page_' + infoQuestion.question.page + '_' + index"
+                :question="infoQuestion.question.question_id" :canChoose="canChoose" />
+            <!-- <LatexComponent v-if="(infoQuestion.question.type == 1)" :isUpdate="isUpdateEssay"
             @update="data => updateResultEssay(infoQuestion.question.result_id, data)" /> -->
 
-        <div class="action-question" v-if="pressUpdate">
-            <button class="tool-button-test" @click="back">
-                Trở lại
-            </button>
-            <button class="tool-button-test margin-bottom6px" @click="confirmUpdate">
-                Lưu
-            </button>
+            <div class="action-question" v-if="pressUpdate">
+                <button class="tool-button-test" @click="back">
+                    Trở lại
+                </button>
+                <button class="tool-button-test margin-bottom6px" @click="confirmUpdate">
+                    Lưu
+                </button>
+            </div>
+            <ConfirmComponent v-if="confirmModal" content="Bạn có chắc chắn muốn xóa?" @close="confirmModal = false"
+                @confirm="confirmDelete" />
+            <CommentQuestionComponent v-if="this.infoQuestion.question.scope == 0 && type != 4 && type != 1"
+                :solutions="infoQuestion.solutions"
+                :question="{ 'id': infoQuestion.question.question_id, 'content': infoQuestion.question.content }" />
         </div>
-        <ConfirmComponent v-if="confirmModal" content="Bạn có chắc chắn muốn xóa?" @close="confirmModal = false"
-            @confirm="confirmDelete" />
-        <CommentQuestionComponent v-if="this.infoQuestion.question.scope == 0" />
+        <div class="note" v-if="type == 2 || type == 3 || type == 4">
+            <div class="note-icon" @click="displayNote = !displayNote">
+                <i class="fa-solid fa-circle-exclamation brand-color"></i>
+            </div>
+            <Transition name="slide-fade">
+                <div class="note-teacher-student" v-if="displayNote">
+                    <NoteComponent>
+                        <template v-slot:note>
+                            <div class="note-action">
+                                <div class="note-content">
+                                    <h4 class="title-note">Ghi chú giáo viên</h4>
+                                    <LatexComponent :isUpdate="isOwner ? isOwner : false"
+                                        @update="updateNoteQuestion" />
+                                </div>
+                                <div class="action-note">
+                                    <button class="note-button" @click="back">
+                                        Lưu
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </NoteComponent>
+                    <NoteComponent>
+                        <template v-slot:note>
+                            <div class="note-action">
+                                <div class="note-content">
+                                    <h4 class="title-note">Ghi chú học sinh</h4>
+                                    <LatexComponent :isUpdate="!isOwner" @update="noteStudent" />
+                                </div>
+                                <div class="action-note">
+                                    <button class="note-button" @click="back">
+                                        Lưu
+                                    </button>
+                                </div>
+                                <div class="list-other-note">
+                                    <div class="other-note">
+                                        <LatexComponent :isUpdate="false" />
+                                    </div>
+                                    <div class="other-note">
+                                        <LatexComponent :isUpdate="false" />
+                                    </div>
+                                    <div class="other-note">
+                                        <LatexComponent :isUpdate="false" />
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </NoteComponent>
 
+                </div>
+            </Transition>
+        </div>
     </div>
 
 </template>
@@ -61,6 +134,9 @@ import LatexComponent from "../LatexComponent.vue";
 import ConfirmComponent from '../common/ConfirmComponent.vue'
 import { ref } from '@vue/reactivity'
 import { handleQuestionTest } from '../../services/question'
+import { Transition } from "vue";
+import NoteComponent from "../common/NoteComponent.vue";
+import VueMultiselect from 'vue-multiselect'
 export default {
     name: "QuestionComponent",
     components: {
@@ -68,8 +144,11 @@ export default {
         LatexComponent,
         ConfirmComponent,
         CommentQuestionComponent,
+        Transition,
+        NoteComponent,
+        VueMultiselect
     },
-    props: ['question', 'isUpdateEssay', 'index', 'isNormal', 'type', 'send'],
+    props: ['question', 'index', 'type', 'isOwner', 'listItemsSubject'],
     setup() {
         const render = ref(true)
         const confirmModal = ref(false)
@@ -77,7 +156,7 @@ export default {
         const pressUpdate = ref(false)
         const canEssay = ref(false)
         const canUpdate = ref(false)
-        const handleQuestion = ref({ 'question': {}, 'answer': {} })
+        const handleQuestion = ref({ 'question': {}, 'answer': {}, 'items': { 'create': [], 'remove': [] } })
         const writeResult = ref({})
         const result = ref(-1)
         const essayAnswer = ref({})
@@ -87,13 +166,15 @@ export default {
         const page = ref(1)
         const canChoose = ref(false)
         const answer = ref(-1)
+        const displayNote = ref(false)
         const styleObject = ref({
             "box-shadow": "0 5px #666",
             "transform": "translateY(4px)"
         })
         const styleQuestion = ref("info-question")
+        const typeQuestion = ['', 'Điền đáp án', ' Trắc nghiệm', ' Tự luận']
         return {
-            render, result, writeResult, handleQuestion, essayAnswer, answerUpdate, answerDelete, answerCreate, styleQuestion, confirmModal, pressUpdate, page, styleObject, infoQuestion, canEssay, canUpdate, canChoose, answer
+            render, result, writeResult, handleQuestion, essayAnswer, answerUpdate, answerDelete, answerCreate, styleQuestion, confirmModal, pressUpdate, page, styleObject, infoQuestion, canEssay, canUpdate, canChoose, answer, displayNote, typeQuestion
         }
     },
 
@@ -102,7 +183,6 @@ export default {
         if (this.type == 0) {
             this.canEssay = this.isUpdateEssay;
             this.canChoose = false;
-
         }
         // Câu hỏi thi
         if (this.type == 1) {
@@ -113,21 +193,25 @@ export default {
         // Câu hỏi cập nhật
         if (this.type == 2) {
             this.canUpdate = true
-            this.canEssay = true
+            this.canEssay = false
             this.canChoose = true;
+            this.handleQuestion.question = this.question.question
         }
         // Câu hỏi lịch sử làm bài
         if (this.type == 3) {
             this.canEssay = false
             this.canChoose = false
         }
+        if (this.type == 4) {
+            this.canEssay = false
+            this.canChoose = false
+        }
+        if (this.type == 5) {
+            this.canEssay = false
+            this.canChoose = false
+        }
 
-        this.canEssay = this.isUpdateEssay
         this.infoQuestion = JSON.parse(JSON.stringify(this.question));
-        // if (("" + this.infoQuestion.question.question_id).includes("new") && this.infoQuestion.question.type != 2) {
-        //     this.answerCreate.set(this.infoQuestion.question.question_id + "new_answer", { 'id': this.infoQuestion.question.question_id + "new_answer", 'content': "" });
-        // }
-        this.handleQuestion.question = this.question.question
         this.page = this.question.page
     },
     mounted() {
@@ -143,7 +227,7 @@ export default {
 
         if (this.type == 2) {
             if (this.question.question.type == 2) {
-                if (this.question.question?.result_id != null) {
+                if (this.question.question?.result_id != null && this.question.question?.result_id != "") {
                     let choose = document.getElementById(this.question.question.question_id + '_choose_' + this.question.question.result_id)
                     choose.click()
                 }
@@ -180,11 +264,15 @@ export default {
                         chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
                         let chooseAnswer = document.getElementById(this.question.question.question_id + '_answer')
                         chooseAnswer.style.border = "4px solid rgb(16, 249, 4)"
+                        let question = document.getElementById("question_" + this.question.question.question_id)
+                        question.style.border = "4px solid rgb(16, 249, 4)"
                     } else {
                         let chooseCorrect = document.getElementById(this.question.question.question_id + '_result_' + this.infoQuestion.question.result_id)
                         chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
                         let chooseFalse = document.getElementById(this.question.question.question_id + '_answer')
                         chooseFalse.style.border = "4px solid red"
+                        let question = document.getElementById("question_" + this.question.question.question_id)
+                        question.style.border = "4px solid red"
                     }
 
                 }
@@ -192,7 +280,6 @@ export default {
         }
     },
     methods: {
-
         back() {
             this.pressUpdate = false
             this.canEssay = false
@@ -212,6 +299,7 @@ export default {
         answerQuestion(answer) {
             this.answer = answer
         },
+
         publicQuestion() {
 
         },
@@ -307,6 +395,30 @@ export default {
             console.log(this.handleQuestion.answer.update)
             this.handleQuestion.answer.delete = Array.from(this.answerDelete.values())
             console.log("Send Data")
+            this.infoQuestion.items.forEach(item => {
+                let check = false
+                this.question.items.forEach(oldItem => {
+                    if (item == oldItem) {
+                        check = true
+                    }
+
+                })
+                if (!check) {
+                    this.handleQuestion.items.create.push(item)
+                }
+            })
+            this.question.items.forEach(item => {
+                let check = false
+                this.infoQuestion.items.forEach(oldItem => {
+                    if (item == oldItem) {
+                        check = true
+                    }
+
+                })
+                if (!check) {
+                    this.handleQuestion.items.remove.push(item)
+                }
+            })
             console.log(this.handleQuestion)
             const response = await handleQuestionTest(this.handleQuestion)
             this.infoQuestion = response.data
@@ -319,6 +431,15 @@ export default {
 }
 </script>
 <style>
+.select-item-subject {
+    display: flex;
+}
+
+.values-items-subject {
+    margin-left: 5px;
+    min-width: 300px;
+}
+
 .info-question {
     background-color: #222;
     color: white;
@@ -326,6 +447,106 @@ export default {
     padding: 15px;
     border-style: solid;
     border-color: #666363;
+    display: flex;
+}
+
+.question-not-note {
+    flex: 1 1 70%;
+}
+
+.note-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #545151;
+    margin-left: 2px;
+    margin-right: 2px;
+    border-start-start-radius: 60%;
+    border-end-start-radius: 60%;
+}
+
+.note {
+    display: flex;
+    margin-left: 2px;
+}
+
+.other-note {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-bottom: 5px;
+}
+
+.list-other-note {
+    overflow-y: scroll;
+}
+
+.note-action {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow-y: hidden;
+}
+
+.action-note {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.note-button {
+    margin-left: 2px;
+    font-family: 'Kalam', cursive;
+    margin-top: 2px;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    height: 35px;
+    box-shadow: 0 8px #999;
+    border-radius: 5px;
+    border: 2px solid #ea4f4c;
+    background-color: rgb(249, 245, 245);
+    color: rgb(15, 14, 14);
+    font-weight: bold;
+    text-align: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.note-button:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+.note-teacher-student {
+    width: 100%;
+    min-width: 300px;
+    flex: 1 1 30%;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Kalam&display=swap');
+
+.title-note {
+    font-family: 'Kalam', cursive;
+}
+
+.note-content {
+    width: 100%;
+    margin-left: 4px;
+    margin-right: 4px;
+    min-height: 120px;
+    overflow-y: scroll;
+}
+
+.slide-fade-enter-active {
+    transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+    transform: translateX(20px);
+    opacity: 0;
 }
 
 .info-question-correct {
@@ -337,6 +558,12 @@ export default {
     border-color: #666363;
 }
 
+.action-question {
+    margin-top: 2px;
+    display: flex;
+    justify-content: flex-end;
+}
+
 .info-question-false {
     background-color: #222;
     color: white;
@@ -344,6 +571,10 @@ export default {
     padding: 15px;
     border-style: solid;
     border-color: #666363;
+}
+
+.brand-color {
+    color: #ea4f4c;
 }
 
 .tool-button-test {
@@ -361,7 +592,6 @@ export default {
 }
 
 .tool-button-test:active {
-
     box-shadow: 0 5px #666;
     transform: translateY(4px);
 }
@@ -373,4 +603,6 @@ export default {
 .border-green {
     border: 2px solid rgb(8, 196, 40);
 }
+
+@import url('vue-multiselect/dist/vue-multiselect.css');
 </style>

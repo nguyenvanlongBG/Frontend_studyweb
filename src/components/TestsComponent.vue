@@ -66,7 +66,7 @@ export default {
   methods: {
     async getListTest() {
       const response = await getTests(this.filter)
-      this.data = response
+      this.data = response.data
     },
     createTest() {
       this.modalCreateTest.visible = true
@@ -81,11 +81,10 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 .container {
   margin: 0 15%;
   position: relative;
-
 }
 
 .myListTestTitle {

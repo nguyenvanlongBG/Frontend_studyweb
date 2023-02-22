@@ -1,18 +1,22 @@
 <template>
-    <div class="container">
+    <div class="container-list-exam">
         <div class="header-list-exams">
             <h1>
                 Danh sách bài thi
             </h1>
-            <div class="menu-create">
-                <button class="create-button-type" @click="createQuestion(2)">
-                    Trắc nghiệm
+            <div class="mark-type-filter">
+                <button class="status-mark green" :style="pressNotCompleteMarked ? styleObject : ''"
+                    @click="filterStatus(2)">
+                    Chưa chấm
                 </button>
-                <button class="create-button-type" @click="createQuestion(1)">
-                    Điền đáp án
+                <button class="status-mark blue" :style="pressMarked ? styleObject : ''" @click="filterStatus(1)">
+                    Đã chấm
                 </button>
-                <button class="create-button-type" @click="createQuestion(3)">
-                    Tự luận
+                <button class="status-mark" :style="pressAll ? styleObject : ''" @click="filterStatus(0)">
+                    Tất cả
+                </button>
+                <button class="status-mark" :style="pressStatistical ? styleObject : ''" @click="statistical()">
+                    Thống kê
                 </button>
             </div>
         </div>
@@ -33,27 +37,20 @@
                             động</a>
                     </div>
                 </div>
-                <div class="table-content">
+                <div class="table-content" v-for="exam in exams" :key="exam.id">
                     <div class="table-row">
-                        <div class="table-data">Tom</div>
-                        <div class="table-data">2</div>
-                        <div class="table-data">0</div>
-                        <div class="table-data">1</div>
+                        <div class="table-data">#{{ exam.id }}</div>
+                        <div class="table-data">{{ exam.user_name }}</div>
+                        <div class="table-data"></div>
+                        <div class="table-data">{{ exam.point }}</div>
                         <div class="table-data">
-                            <button class="tool-button-mark green" @click="mark">
+                            <button class="tool-button-mark green" @click="mark(exam.id)" v-if="!exam.is_marked">
                                 Chấm
                             </button>
-                            <button class="tool-button-mark blue" @click="remark">
+                            <button class="tool-button-mark blue" @click="mark(exam.id)" v-if="exam.is_marked">
                                 Chấm lại
                             </button>
                         </div>
-                    </div>
-                    <div class="table-row">
-                        <div class="table-data">Dick</div>
-                        <div class="table-data">1</div>
-                        <div class="table-data">1</div>
-                        <div class="table-data">2</div>
-                        <div class="table-data">3</div>
                     </div>
                 </div>
             </div>
@@ -63,19 +60,98 @@
 
 <script>
 import router from '@/router';
+import { getExams } from '@/services/test';
+import { ref } from 'vue';
+import { useRoute } from 'vue-router';
 
 export default {
     name: "ListExamComponent",
+    setup() {
+        const idTest = parseInt(useRoute().params.idTest)
+        const filter = ref({
+            status: 0
+        })
+        const pressAll = ref(true)
+        const pressStatistical = ref(false)
+        const pressMarked = ref(false)
+        const pressNotCompleteMarked = ref(false)
+        const styleObject = ref({
+            "box-shadow": "0 5px #666",
+            "transform": "translateY(4px)"
+        })
+        return {
+            idTest, filter, styleObject, pressAll, pressStatistical, pressMarked, pressNotCompleteMarked
+        }
+    },
+    data() {
+        return {
+            exams: []
+        }
+    },
+    mounted() {
+        this.handleGetData()
+    },
     methods: {
-        mark() {
-            router.push({ name: 'markExam', params: { idExam: 1 } })
+        mark(examId) {
+            router.push({ name: 'markExam', params: { idExam: examId } })
+        },
+        refreshButton() {
+            this.pressAll = false,
+                this.pressMarked = false,
+                this.pressNotCompleteMarked = false,
+                this.pressStatistical = false
+        },
+        filterStatus(status) {
+            this.refreshButton()
+            if (status == 0) {
+                this.pressAll = true
+            }
+            if (status == 1) {
+                this.pressMarked = true
+            }
+            if (status == 2) {
+                this.pressNotCompleteMarked = true
+            }
+            this.filter.status = status
+        },
+        statistical() {
+            this.refreshButton()
+            this.pressStatistical = true
+        },
+        async handleGetData() {
+            const response = await getExams(this.idTest, this.filter)
+            this.exams = response.data
         }
     }
 }
 </script>
-<style>
-.container {
+<style scoped>
+.container-list-exam {
     margin: 0 15%;
+}
+
+.mark-type-filter {
+    display: flex;
+    align-items: center;
+}
+
+.status-mark {
+    margin-left: 2px;
+    margin-top: 2px;
+    height: 35px;
+    box-shadow: 0 8px #999;
+    border-radius: 5px;
+    border: 2px solid #ea4f4c;
+    background-color: #222;
+    color: white;
+    text-align: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.status-mark:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
 }
 
 @import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700");
@@ -103,11 +179,10 @@ h6 {
 
 .header-list-exams {
     display: flex;
-
+    justify-content: space-between;
 }
 
 .container-table {
-    max-width: 1000px;
     margin-top: 20px;
     /* margin-right: auto;
     margin-left: auto; */
@@ -137,26 +212,9 @@ h6 {
     display: flex;
     width: 100%;
     padding: 18px 0;
+    border-bottom: 2px solid rgb(202, 198, 198);
 }
 
-.menu-create {
-    display: flex;
-    align-items: center;
-}
-
-.create-button-type {
-    margin-left: 2px;
-    margin-top: 2px;
-    height: 35px;
-    box-shadow: 0 8px #999;
-    border-radius: 5px;
-    border: 2px solid #ea4f4c;
-    background-color: #222;
-    color: white;
-    text-align: center;
-    justify-content: center;
-    text-decoration: none;
-}
 
 .tool-button-mark {
     margin-left: 2px;
@@ -192,7 +250,9 @@ h6 {
 .table-data,
 .header__item {
     flex: 1 1 20%;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .header__item {

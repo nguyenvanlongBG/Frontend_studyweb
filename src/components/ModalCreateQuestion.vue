@@ -86,7 +86,7 @@ export default {
     justify-content: center;
     color: white;
     background-color: #000000da;
-    z-index: 10;
+    z-index: 100;
     align-items: center;
 
 }

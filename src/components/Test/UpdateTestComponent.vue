@@ -1,6 +1,7 @@
 <template  v-if="render">
     <!-- <NavbarListComponent /> -->
     <NavbarListComponent :numericalQuestion="numericalQuestion" @moveQuestion="moveQuestion" />
+    <QuestionBankComponent v-if="isDisplayBank" @close="closeBank" />
     <div class="info-list-question">
         <h1>Chỉnh sửa đề thi</h1>
         <LoadingComponent v-if="isLoading"></LoadingComponent>
@@ -23,15 +24,21 @@
                         </div>
                     </div>
                     <button class="create-button-first" @click="displayCreateQuestionTypeFirst" v-if="canUpdate">
-                        Thêm câu hỏi
+                        Tạo câu hỏi
+                    </button>
+                    <button class="create-button-first" @click="displayBank" v-if="canUpdate">
+                        + Ngân hàng
+                    </button>
+                    <button class="create-button-first" @click="displayCreateQuestionTypeFirst" v-if="canUpdate">
+                        Import
                     </button>
                 </div>
             </div>
             <QuestionComponent v-for="(question, index) in  questions" :key="index" :question="question"
                 :ref="'question_' + question.question.question_id" @create="createQuestion" @update="updateQuestion()"
                 @delete="deleteQuestion" @addlistQuestionFollow="addlistQuestionFollow"
-                :id="'question_' + question.question.question_id" :index="startIndex + index" :type="2" :send="sendData"
-                @send="sendData" />
+                :id="'question_' + question.question.question_id" :index="startIndex + index" :type="2"
+                :isOwner="isOwner" @seeSolution="seeSolution" :listItemsSubject="listItemsSubject" />
             <div class="end-action">
                 <div class="menu-create-end">
                     <div class="choice-type-create" v-if="displayTypeCreateEnd">
@@ -68,24 +75,26 @@
 import QuestionComponent from '../Question/QuestionComponent.vue';
 import Paginate from 'vuejs-paginate-next';
 import { getQuestionTestUpdate } from '../../services/question'
-import { getNumericalQuestion, updateTest } from '../../services/test'
+import { getTest, getNumericalQuestion, updateTest } from '../../services/test'
+import { getItems } from '../../services/subject'
 import { ref } from '@vue/reactivity'
 import { useRoute } from 'vue-router';
 import LoadingComponent from '../common/LoadingComponent.vue';
 import NavbarListComponent from "../Test/NavbarListComponent.vue"
+import QuestionBankComponent from "../Test/QuestionBankComponent.vue"
 export default {
     name: "UpdateTestComponent",
     components: {
         QuestionComponent,
         paginate: Paginate,
         NavbarListComponent,
-        LoadingComponent
+        QuestionBankComponent,
+        LoadingComponent,
     },
     setup() {
         const idTest = parseInt(useRoute().params.idTest)
         const isLoading = ref(false)
         const canUpdate = ref(true)
-        const isUpdateEssay = ref(false)
         const questions = ref([])
         const currentPage = ref(1)
         const totalPage = ref(1)
@@ -98,6 +107,10 @@ export default {
         const indexNewQuestion = ref(0)
         const displayTypeCreateFirst = ref(false)
         const displayTypeCreateEnd = ref(false)
+        const displaySolution = ref(false)
+        const isOwner = ref(false)
+        const test = ref(null)
+        const isDisplayBank = ref(false)
         const sendData = ref({
             'questions': {
                 'create': [],
@@ -113,14 +126,12 @@ export default {
                 'delete': [],
             }
         })
-        // const answersUpdate = ref([])
-        // const answersDelete = ref([])
-        // const answersCreate = ref([])
+        const listItemsSubject = ref([])
         return {
             idTest,
+            test,
             isLoading,
             canUpdate,
-            isUpdateEssay,
             questions,
             currentPage,
             totalPage,
@@ -133,6 +144,10 @@ export default {
             indexNewQuestion,
             displayTypeCreateFirst,
             displayTypeCreateEnd,
+            displaySolution,
+            isOwner,
+            listItemsSubject,
+            isDisplayBank,
             render
         }
     },
@@ -147,6 +162,7 @@ export default {
     },
     mounted() {
         this.handleGetData()
+        this.getItems()
     },
     methods: {
         refreshData() {
@@ -174,10 +190,10 @@ export default {
             };
             try {
                 const responseQuestions = await getQuestionTestUpdate(this.idTest, paramsQuestion);
-
                 if (responseQuestions) {
-
                     this.questions = responseQuestions.data?.questions
+                    this.itemsSubject = responseQuestions.data?.itemsSubject
+                    this.isOwner = responseQuestions.data?.isOwner
                     let pages = responseQuestions.data?.pages
                     this.startIndex = pages.startIndex
                     this.currentPage = pages.currentPage
@@ -191,11 +207,18 @@ export default {
                 const responseNumerical = await getNumericalQuestion(this.idTest, paramsNumerical)
                 if (responseNumerical) {
                     this.numericalQuestion = responseNumerical.data
-
                 }
             } finally {
                 this.isLoading = false
             }
+        },
+        async getItems() {
+            const response = await getTest(this.idTest)
+            this.test = response.data
+            const responseItems = await getItems(this.test.subject_id)
+            this.listItemsSubject = responseItems.data
+            console.log("List items")
+            console.log(this.listItemsSubject)
         },
         addlistQuestionFollow(id) {
             // Add id question to list question update
@@ -236,6 +259,12 @@ export default {
             this.currentPage = pageNum
             this.handleGetData()
         },
+        displayBank() {
+            this.isDisplayBank = true
+        },
+        closeBank() {
+            this.isDisplayBank = false
+        },
         displayCreateQuestionTypeFirst() {
             this.displayTypeCreateFirst = !this.displayTypeCreateFirst
         },
@@ -270,8 +299,6 @@ export default {
             this.numericalQuestion.data.splice(deleteQuestion.index, 1)
             // console.log("Delete " + ('' + deleteQuestion.id).includes('new_'))
             let q = this.$refs['question_' + deleteQuestion.id][0]
-            // console.log("Ref")
-            // console.log(q)
             if (deleteQuestion.result != undefined) {
                 this.sendData.deleteResults.push(deleteQuestion.result)
             }
@@ -309,7 +336,7 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
 .page {
     display: flex;
     flex-direction: row;
@@ -396,7 +423,7 @@ export default {
 }
 
 .info-list-question {
-    width: 79%;
+    width: 78%;
     margin-top: 3px;
     margin-right: 2px;
     position: absolute;

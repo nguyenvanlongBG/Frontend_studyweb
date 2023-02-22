@@ -109,7 +109,7 @@ body {
      height: calc(100% - 40px);
      position: absolute;
      place-content: center;
-     width: calc(100% - 40px);
+     width: 100%;
 }
 
 @media (max-width: 767px) {

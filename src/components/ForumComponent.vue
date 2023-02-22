@@ -1,12 +1,11 @@
 <template>
 
   <div>
-    <ModalSolution :idAnswer="idAnswer" v-if="displaySolution" @close="closeSolution" />
-
+    <ModalSolution :idSolution="idSolution" v-if="displaySolution" @close="closeSolution" />
     <div class="container">
       <QuestionComponent v-for="(question, index) in  questions" :key="index" :question="question"
         :ref="'question_' + question.question.question_id" :id="'question_' + question.question.question_id"
-        :index="startIndex + index" :type="0" :send="sendData" @send="sendData" @seeSolution="seeSolution" />
+        :index="startIndex + index" :type="0" @seeSolution="seeSolution" />
     </div>
   </div>
 </template>
@@ -14,7 +13,7 @@
 <script>
 // import { getAnswer } from "../services/answer"
 import { getQuestionNormal } from "../services/question"
-import ModalSolution from "../components/ModalSolution.vue"
+import ModalSolution from  "./Answer/ModalSolution.vue"
 import QuestionComponent from "./Question/QuestionComponent.vue"
 import { ref } from '@vue/reactivity'
 const axios = require('axios')
@@ -27,24 +26,22 @@ export default {
   setup() {
     const isLoading = ref(false)
     const canUpdate = ref(true)
-    const isUpdateEssay = ref(false)
     const questions = ref([])
     const moveTo = ref("")
     const render = ref(true)
     const displaySolution = ref(false)
     const sendData = ref({})
     const startIndex = ref(1)
-    const idAnswer = ref(0)
+    const idSolution = ref(null)
     return {
       isLoading,
       displaySolution,
       canUpdate,
-      isUpdateEssay,
       questions,
       moveTo,
       sendData,
       startIndex,
-      idAnswer,
+      idSolution,
       render
     }
   },
@@ -55,13 +52,14 @@ export default {
   },
   methods: {
     seeSolution(id) {
-
-      this.idAnswer = id
+      console.log(id)
+      this.idSolution = id
+      console.log(this.idSolution)
       this.displaySolution = true
     },
     closeSolution() {
       this.displaySolution = false
-      this.idAnswer = 0
+      this.idSolution = null
     },
     uploadSolution(e, $id) {
       console.log($id);
@@ -78,13 +76,8 @@ export default {
     }
     ,
     async handleGetData() {
-      this.data = []
-
       const responseQuestions = await getQuestionNormal()
-      this.questions = responseQuestions.data.data.questions;
-      console.log(this.questions)
-
-
+      this.questions = responseQuestions.data.questions;
     },
     showMenu() {
       var library = document.getElementById('library');

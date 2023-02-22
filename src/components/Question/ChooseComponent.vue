@@ -1,9 +1,8 @@
 <template>
     <div class="list-choice" v-if="render">
-
         <template v-for="(choice, index) in choiceQuestion" :key="index">
-            <input type="radio" class="hidden-radio" :id="choice.id" :name="'question_' + question" :value="choice.id"
-                :disabled="!canChoose" />
+            <input type="radio" class="hidden-radio" :id="choice.id" :name="'choices_question_' + question"
+                :value="choice.id" :disabled="!canChoose" />
             <label :class="canChoose ? 'choice' : 'choice nohover'" :id="question + '_choose_' + choice.id"
                 @click="canChoose ? choiceAnswer(choice.id) : ''" :for="choice.id">
                 <span class="closeChoice" v-if="isUpdate" @click="deleteChoose($event, index)">X</span>
@@ -180,7 +179,6 @@ export default {
 
 input.hidden-radio {
     display: none;
-
 }
 
 

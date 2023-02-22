@@ -1,6 +1,5 @@
 <template>
     <div class="modal-answer-overlay" style="overflow-y: scroll">
-
         <div class="form-create-test">
             <h1>Tạo kì thi</h1>
             <table class="table-input">
@@ -11,6 +10,17 @@
                     <td>
                         <input v-model="dataSend.name" id="name" type="text" class="input-data"
                             placeholder="Tên kì thi" />
+                    </td>
+                </tr>
+                <tr>
+                    <th class="label-input">
+                        Kì thi môn
+                    </th>
+                    <td>
+                        <VueMultiselect v-model="valueSubject" :options="subjects ? subjects : []" :multiple="false"
+                            :close-on-select="true" :clear-on-select="true" :preserve-search="true"
+                            placeholder="Môn học" label="name" track-by="name" :preselect-first="true">
+                        </VueMultiselect>
                     </td>
                 </tr>
                 <tr>
@@ -109,22 +119,31 @@ import router from '@/router';
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import { createTest } from '../services/test'
+import VueMultiselect from 'vue-multiselect'
+import { ref } from 'vue';
 export default {
     name: 'ModalCreateTest',
     components: {
+        VueMultiselect,
         Datepicker
     },
     setup() {
-
+        const subjects = ref([
+            { name: 'Toán', id: 2 },
+            { name: 'Hóa học', id: 3 },
+            { name: 'Vật lý', id: 4 }
+        ])
         return {
-
+            subjects
         }
     },
     data() {
         return {
+            valueSubject: {},
             dataSend: {
                 type: 0,
                 name: "",
+                subject_id: 1,
                 note: "",
                 belong_id: null,
                 reward_init: 0,
@@ -141,6 +160,7 @@ export default {
             if (this.dataSend.time_finish) {
                 this.dataSend.time_finish = this.dataSend.time_finish.toISOString().substring(0, 10) + ' ' + this.dataSend.time_finish.toISOString().substring(11, 19)
             }
+            this.dataSend.subject_id = this.valueSubject.id
             if (parseInt(this.dataSend.mark_option) >= 0) {
                 this.dataSend.mark_option = parseInt(this.dataSend.mark_option)
             }
@@ -170,7 +190,7 @@ export default {
     justify-content: center;
     color: white;
     background-color: #000000da;
-    z-index: 10;
+    z-index: 100;
     align-items: center;
 
 }
@@ -267,7 +287,7 @@ td {
 .input-data {
     box-sizing: border-box;
     min-height: 35px;
-    width: 80%;
+    width: 100%;
 
 }
 
@@ -281,7 +301,7 @@ td {
     width: 30%;
 }
 
-.close {
+.close-modal-create {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -293,4 +313,6 @@ td {
     cursor: pointer;
     background-color: blueviolet;
 }
+
+@import url('vue-multiselect/dist/vue-multiselect.css');
 </style>

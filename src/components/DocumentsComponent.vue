@@ -74,7 +74,7 @@
 </template>
 <script>
 import { getDocument } from "../services/document"
-import ModalSolution from "../components/ModalSolution.vue"
+import ModalSolution from "./Answer/ModalSolution.vue"
 export default {
     name: "DocumentsComponent",
     components: {

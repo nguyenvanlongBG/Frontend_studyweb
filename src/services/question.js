@@ -18,6 +18,7 @@ export function getQuestionTestUpdate(idTest, params) {
         params: params
     })
 }
+
 export function handleQuestionTest(data) {
     return request({url: '/question/handle', method: 'post', data: data})
 }

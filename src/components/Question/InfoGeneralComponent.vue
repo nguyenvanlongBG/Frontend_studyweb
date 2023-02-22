@@ -59,8 +59,6 @@ export default {
 
 .circle {
     display: inline-block;
-    height: 64px;
-    width: 64px;
     border: 4px solid rgba(200, 200, 200, 0.4);
     border-radius: 50%;
 }

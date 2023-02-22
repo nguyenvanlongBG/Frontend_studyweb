@@ -2,6 +2,13 @@ import request from '../utils/request';
 export function getTests(data) { // console.log(params)
     return request({url: '/test/list', method: 'get', data: data})
 }
+export function getTest(id) {
+    return request({
+        url: '/test/' + id + '/detail',
+        method: 'get'
+    })
+
+}
 export function createTest(data) { // console.log(params)
     return request({url: '/test/create', method: 'post', data: data})
 }
@@ -10,13 +17,6 @@ export function updateTest(data) { // console.log(params)
     return request({url: '/test/update', method: 'put', data: data})
 }
 
-export function getDetailTest(id) { // console.log(params)
-
-    return request({
-        url: '/test/' + id + '/do',
-        method: 'get'
-    })
-}
 export function updateQuestionTest(id, data) { // console.log(params)
 
     return request({
@@ -54,4 +54,19 @@ export function getTestsByIdUser(userId) { // console.log(params)
             'userId': userId
         }
     })
+}
+export function getExams(id, params) {
+    return request({
+        url: '/test/' + id + '/exams',
+        method: 'get',
+        params: params
+    })
+}
+export function getReportTest(id) {
+    return request({
+        url: '/test/' + id + '/report',
+        method: 'get'
+    })
+
+
 }

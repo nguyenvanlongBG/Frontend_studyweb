@@ -13,7 +13,7 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { ref } from 'vue'
 export default {
     name: 'LatexComponent',
-    props: ['isUpdate', 'content', 'isAnswer'],
+    props: ['isUpdate', 'content'],
     watch: {
         isUpdate() {
             this.disabled = !this.isUpdate

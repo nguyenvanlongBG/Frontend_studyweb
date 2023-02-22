@@ -59,7 +59,7 @@ export default {
                     setAccessToken(response.data, {
                         expires: new Date(Date.now() + 1000000000),
                     })
-                    router.push({ name: 'forum' })  
+                    router.push({ name: 'forum' })
                 }
             } finally {
                 this.isSubmiting = false
@@ -103,7 +103,7 @@ body {
     height: calc(100% - 40px);
     position: absolute;
     place-content: center;
-    width: calc(100% - 40px);
+    width: 100%;
 }
 
 @media (max-width: 767px) {

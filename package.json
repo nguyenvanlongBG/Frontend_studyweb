@@ -12,6 +12,7 @@
         "@coreui/coreui": "^4.2.1",
         "@coreui/vue": "^4.3.1",
         "@vuepic/vue-datepicker": "^3.6.4",
+        "apexcharts": "^3.36.3",
         "axios": "^0.27.2",
         "bootstrap": "^5.2.0",
         "ckeditor5-build-classic-mathtype": "^1.0.0",
@@ -20,7 +21,11 @@
         "universal-cookie": "^4.0.4",
         "usemodal-vue3": "^0.3.6",
         "vue": "^3.2.13",
+        "vue-draggable-next": "^2.1.1",
+        "vue-multiselect": "^3.0.0-alpha.2",
         "vue-router": "^4.1.5",
+        "vue3-apexcharts": "^1.4.1",
+        "vuedraggable": "^4.1.0",
         "vuejs-paginate-next": "^1.0.2"
     },
     "devDependencies": {
@@ -38,12 +43,18 @@
             "node": true
         },
         "extends": [
-            "plugin:vue/vue3-essential", "eslint:recommended"
+            "plugin:vue/vue3-essential",
+            "eslint:recommended"
         ],
         "parserOptions": {
             "parser": "@babel/eslint-parser"
         },
         "rules": {}
     },
-    "browserslist": ["> 1%", "last 2 versions", "not dead", "not ie 11"]
+    "browserslist": [
+        "> 1%",
+        "last 2 versions",
+        "not dead",
+        "not ie 11"
+    ]
 }

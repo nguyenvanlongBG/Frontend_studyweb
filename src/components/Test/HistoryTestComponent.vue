@@ -1,29 +1,31 @@
 <template  v-if="render">
-
-    <HistoryExamComponent>
-        <template v-slot:tabs>
-            <div class="tabs-exam">
-                <div class="tab-exam" @click="getExam()">Bài thi 1
+    <router-view v-slot="{ Component }">
+        <component :is="Component">
+            <template #list-tabs>
+                <div class="tabs-exam">
+                    <div class="tab-exam" @click="getExam(1)">Bài thi 1
+                    </div>
+                    <div class="tab-exam" @click="getExam(1)">Bài thi 2
+                    </div>
+                    <div class="tab-exam" @click="getExam(1)">Bài thi 3
+                    </div>
+                    <div class="tab-exam" @click="getExam(1)">Bài thi 4
+                    </div>
                 </div>
-                <div class="tab-exam" @click="getExam()">Bài thi 2
-                </div>
-                <div class="tab-exam" @click="getExam()">Bài thi 3
-                </div>
-                <div class="tab-exam" @click="getExam()">Bài thi 4
-                </div>
-            </div>
-        </template>
-    </HistoryExamComponent>
+            </template>
+        </component>
+    </router-view>
 
 </template>
 <script>
-import HistoryExamComponent from '../Exam/HistoryExamComponent.vue';
-import { getExams } from '../../services/exam'
+// import HistoryExamComponent from '../Exam/HistoryExamComponent.vue';
+// import { getExams } from '../../services/exam'
+import router from '@/router';
 import { useRoute } from 'vue-router';
 export default {
     name: "HistoryTestComponent",
     components: {
-        HistoryExamComponent
+        // HistoryExamComponent
     },
     setup() {
         const idTest = parseInt(useRoute().params.idTest)
@@ -48,11 +50,16 @@ export default {
         refreshData() {
 
         },
+        getExam(id) {
+            router.push({ name: "historyTest", params: { idTest: this.idTest, idExam: id } })
+        },
         async handleGetData() {
             let condition = { idTest: this.idTest }
             console.log(condition)
-            const response = await getExams(condition)
-            console.log(response)
+            router.push({ name: "historyTest", params: { idTest: this.idTest, idExam: 1 } })
+
+            // const response = await getExams(condition)
+            // console.log(response)
         }
     }
 }
@@ -143,7 +150,7 @@ export default {
 }
 
 .info-list-question {
-    width: 79%;
+    width: 78%;
     margin-top: 3px;
     margin-right: 2px;
     position: absolute;

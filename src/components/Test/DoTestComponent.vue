@@ -23,6 +23,7 @@
                 :prev-text="'Prev'" :next-text="'Next'" :container-class="'pagination'" :page-class="'page-item'"
                 :active-class="'active-class'">
             </paginate>
+
         </template>
     </div>
 
@@ -144,7 +145,6 @@ export default {
                 const responseNumerical = await getNumericalQuestion(this.idTest, paramsNumerical)
                 if (responseNumerical) {
                     this.numericalQuestion = responseNumerical
-
                 }
             } finally {
                 this.isLoading = false
@@ -253,6 +253,11 @@ export default {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 10px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
 }
 
 @import "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css";
