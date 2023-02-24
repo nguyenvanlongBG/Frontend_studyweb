@@ -9,7 +9,7 @@
 
 <script>
 
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ClassicEditor from "@ckeditor/newplugin/build/ckeditor";
 import { ref } from 'vue'
 export default {
     name: 'LatexComponent',
