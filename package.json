@@ -4,7 +4,8 @@
     "private": true,
     "scripts": {
         "serve": "vue-cli-service serve",
-        "build": "webpack --mode production",
+        "build": "vue-cli-service build",
+        "build-ckeditor": "webpack --mode production",
         "lint": "vue-cli-service lint"
     },
     "dependencies": {
@@ -49,18 +50,12 @@
             "node": true
         },
         "extends": [
-            "plugin:vue/vue3-essential",
-            "eslint:recommended"
+            "plugin:vue/vue3-essential", "eslint:recommended"
         ],
         "parserOptions": {
             "parser": "@babel/eslint-parser"
         },
         "rules": {}
     },
-    "browserslist": [
-        "> 1%",
-        "last 2 versions",
-        "not dead",
-        "not ie 11"
-    ]
+    "browserslist": ["> 1%", "last 2 versions", "not dead", "not ie 11"]
 }
