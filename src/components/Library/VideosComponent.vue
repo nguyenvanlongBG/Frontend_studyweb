@@ -1,26 +1,10 @@
 <template>
     <div class="container-profile">
         <div class="info-special">
-            <div class="information-user">
-                <!-- Khối thông tin User -->
-                <div class="avatar">
-                    <a href="" class="circle">
-                        <img width="64" height="64"
-                            src="http://www.gravatar.com/avatar/9017a5f22556ae0eb7fb0710711ec125?s=128" />
-                    </a>
-                </div>
-                <div class="information">
-                    <!-- Thông tin tên, giờ post bài -->
-                    <span class="name-user">
-                        Nguyễn Văn A
-                    </span>
-                    <span class="level-user">
-                        <i class="fa-solid fa-medal"></i>Chuyên gia ra đề
-                    </span>
-                    <span class="school-user">
-                        Trường THPT Lục Nam
-                    </span>
-                </div>
+            <div class="motivation">
+                Tôi biết bạn đang nỗ lực
+                <br>
+                Hãy cố gắng lên bạn nhé<i class="fa-sharp fa-solid fa-heart red-color"></i>
             </div>
             <div class="special-test-reference">
                 <span class="title-reference">Tài liệu</span>
@@ -83,6 +67,15 @@ export default {
     min-width: 70%;
     max-width: 1100px;
     display: flex;
+}
+
+.motivation {
+    font-size: 20px;
+    color: #999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .name-user {
@@ -183,5 +176,9 @@ input.hidden-radio {
     border: 3px solid rgb(209, 175, 6);
     background-color: #222;
 
+}
+
+.red-color {
+    color: red;
 }
 </style>

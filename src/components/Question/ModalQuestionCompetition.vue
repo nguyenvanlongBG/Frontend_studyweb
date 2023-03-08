@@ -2,7 +2,7 @@
     <div class="modal-answer-overlay" style="overflow-y: scroll" v-if="render">
         <div class="question-competition">
             <div class="info-question-competition">
-                <QuestionComponent :type="1" :isOwner="false" :question="question" />
+                <QuestionComponent :type="status ? 2 : 1" :isOwner="true" :question="question" />
             </div>
             <button @click="close()" class="close-modal-solution">X</button>
         </div>
@@ -16,17 +16,18 @@ export default {
     components: {
         QuestionComponent
     },
+    props: ['question', 'status'],
     setup() {
         const solution = ref({})
-        const question = ref({
-            question: {
-                content: 'OK'
-            },
-            page: 1
-        })
+        // const question = ref({
+        //     question: {
+        //         content: 'OK'
+        //     },
+        //     page: 1
+        // })
         const render = ref(true)
         return {
-            solution, question, render
+            solution, render
         }
     },
 

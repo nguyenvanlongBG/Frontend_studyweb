@@ -8,8 +8,7 @@
                         Tên kì thi
                     </th>
                     <td>
-                        <input v-model="dataSend.name" id="name" type="text" class="input-data"
-                            placeholder="Tên kì thi" />
+                        <input v-model="dataSend.name" id="name" type="text" class="input-data" placeholder="Tên kì thi" />
                     </td>
                 </tr>
                 <tr>
@@ -18,8 +17,8 @@
                     </th>
                     <td>
                         <VueMultiselect v-model="valueSubject" :options="subjects ? subjects : []" :multiple="false"
-                            :close-on-select="true" :clear-on-select="true" :preserve-search="true"
-                            placeholder="Môn học" label="name" track-by="name" :preselect-first="true">
+                            :close-on-select="true" :clear-on-select="true" :preserve-search="true" placeholder="Môn học"
+                            label="name" track-by="name" :preselect-first="true">
                         </VueMultiselect>
                     </td>
                 </tr>
@@ -28,8 +27,7 @@
                         Ghi chú
                     </th>
                     <td>
-                        <input v-model="dataSend.note" id="nameTest" type="text" class="input-data"
-                            placeholder="Ghi chú" />
+                        <input v-model="dataSend.note" id="nameTest" type="text" class="input-data" placeholder="Ghi chú" />
                     </td>
                 </tr>
                 <tr>

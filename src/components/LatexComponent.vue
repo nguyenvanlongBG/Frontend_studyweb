@@ -22,7 +22,9 @@ export default {
             this.render = false
             this.editorConfig.toolbar = this.disabled ? { items: [] } : {
                 items: ['Mathtype', "bold",
-                    "italic", "imageUpload", "insertTable"]
+                    "italic", "imageUpload", "insertTable", 'link',
+                    'bulletedList',
+                    'numberedList',]
             };
             this.$nextTick(() => {
                 this.render = true

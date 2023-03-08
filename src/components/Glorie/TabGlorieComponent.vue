@@ -155,7 +155,7 @@ export default {
     align-self: flex-end;
     /* padding: 20px 20px 0 20px; */
     font-weight: bold;
-    color: #552a01;
+    color: #f1e209;
     font-size: 20px;
     min-width: 100px;
 }

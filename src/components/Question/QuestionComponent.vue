@@ -20,27 +20,27 @@
                 <div class="values-items-subject">
                     <VueMultiselect :disabled="!pressUpdate" v-model="infoQuestion.items"
                         :options="listItemsSubject ? listItemsSubject : []" :multiple="true" :close-on-select="false"
-                        :clear-on-select="false" :preserve-search="true" placeholder="Chương" label="name"
-                        track-by="name" :preselect-first="true" @select="selectItems" @remove="removeItems"
-                        v-if="type == 2">
+                        :clear-on-select="false" :preserve-search="true" placeholder="Chương" label="name" track-by="name"
+                        :preselect-first="true" @select="selectItems" @remove="removeItems" v-if="type == 2">
                     </VueMultiselect>
                 </div>
             </div>
-            <h3 v-if="type == 0">Câu hỏi: </h3>
-            <h3 v-if="type == 5">Câu hỏi: {{ typeQuestion[infoQuestion.question.type] }}</h3>
-            <LatexComponent :content="infoQuestion.question.content" :isUpdate="pressUpdate"
-                @update="updateContentQuestion" :id="'question_' + infoQuestion.question.question_id" />
+            <h4 v-if="type == 0">Câu hỏi: </h4>
+            <h4 v-if="type == 5">Câu hỏi: {{ typeQuestion[infoQuestion.question.type] }}</h4>
+            <LatexComponent :content="infoQuestion.question.content" :isUpdate="pressUpdate" @update="updateContentQuestion"
+                :id="'question_' + infoQuestion.question.question_id" />
             <!-- <CommentQuestionComponent :answers="question.answers" /> -->
-            <h3 v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 3 || type == 2)">
+            <slot name="contentBigQuestion"></slot>
+            <h4 v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 3 || type == 2)">
                 Đáp
-                án câu hỏi:</h3>
+                án câu hỏi:</h4>
             <LatexComponent :isUpdate="canEssay" @update="answerQuestion"
                 :content="infoQuestion.question.contentResult != null ? infoQuestion.question.contentResult : ''"
                 :id="infoQuestion.question.question_id + '_result_' + infoQuestion.question.result_id"
                 v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 3 || type == 2)"
                 class="border-green" />
             <div v-if="(type == 1 || type == 3 || type == 4 || type == 5)">
-                <h3>Đáp án của bạn là:</h3>
+                <h4>Đáp án của bạn là:</h4>
                 <span v-if="question.question.type == 2">Lựa chọn phương án đúng nhất</span>
                 <span v-if="question.question.type == 1">Bạn hãy điền đáp án câu hỏi</span>
                 <span v-if="question.question.type == 3">Bạn hãy điền lời giải</span>
@@ -51,9 +51,9 @@
                 :id="infoQuestion.question.question_id + '_answer'"
                 v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 1 || type == 3 || type == 5)" />
             <ChooseComponent :ref="'chooses_' + infoQuestion.question.question_id" :choices="infoQuestion.choices"
-                :isUpdate="pressUpdate" doTest="true" @update="updateChoose" @create="createChoose"
-                @delete="deleteAnswer" @chooseAnswer="answerQuestion" v-if="(infoQuestion.question.type == 2)"
-                :type="type" :linkNavbar="'page_' + infoQuestion.question.page + '_' + index"
+                :isUpdate="pressUpdate" doTest="true" @update="updateChoose" @create="createChoose" @delete="deleteAnswer"
+                @chooseAnswer="answerQuestion" v-if="(infoQuestion.question.type == 2)" :type="type"
+                :linkNavbar="'page_' + infoQuestion.question.page + '_' + index"
                 :question="infoQuestion.question.question_id" :canChoose="canChoose" />
             <!-- <LatexComponent v-if="(infoQuestion.question.type == 1)" :isUpdate="isUpdateEssay"
             @update="data => updateResultEssay(infoQuestion.question.result_id, data)" /> -->
@@ -83,8 +83,7 @@
                             <div class="note-action">
                                 <div class="note-content">
                                     <h4 class="title-note">Ghi chú giáo viên</h4>
-                                    <LatexComponent :isUpdate="isOwner ? isOwner : false"
-                                        @update="updateNoteQuestion" />
+                                    <LatexComponent :isUpdate="isOwner ? isOwner : false" @update="updateNoteQuestion" />
                                 </div>
                                 <div class="action-note">
                                     <button class="note-button" @click="back">
@@ -125,7 +124,6 @@
             </Transition>
         </div>
     </div>
-
 </template>
 <script>
 import ChooseComponent from "./ChooseComponent.vue";

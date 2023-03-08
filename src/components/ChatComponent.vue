@@ -1,8 +1,8 @@
 <template>
     <div class="conversation">
         <div class="menu-chat">
-            <a href="#" class="back"><i class="fa fa-angle-left"></i> <img src="https://i.imgur.com/G4EjwqQ.jpg"
-                    draggable="false" /></a>
+            <a href="#" @click="back" class="back"><i class="fa fa-angle-left"></i> <img
+                    src="https://i.imgur.com/G4EjwqQ.jpg" draggable="false" /></a>
             <div class="name">Random chat</div>
             <div class="members"><b>You</b>, Marga, Charo & Brotons</div>
         </div>
@@ -170,7 +170,7 @@
         <div class="typezone">
             <form>
                 <textarea type="text" placeholder="Say something">
-                </textarea>
+                                                    </textarea>
                 <input type="submit" class="send-chat" value=" " />
             </form>
             <div class="emojis"></div>
@@ -179,7 +179,12 @@
 </template>
 <script>
 export default {
-    name: "ChatComponent"
+    name: "ChatComponent",
+    methods: {
+        back() {
+            this.$emit('back')
+        }
+    }
 }
 </script>
 <style scoped>

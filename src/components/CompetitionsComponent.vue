@@ -37,7 +37,10 @@
                     </div>
                     <div>Đối tượng: Tất cả</div>
                     <div>Hình thức: Cá nhân</div>
-                    <button class="tool-button-detail-event" @click="getCompetition(event.id)">Xem chi tiết</button>
+                    <div>
+                        <button class="tool-button-detail-event" @click="updateCompetition(event.id)">Cập nhật</button>
+                        <button class="tool-button-detail-event" @click="getCompetition(event.id)">Xem chi tiết</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -84,6 +87,9 @@ export default {
         },
         getCompetition(id) {
             router.push({ name: "detailCompetition", params: { id: id } })
+        },
+        updateCompetition(id) {
+            router.push({ name: "UpdateCompetition", params: { id: id } })
         },
         createTest() {
             this.modalCreateTest.visible = true

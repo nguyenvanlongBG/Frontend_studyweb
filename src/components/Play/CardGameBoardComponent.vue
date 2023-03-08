@@ -1,9 +1,11 @@
 <template>
-    <div class="container">
+    <div class="container" v-if="refresh">
         <div class="container-board">
-            <div class="top">
+            <div :class="'top' + (top == turn ? ' turn-player' : '')" id="player_1">
                 <div class="storage-card">
+                    <span class="title-accumulation">Tích lũy</span>
                     <div class="card-library-layout-storage card-top">
+                        5
                     </div>
                 </div>
                 <div class="avatar">
@@ -18,10 +20,12 @@
             </div>
             <div class="mid">
                 <div class="player-mid">
-                    <div class="other-box-cards">
+                    <div :class="'other-box-cards' + (left == turn ? ' turn-player' : '')" id="player_2">
                         <div class="other-player">
                             <div class="storage-card-mid">
+                                <span class="title-accumulation">Tích lũy</span>
                                 <div class="card-library-layout-storage card-mid">
+                                    2
                                 </div>
                             </div>
                             <div class="avatar">
@@ -45,6 +49,7 @@
                                     <span class="number">4</span>
                                 </div>
                                 <div class="card-library-layout-storage card-top">
+
                                 </div>
                             </div>
                         </div>
@@ -52,13 +57,15 @@
                             <CardPlayComponent :cards="cardsAttack" />
                         </div>
                     </div>
-                    <div class="other-box-cards">
+                    <div :class="'other-box-cards' + (right == turn ? ' turn-player' : '')">
                         <div class="special-box-items-vertical">
                             <CardVerticalComponent v-for="card in cards" :type="1" :card="card" :key="card.id" />
                         </div>
-                        <div class="other-player">
+                        <div class="other-player" id="player_3">
                             <div class="storage-card-mid">
+                                <span class="title-accumulation">Tích lũy</span>
                                 <div class="card-library-layout-storage card-mid">
+                                    2
                                 </div>
                             </div>
                             <div class="avatar">
@@ -71,16 +78,18 @@
                     </div>
                 </div>
             </div>
-            <div class="bottom">
-                <div class="storage-card">
+            <div :class="'bottom' + (myself == turn ? ' turn-player' : '')" id="4">
+                <div class="my-storage-card">
+                    <span class="title-accumulation">Tích lũy</span>
                     <div class="card-library-layout-storage card-top">
+                        4
                     </div>
                 </div>
                 <div class="cards">
-                    <CardPlayComponent :cards="cards" :type="1" />
+                    <CardPlayComponent :cards="cards" :type="1" ref="cardsPlay" />
                 </div>
                 <div class="actions-game">
-                    <button class="button-action">Đánh</button>
+                    <button class="button-action" @click="attackCard">Đánh</button>
                     <button class="button-action">Bỏ lượt</button>
                 </div>
             </div>
@@ -102,8 +111,9 @@ export default {
     components: { CardPlayComponent, CardVerticalComponent, CardHorizontalComponent, ChatComponent },
     setup() {
         const displayChat = ref(false)
+        const refresh = ref(true)
         return {
-            displayChat
+            displayChat, refresh
         }
     },
     data() {
@@ -113,24 +123,37 @@ export default {
                 { id: 3, name: "Đề thi hình học không gian", stars: 5 }, { id: 4, name: "Đề thi hình học giải tích", stars: 5 },
                 { id: 5, name: "Đề thi hình học giải tích", stars: 5 }, { id: 6, name: "Đề thi hình học không gian", stars: 5 }, { id: 7, name: "Đề thi hình học giải tích", stars: 5 },
                 { id: 8, name: "Đề thi hình học giải tích", stars: 5 },
-                { id: 97, name: "Đề thi hình học giải tích", stars: 5 }, { id: 98, name: "Đề thi hình học không gian", stars: 5 }, { id: 99, name: "Đề thi hình học giải tích", stars: 5 },
-                { id: 100, name: "Đề thi hình học giải tích", stars: 5 },
+
 
             ],
             cardsAttack: [
                 { id: 9, name: "Đề thi hàm số", stars: 5 }, { id: 10, name: "Đề thi bất phương trình", stars: 5 },
                 { id: 11, name: "Đề thi hình học không gian", stars: 5 }, { id: 12, name: "Đề thi hình học giải tích", stars: 5 },
-                { id: 13, name: "Đề thi hình học giải tích", stars: 5 }, { id: 98, name: "Đề thi hình học không gian", stars: 5 }, { id: 99, name: "Đề thi hình học giải tích", stars: 5 },
-                { id: 100, name: "Đề thi hình học giải tích", stars: 5 },
+                { id: 13, name: "Đề thi hình học giải tích", stars: 5 }, { id: 101, name: "Đề thi hình học không gian", stars: 5 }, { id: 103, name: "Đề thi hình học giải tích", stars: 5 },
+                { id: 104, name: "Đề thi hình học giải tích", stars: 5 },
             ],
             storageCards: [
                 { id: 1, name: "Đề thi hàm số", stars: 5 }
-            ]
+            ],
+            top: 1,
+            left: 2,
+            right: 3,
+            myself: 4,
+            turn: 2
         }
     },
     methods: {
         openChat() {
             this.displayChat = !this.displayChat
+        },
+        attackCard() {
+            this.cardsAttack = this.$refs.cardsPlay.selectCard
+            console.log(this.cardsAttack)
+            this.refresh = false
+            this.$nextTick(() => {
+                this.refresh = true
+            })
+
         }
     }
 }
@@ -200,11 +223,22 @@ export default {
     /* background-color: rgb(77, 160, 232); */
 }
 
+.turn-player {
+    border: 4px solid #d54110;
+    border-radius: 5px;
+}
+
 .top {
     display: flex;
     justify-content: center;
     width: 100%;
     flex-grow: 2;
+}
+
+.title-accumulation {
+    text-align: center;
+    padding: 2px;
+    font-weight: bold;
 }
 
 .bottom {
@@ -297,8 +331,17 @@ export default {
     align-items: center;
 }
 
+.my-storage-card {
+    padding-top: 15px;
+    display: flex;
+    flex-direction: column;
+    /* width: 180px; */
+    align-items: center;
+}
+
 .storage-card-mid {
     display: flex;
+    flex-direction: column;
     /* height: 150px;
     width: 150px; */
     /* transform: rotate(90deg); */
@@ -321,6 +364,10 @@ export default {
 
 .card-library-layout-storage {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+    font-weight: bold;
     flex-direction: column;
     background-color: #089bf0;
     border-radius: 10px;
@@ -330,7 +377,6 @@ export default {
     position: relative;
     cursor: pointer;
     left: 0px;
-    z-index: 20;
     border: 2px solid #518b9b;
 }
 

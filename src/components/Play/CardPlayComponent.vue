@@ -1,7 +1,8 @@
 <template>
     <div class="player">
-        <template v-for="card in cards" :key="card.id">
-            <input type="checkbox" class="hidden-select" :id="card.id" name="selectCards" v-if="type == 1" />
+        <template v-for="(card, index) in cards" :key="index">
+            <input type="checkbox" v-model="selectCard" class="hidden-select" :id="card.id" name="selectCards"
+                v-if="type == 1" :value="card.id" />
             <label class="card-library-layout" :for="card.id">
                 <slot name="content-card"></slot>
                 <div class="name-card">
@@ -23,6 +24,11 @@ export default {
     props: ['type', 'cards'],
     setup() {
 
+    },
+    data() {
+        return {
+            selectCard: [],
+        }
     }
 }
 </script>
@@ -38,6 +44,7 @@ export default {
     /* min-width: 125px; */
     flex: 2;
     max-width: 150px;
+    border: 2px solid #fa750f;
     background-color: #c27b24;
     border-radius: 10px;
     box-shadow: -1rem 0 3rem #f7e455;

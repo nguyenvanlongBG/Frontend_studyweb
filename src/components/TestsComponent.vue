@@ -19,6 +19,9 @@
         <button class="tool-button-test" @click="getMyListTests" id="myListTest">
           Bộ đề của tôi
         </button>
+        <button class="tool-button-test" @click="getMyListTests" id="myListTest">
+          Chọn lọc
+        </button>
         <button class="tool-button-test" @click="getMyListTests" :disabled="!hasMyTests" id="all">
           Bộ đề khác
         </button>

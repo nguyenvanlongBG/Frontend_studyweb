@@ -18,16 +18,16 @@ export default {
     flex-direction: column;
     height: 70px;
     min-width: 70px;
-    background-color: #da7b07;
+    background-color: #a45c03;
     border-radius: 10px;
-    box-shadow: -4px 0 8px #f7e455;
+    /* box-shadow: -4px 0 8px #f7e455; */
     margin-top: 25px;
     transition: 0.4s ease-out;
     color: #222;
     position: relative;
     cursor: pointer;
     left: 0px;
-    border: 2px solid #518b9b;
+    border: 2px solid #fa750f;
 }
 
 .card-normal {

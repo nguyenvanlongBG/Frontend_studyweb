@@ -7,7 +7,6 @@
         <LoadingComponent v-if="isLoading"></LoadingComponent>
         <template v-else>
             <div class="page">
-
                 <h2>
                     Trang {{ currentPage }}
                 </h2>

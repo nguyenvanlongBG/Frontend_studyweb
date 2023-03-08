@@ -1,5 +1,8 @@
 <template>
-    <div class="modal-answer-overlay">
+    <div class="modal-bank-overlay">
+        <div class="close-button">
+            <button @click="close()" class="close-modal-solution">X</button>
+        </div>
         <div class="container-list-exam">
             <div class="header-list-exams">
                 <h1>
@@ -36,8 +39,18 @@
                     <div class="table-header">
                         <div class="header__item choice-question-label">
                             <a id="name" class="filter__link" href="#">
-                                Chọn
                             </a>
+                            <div class="">
+                                <button v-if="displayAdd" class="status-mark" :style="pressAll ? styleObject : ''"
+                                    @click="filterStatus(0)">
+                                    Thêm
+                                </button>
+                                <div>
+                                    <input name="selectAll" v-model="selectAll" type="checkbox" class="choice-question"
+                                        value="1" />
+                                    <span style="text-transform: none;"> Tất cả</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="header__item question-content-label">
                             <a id="wins" class="filter__link filter__link--number" href="#">Câu hỏi</a>
@@ -58,7 +71,9 @@
                     <div class="table-content">
                         <div class="table-row" v-for="(question, index) in questions" :key="index">
                             <div class="table-data-choice">
-                                <input name="list-questions-choice" type="checkbox" class="choice-question" />
+                                <input :id="question.question_id" name="selectQuestions" v-model="selectQuestions"
+                                    :checked="selectAll[0]" type="checkbox" :value="question.question.question_id"
+                                    class="choice-question" />
                             </div>
                             <div class="table-data-question-content">
                                 <div class="content-question">
@@ -78,7 +93,6 @@
                 </div>
             </div>
         </div>
-        <button @click="close()" class="close-modal-solution">X</button>
     </div>
 </template>
 
@@ -93,14 +107,42 @@ export default {
         QuestionComponent
     },
     setup() {
+        const displayAdd = ref(false)
         const solution = ref({})
         const render = ref(true)
         return {
-            solution, render
+            displayAdd, solution, render
         }
+    },
+    watch: {
+        selectAll() {
+            this.displayAdd = !this.displayAdd
+            if (this.selectAll[0]) {
+                this.questions.forEach(question => {
+                    this.selectQuestions.add(question.question.question_id)
+                });
+                console.log(this.selectQuestions)
+            } else {
+                this.selectQuestions = new Set()
+            }
+        },
+        selectQuestions() {
+            if (this.selectQuestions.size != 0) {
+                this.displayAdd = true
+            } else {
+                this.displayAdd = false
+            }
+            console.log("Question Select")
+            console.log(this.selectQuestions)
+        }
+    },
+    computed: {
+
     },
     data() {
         return {
+            selectAll: [],
+            selectQuestions: new Set(),
             listFilters: [{ id: 1, name: "OK" }],
             questions: [
                 { question: { question_id: 1, content: 'OK1', page: 1, type: 1, index: 1, result_id: "", contentResult: "", scope: 1, dependence_id: 1 } },
@@ -136,32 +178,33 @@ export default {
 
 </script>
 <style scoped>
-.modal-answer-overlay {
+.modal-bank-overlay {
     position: fixed;
-    padding: 25px;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     color: white;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    background-color: #000000da;
+    background-color: #2b2929da;
     z-index: 100;
 }
 
 
 .container-list-exam {
+    padding-left: 35px;
+    padding-right: 35px;
     width: 100%;
 }
 
 .choice-question-label {
-    flex-basis: 5%;
+    flex-basis: 6%;
+    display: flex;
+    flex-direction: column;
+    color: white;
 }
 
 .question-content-label {
-    flex-basis: 55%;
+    flex-basis: 54%;
 }
 
 .chapter-label {
@@ -204,6 +247,7 @@ export default {
     text-align: center;
     justify-content: center;
     text-decoration: none;
+    margin-bottom: 8px;
 }
 
 .status-mark:active {
@@ -240,7 +284,6 @@ h6 {
 }
 
 .container-table {
-    margin-top: 20px;
     /* margin-right: auto;
     margin-left: auto; */
     display: flex;
@@ -273,7 +316,7 @@ h6 {
 .table-row {
     display: flex;
     width: 100%;
-    padding: 18px 0;
+    /* padding: 5px 0; */
     border-bottom: 2px solid rgb(202, 198, 198);
 }
 
@@ -321,7 +364,8 @@ h6 {
 }
 
 input.choice-question {
-    width: 15px;
+    width: 20px;
+    height: 20px;
 }
 
 .table-data-question-content {
@@ -401,15 +445,19 @@ input.choice-question {
     content: "(asc)";
 }
 
+.close-button {
+    display: flex;
+    justify-content: flex-end;
+}
+
 .close-modal-solution {
     display: flex;
     justify-content: center;
     align-items: center;
-    top: 0px;
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     cursor: pointer;
-    background-color: blueviolet;
+    background-color: rgb(248, 74, 5);
 }
 </style>

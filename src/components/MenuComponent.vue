@@ -100,12 +100,17 @@
                             </a>
                         </li>
                         <li>
+                            <a href="/user/1/review">
+                                Ôn tập
+                            </a>
+                        </li>
+                        <li>
                             <a href="/user/1/mission">
                                 Nhiệm vụ
                             </a>
                         </li>
                         <li>
-                            <a>
+                            <a href="/user/1/user-report">
                                 Báo cáo
                             </a>
                         </li>
@@ -306,6 +311,7 @@ body .signature:hover {
     display: flex;
     flex-direction: column;
     position: relative;
+    cursor: pointer;
 }
 
 .circle-menu {

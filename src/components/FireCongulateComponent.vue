@@ -81,8 +81,29 @@
                 <div class="ring_1"></div>
                 <div class="ring_2"></div>
             </div>
+            <div class="pattern15 fireworks fire15">
+                <div class="ring_1"></div>
+                <div class="ring_2"></div>
+            </div>
+            <div class="pattern16 fireworks fire16">
+                <div class="ring_1"></div>
+                <div class="ring_2"></div>
+            </div>
+            <div class="pattern17 fireworks fire17">
+                <div class="ring_1"></div>
+                <div class="ring_2"></div>
+            </div>
+            <div class="pattern18 fireworks fire18">
+                <div class="ring_1"></div>
+                <div class="ring_2"></div>
+            </div>
+            <div class="pattern19 fireworks fire19">
+                <div class="ring_1"></div>
+                <div class="ring_2"></div>
+            </div>
+
         </div>
-</div>
+    </div>
 </template>
 <script>
 export default {
@@ -92,8 +113,10 @@ export default {
 <style>
 html {
     height: 100%;
-    background: radial-gradient(ellipse at bottom, #192e47 0%, #030617 100%);
+    background: radial-gradient(ellipse at bottom, #192e47 0%, #023a5a 100%);
 }
+
+.container-fire {}
 
 .fire0 {
     top: 77%;

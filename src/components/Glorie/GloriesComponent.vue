@@ -1,13 +1,18 @@
 <template>
-    <div class="container-glories">
-        <div class="glorie-network">
-            <GlorieComponent />
-            <GlorieComponent />
+    <div class="body-glories">
+        <div class="container-glories">
+            <div class="glorie-network">
+                <GlorieComponent />
+                <GlorieComponent />
+                <GlorieComponent />
+                <GlorieComponent />
+            </div>
         </div>
     </div>
-<!-- <FireCongulateComponent>
+    <!-- <FireCongulateComponent>
 
-</FireCongulateComponent> --></template>
+</FireCongulateComponent> -->
+</template>
 <script>
 // import FireCongulateComponent from '../FireCongulateComponent.vue';
 import GlorieComponent from './GlorieComponent.vue';
@@ -21,8 +26,9 @@ export default {
 }
 </script>
 <style scoped>
+.body-glories {}
+
 .container-glories {
-    margin: 0 15%;
     overflow-y: hidden scroll;
 }
 </style>

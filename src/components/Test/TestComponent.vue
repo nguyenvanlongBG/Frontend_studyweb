@@ -2,31 +2,10 @@
     <div class="grid-item">
         <div class="header-test">
             <div class="mask">
-                <button class="tool-button" @click="tryTest(test.id)" v-if="displayTry">
-                    Thi thử
+                <button class="tool-button" @click="doTest(test.id)" v-if="displayDo">
+                    Xem chi tiết
                 </button>
-                <button class="tool-button-do" @click="doTest(test.id)" v-if="displayDo">
-                    <span class="fee">5 xu</span>
-                    <span class="do">Làm đề</span>
-                </button>
-                <button class="tool-button" @click="continueTest(test.id)" v-if="displayContinue">
-                    Làm tiếp
-                </button>
-                <button class="tool-button" @click="markTest(test.id)" v-if="displayMark">
-                    Chấm điểm
-                </button>
-                <button class="tool-button" @click="reportTest(test.id)" v-if="displayMark">
-                    Báo cáo
-                </button>
-                <button class="tool-button" @click="updateTest(test.id)" v-if="displayUpdate">
-                    Sửa
-                </button>
-                <button class="tool-button" @click="historyTest(test.id)" v-if="displayHistory">
-                    Lịch sử
-                </button>
-                <button class="tool-button" @click="deleteTest(test.id)" v-if="displayDelete">
-                    Xóa
-                </button>
+
             </div>
             <div class="information-user">
                 <!-- Khối thông tin User -->
@@ -124,25 +103,6 @@ export default {
             await createExam({ 'test_id': testId })
             router.push({ name: 'detailTest', params: { idTest: testId } })
         },
-        continueTest(testId) {
-            router.push({ name: 'doExam', params: { idTest: testId } })
-        },
-        markTest(testId) {
-            router.push({ name: 'listExam', params: { idTest: testId } })
-        },
-        reportTest(testId) {
-            router.push({ name: 'reportTest', params: { idTest: testId } })
-        },
-        updateTest(testId) {
-            router.push({ name: 'updateTest', params: { idTest: testId } })
-        },
-        historyTest(testId) {
-            router.push({ name: 'layoutHistoryTest', params: { idTest: testId } })
-        },
-        deleteTest(testId) {
-            router.push({ name: 'deleteTest', params: { idTest: testId } })
-        },
-
     }
 }
 
@@ -190,25 +150,20 @@ export default {
     border-radius: 5px;
     border: 2px solid #ea4f4c;
     background-color: #222;
+    box-shadow: 0 8px #999;
     color: white;
     text-align: center;
     justify-content: center;
     text-decoration: none;
-
+    cursor: pointer;
 }
 
-.tool-button-do {
-    margin-top: 5px;
-    min-height: 35px;
-    width: 40%;
-    border-radius: 5px;
-    border: 2px solid #ea4f4c;
-    background-color: #222;
-    color: white;
-    text-align: center;
-    justify-content: center;
-    text-decoration: none;
+.tool-button:active {
+
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
 }
+
 
 .fee {
     display: none;

@@ -26,7 +26,6 @@
 
         </template>
     </div>
-
 </template>
 <script>
 import QuestionComponent from '../Question/QuestionComponent.vue';

@@ -1,6 +1,9 @@
 <template>
     <div class="references">
-        <span class="title-library">{{ category== 1 ? 'Tài liệu tham khảo' : 'Tài liệu video' }}</span>
+        <div class="header-library">
+            <span class="title-library">{{ category == 1 ? 'Tài liệu tham khảo' : 'Tài liệu video' }}</span>
+            <button class="button">Tạo tài liệu</button>
+        </div>
         <VueMultiselect :class="colorSelect" v-model="filterChapters" open-direction="bottom"
             :options="chapters ? chapters : []" :multiple="true" :close-on-select="false" :clear-on-select="false"
             :preserve-search="true" placeholder="Chương" label="name" track-by="name" :preselect-first="false"
@@ -29,8 +32,7 @@
             </SpecialCardComponent>
         </div>
         <paginate :page-count="2" :page-range="3" :margin-pages="2" :click-handler="clickCallback" :prev-text="'Prev'"
-            :next-text="'Next'" :container-class="'pagination'" :page-class="'page-item'"
-            :active-class="'active-class'">
+            :next-text="'Next'" :container-class="'pagination'" :page-class="'page-item'" :active-class="'active-class'">
         </paginate>
     </div>
 </template>
@@ -90,6 +92,11 @@ export default {
     padding: 15px;
 }
 
+.header-library {
+    display: flex;
+    justify-content: space-between;
+}
+
 .grid-box-items {
     display: grid;
     grid-template-columns: auto auto auto auto auto;
@@ -99,6 +106,33 @@ export default {
 .title-library {
     font-size: 25px;
     font-weight: bold;
+}
+
+.button {
+    display: block;
+    padding: 3px;
+    margin-left: 2px;
+    font-family: 'Kalam', cursive;
+    margin-top: 2px;
+    /* margin-right: 15px; */
+    margin-bottom: 15px;
+    height: 35px;
+    box-shadow: 0 8px #999;
+    border-radius: 5px;
+    color: white;
+    /* border: 2px solid #ea4f4c; */
+    background-color: #222;
+    border: 2px solid #ea4f4c;
+    font-weight: bold;
+    text-align: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.button:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
 }
 
 .pagination {
