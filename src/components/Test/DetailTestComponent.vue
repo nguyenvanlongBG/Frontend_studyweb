@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container-detail-test">
         <div class="information-user">
             <!-- Khối thông tin User -->
             <div class="avatar">
@@ -73,7 +73,7 @@ export default {
         LatexComponent
     },
     setup() {
-        const testId = parseInt(useRoute().params.idTest)
+        const testId = null
         const displayDo = ref(true)
         const displayUpdate = ref(true)
         const displayDelete = ref(true)
@@ -84,6 +84,15 @@ export default {
         return {
             testId, displayDo, displayUpdate, displayDelete, displayTry, displayContinue, displayHistory, displayMark
         }
+    },
+    props: ['type'],
+    created() {
+        if (this.type) {
+            this.testId = 1
+        } else {
+            this.testId = parseInt(useRoute().params.idTest)
+        }
+
     },
     mounted() {
 
@@ -125,9 +134,9 @@ export default {
     border-color: #222;
     color: white;
 } */
-.container {
-    margin: 0 15%;
+.container-detail-test {
     display: flex;
+    margin: 0 15%;
 }
 
 .info-detail-test {

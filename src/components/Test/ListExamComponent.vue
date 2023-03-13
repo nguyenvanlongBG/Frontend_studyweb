@@ -67,7 +67,7 @@ import { useRoute } from 'vue-router';
 export default {
     name: "ListExamComponent",
     setup() {
-        const idTest = parseInt(useRoute().params.idTest)
+        const idTest = null
         const filter = ref({
             status: 0
         })
@@ -81,6 +81,13 @@ export default {
         })
         return {
             idTest, filter, styleObject, pressAll, pressStatistical, pressMarked, pressNotCompleteMarked
+        }
+    },
+    created() {
+        if (this.testId) {
+            this.idTest = this.testId
+        } else {
+            this.idTest = parseInt(useRoute().params.idTest)
         }
     },
     data() {

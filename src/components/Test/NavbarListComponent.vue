@@ -1,29 +1,32 @@
 <template v-if="reload">
-    <div class="nav-question">
-        <Transition name="slide-fade">
-            <div class="overview-exam" v-if="displayShrink">
-                <span class="nameUser">
-                    Họ và tên: Nguyễn Văn A
-                </span>
-                <div>
-                    <span class="navbar-list-question">
-                        Danh sách câu hỏi
+    <div class="container-nav-question" v-if="true">
+        <div class="nav-question" v-if="displayShrink">
+            <Transition name="slide-fade">
+                <div class="overview-exam">
+                    <span class="nameUser">
+                        Họ và tên: Nguyễn Văn A
                     </span>
-                    <div class="list-numerical-question">
-                        <template v-for="(question, index) in numericalQuestion.data" :key="index">
-                            <div :class="classType[parseInt(question.type)]" :id="'link_' + question.id"
-                                @click="moveToQuestion(question.page, question.id)">
-                                {{ index + 1 }}
-                            </div>
-                        </template>
+                    <div>
+                        <span class="navbar-list-question">
+                            Danh sách câu hỏi
+                        </span>
+                        <div class="list-numerical-question">
+                            <template v-for="(question, index) in numericalQuestion.data" :key="index">
+                                <div :class="classType[parseInt(question.type)]" :id="'link_' + question.id"
+                                    @click="moveToQuestion(question.page, question.id)">
+                                    {{ index + 1 }}
+                                </div>
+                            </template>
 
+                        </div>
                     </div>
                 </div>
-            </div>
-        </Transition>
-        <div class="nav-hiden-display" @click="displayShrink = !displayShrink">
-            <i class="fa-solid fa-caret-left" v-if="displayShrink"></i>
-            <i class="fa-solid fa-caret-right" v-if="!displayShrink"></i>
+            </Transition>
+        </div>
+        <div class="nav-hiden-display">
+            <button class="icon-nav">
+                <i class="fa-solid fa-list-check" @click="displayShrink = !displayShrink"></i>
+            </button>
         </div>
     </div>
 </template>
@@ -76,16 +79,21 @@ export default {
 
 .slide-fade-enter-from,
 .slide-fade-leave-to {
-    transform: translateX(20px);
+    transform: translateY(20px);
     opacity: 0;
+}
+
+.container-nav-question {
+    position: fixed;
+    min-height: 250px;
+    z-index: 100;
 }
 
 .nav-question {
     display: flex;
     border-style: solid;
-    min-width: 21%;
+    min-width: 320px;
     min-height: 250px;
-    position: fixed;
     z-index: 100;
 }
 
@@ -94,14 +102,33 @@ export default {
 }
 
 .nav-hiden-display {
-    text-align: center;
-    overflow-x: hidden;
-    min-width: 10px;
+    font-size: 25px;
+    cursor: pointer;
+    margin-top: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #e2dfdf;
     right: 0px;
+}
+
+
+.icon-nav {
+    margin-left: 2px;
+    margin-top: 2px;
+    height: 35px;
+    box-shadow: 0 8px #999;
+    border-radius: 5px;
+    border: 2px solid #ea4f4c;
+    background-color: #222;
+    color: white;
+    text-align: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.icon-nav:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
 }
 
 .overview-exam {

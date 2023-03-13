@@ -1,6 +1,6 @@
 <template>
     <ModalQuestionCompetition :status="status" :question="question" v-if="displayQuestion"
-        @close="displayQuestion = !displayQuestion" />
+        @close="displayQuestion = !displayQuestion" @submited="submited" />
     <div class="grid-question" v-if="type == 1">
         <div @click="openQuestion" class="box-mystery">
             <div class="task-bar" v-on:click.stop v-if="status == 1">
@@ -14,7 +14,7 @@
         </div>
     </div>
     <div v-else-if="type == 2" @click="openQuestion" class="character-box">{{
-        question?.question?.suggest ? question?.question?.suggest : "A" }}</div>
+        question?.question?.suggest ? question?.question?.suggest : "" }}</div>
 </template>
 <script>
 import { ref } from 'vue';
@@ -59,6 +59,17 @@ export default {
             if (file.length)
                 this.image = file;
             console.log(this.image.length)
+        },
+        submited(data) {
+            // Test
+            if (this.type == 1) {
+                data.suggest = this.defaulResult
+            } else {
+                data.suggest = 'A'
+            }
+            // End test
+            this.displayQuestion = false
+            this.$emit('submited', data)
         }
     },
     components: { ModalQuestionCompetition }

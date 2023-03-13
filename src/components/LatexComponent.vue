@@ -52,6 +52,11 @@ export default {
             // editorData: "<a href='#' onclick='alert('XSS')'>Test</a>",
             editorConfig: {
                 toolbar: [],
+                ckfinder: {
+                    // Upload the images to the server using the CKFinder QuickUpload command.
+                    uploadUrl: 'http://127.0.0.1:8000/api/post/upload-file',
+                    // Define the CKFinder configuration (if necessary).
+                },
             },
             disabled: true,
             render: true

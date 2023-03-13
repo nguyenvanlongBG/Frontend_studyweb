@@ -17,7 +17,7 @@
             </div>
         </div>
         <div v-else>
-            <BigQuestionComponent @open="openQuestion" />
+            <BigQuestionComponent type="2" @open="openQuestion" />
         </div>
     </div>
 </template>

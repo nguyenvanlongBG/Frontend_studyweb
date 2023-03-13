@@ -36,7 +36,12 @@ const routes = [{
                         path: 'courses',
                         name: 'CoursesComponent',
                         component: () => import ('../components/Library/CoursesComponent')
+                    }, {
+                        path: ':id',
+                        name: 'DetailReference',
+                        component: () => import ('@/views/Library/DetailReference')
                     }
+
                 ]
             },
             {
@@ -116,7 +121,7 @@ const routes = [{
                         name: "testDetail",
                         component: () => import ("../components/Test/TestLayoutComponent.vue"),
                         redirect: {
-                            name: 'detail'
+                            name: 'detailTest'
                         },
                         children: [
                             {
@@ -224,6 +229,17 @@ const routes = [{
                         component: () => import ("../components/User/ProfileComponent")
                     },
                     {
+                        path: 'target',
+                        name: 'target',
+                        component: () => import ("../components/User/TargetComponent"),
+                        children: [
+                            {
+                                path: "detail"
+                            }
+                        ]
+                    },
+
+                    {
                         path: 'questions-bank',
                         name: 'questions-bank',
                         component: () => import ("../components/User/QuestionsBankComponent")
@@ -232,8 +248,7 @@ const routes = [{
                         path: 'mission',
                         name: 'user-mission',
                         component: () => import ("../components/User/MissionComponent")
-                    },
-                    {
+                    }, {
                         path: 'user-report',
                         name: 'user-report',
                         component: () => import ("../components/User/ReportTeacherComponent")
@@ -245,10 +260,13 @@ const routes = [{
                         },
                         children: [
                             {
+                                path: '',
+                                name: "list-review",
+                                component: () => import ("../components/User/ReviewComponent")
+                            }, {
                                 path: ':id',
                                 name: "detail-review",
-                                component: () => import ("../components/User/ReviewComponent")
-
+                                component: () => import ("../components/User/ReviewDetailComponent")
                             }
                         ]
                     }

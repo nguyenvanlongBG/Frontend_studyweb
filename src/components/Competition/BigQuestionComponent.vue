@@ -47,14 +47,15 @@
                             <QuestionComponent
                                 v-for="column in Array.from({ length: bigQuestion2.width }, (_, index) => index + 1)"
                                 :key="column" :status="status"
-                                :question="bigQuestion2.questions[(row - 1) * bigQuestion2.width + column - 1]" type="1" />
+                                :question="bigQuestion2.questions[(row - 1) * bigQuestion2.width + column - 1]" type="1"
+                                @submited="openSuggest" />
                         </div>
                     </div>
                 </div>
                 <div class="grid-container" v-else-if="bigQuestion2.type == 2">
                     <div class="grid-row wrap">
                         <QuestionComponent v-for="index in bigQuestion2.questions.length" :status="status"
-                            :question="bigQuestion2.questions[index - 1]" type="2" :key="index" />
+                            :question="bigQuestion2.questions[index - 1]" type="2" :key="index" @submited="openSuggest" />
                         <div v-if="bigQuestion2.questions.length == 0">
                             Khi lưu đáp án ô chữ sẽ xuất hiện ở đây
                         </div>
@@ -87,7 +88,7 @@ export default {
             status, refresh
         }
     },
-    create() {
+    created() {
         if (this.type == 1) {
             // status=1 Update
             this.status = 1
@@ -163,7 +164,7 @@ export default {
                 }]
             },
             bigQuestion2: {
-                type: 2, // Ảnh
+                type: 1, // Ảnh
                 width: 2,
                 height: 2,
                 bigQuestion: {
@@ -188,7 +189,7 @@ export default {
                     page: 1
                 }, {
                     question: {
-                        question_id: 1,
+                        question_id: 2,
                         type: 3,
                         content: 'OK',
                         suggest: null
@@ -198,7 +199,7 @@ export default {
                 },
                 {
                     question: {
-                        question_id: 1,
+                        question_id: 3,
                         type: 4,
                         content: 'OK',
                         suggest: null
@@ -207,7 +208,7 @@ export default {
                     page: 1
                 }, {
                     question: {
-                        question_id: 1,
+                        question_id: 4,
                         type: 3,
                         content: 'OK',
                         suggest: null
@@ -305,6 +306,13 @@ export default {
                 }
             }
         },
+        openSuggest(data) {
+            (this.bigQuestion2.questions).forEach(question => {
+                if (question.question.question_id == data.id) {
+                    question.question.suggest = data.suggest
+                }
+            });
+        }
     }
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container-test">
         <router-view v-slot="{ Component }">
             <component :is="Component">
             </component>
@@ -28,6 +28,9 @@ export default {
     border-color: #222;
     color: white;
 } */
+.container-test {
+    /* margin: 0 15%; */
+}
 
 .tool-button-test {
     margin-left: 2px;

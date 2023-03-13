@@ -45,7 +45,7 @@ export default {
         LoadingComponent
     },
     setup() {
-        const idTest = parseInt(useRoute().params.idTest)
+        const idTest = null
         const isLoading = ref(false)
         const canUpdate = ref(true)
         const isUpdateEssay = ref(false)
@@ -91,7 +91,14 @@ export default {
             render
         }
     },
-
+    props: ['testId'],
+    created() {
+        if (this.testId) {
+            this.idTest = this.testId
+        } else {
+            this.idTest = parseInt(useRoute().params.idTest)
+        }
+    },
     create() {
         this.$watch(
             () => this.$route.query,

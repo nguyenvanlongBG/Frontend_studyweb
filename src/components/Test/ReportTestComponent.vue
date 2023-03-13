@@ -26,10 +26,17 @@ export default {
         apexchart: VueApexCharts,
     },
     setup() {
-        const idTest = parseInt(useRoute().params.idTest)
+        const idTest = null
         const render = ref(true)
         return {
             idTest, render
+        }
+    },
+    created() {
+        if (this.testId) {
+            this.idTest = this.testId
+        } else {
+            this.idTest = parseInt(useRoute().params.idTest)
         }
     },
     mounted() {

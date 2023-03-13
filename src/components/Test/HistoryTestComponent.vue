@@ -15,7 +15,6 @@
             </template>
         </component>
     </router-view>
-
 </template>
 <script>
 // import HistoryExamComponent from '../Exam/HistoryExamComponent.vue';
@@ -28,13 +27,19 @@ export default {
         // HistoryExamComponent
     },
     setup() {
-        const idTest = parseInt(useRoute().params.idTest)
+        const idTest = null
         return {
             idTest
         }
 
     },
-
+    created() {
+        if (this.testId) {
+            this.idTest = this.testId
+        } else {
+            this.idTest = parseInt(useRoute().params.idTest)
+        }
+    },
     create() {
         this.$watch(
             () => this.$route.query,

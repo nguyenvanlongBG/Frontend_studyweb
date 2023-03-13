@@ -2,7 +2,8 @@
     <div class="modal-answer-overlay" style="overflow-y: scroll" v-if="render">
         <div class="question-competition">
             <div class="info-question-competition">
-                <QuestionComponent :type="status ? 2 : 1" :isOwner="true" :question="question" />
+                <QuestionComponent ref="question" :type="status ? 2 : 1" :isOwner="true" :question="question" />
+                <button @click="submit()" class="tool-button-test right">Gửi</button>
             </div>
             <button @click="close()" class="close-modal-solution">X</button>
         </div>
@@ -42,6 +43,9 @@ export default {
                 this.render = true
             })
         },
+        submit() {
+            this.$emit('submited', { id: this.question.question.question_id, suggest: "A" })
+        },
         close() {
             this.$emit('close')
         },
@@ -75,6 +79,7 @@ export default {
 .info-question-competition {
     min-height: 800px;
     min-width: 800px;
+    position: relative;
 }
 
 .solution-modal {
@@ -89,6 +94,11 @@ export default {
 
 .content-solution {
     width: 100%;
+}
+
+.right {
+    position: absolute;
+    right: 0px;
 }
 
 .close-modal-solution {

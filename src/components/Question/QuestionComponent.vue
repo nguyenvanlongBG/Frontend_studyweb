@@ -446,6 +446,8 @@ export default {
     border-style: solid;
     border-color: #666363;
     display: flex;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .question-not-note {

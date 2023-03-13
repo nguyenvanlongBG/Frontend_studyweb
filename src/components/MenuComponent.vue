@@ -79,6 +79,11 @@
                             </a>
                         </li>
                         <li>
+                            <a href="/user/1/target">
+                                Mục tiêu
+                            </a>
+                        </li>
+                        <li>
                             <a href="/user/1/questions-bank">
                                 Ngân hàng câu hỏi
                             </a>
@@ -395,7 +400,7 @@ body .signature:hover {
         min-width: 200px;
         right: -15px;
         top: 50px;
-        z-index: 100;
+        z-index: 1000;
     }
 
     .user-nav li a {

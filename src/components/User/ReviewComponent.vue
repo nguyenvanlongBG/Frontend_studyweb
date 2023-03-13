@@ -55,8 +55,19 @@
     </div>
 </template>
 <script>
+import router from '@/router';
+
 export default {
     name: "ReviewComponent",
+    methods: {
+        openTest() {
+            router.push({
+                name: 'detail-review', query: {
+                    type: 1,
+                }
+            })
+        }
+    }
 
 }
 </script>

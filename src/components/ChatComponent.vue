@@ -3,8 +3,8 @@
         <div class="menu-chat">
             <a href="#" @click="back" class="back"><i class="fa fa-angle-left"></i> <img
                     src="https://i.imgur.com/G4EjwqQ.jpg" draggable="false" /></a>
-            <div class="name">Random chat</div>
-            <div class="members"><b>You</b>, Marga, Charo & Brotons</div>
+            <div class="name">Haha Chat</div>
+            <div class="members"><b>You</b>, Long Bg, Dragon, Eagle</div>
         </div>
         <ol class="chat">
             <li class="other">
@@ -17,10 +17,10 @@
                                     src="http://www.gravatar.com/avatar/9017a5f22556ae0eb7fb0710711ec125?s=128" />
                             </a>
                         </div>
-                        Marga
+                        You
                         <span class="range admin">Admin</span>
                     </div>
-                    <p>Dude</p>
+                    <p>Hello</p>
                     <p>Want to go dinner? <emoji class="pizza"></emoji>
                     </p>
                     <time>20:17</time>
@@ -28,8 +28,8 @@
             </li>
             <li class="self">
                 <div class="msg">
-                    <p>Puff...</p>
-                    <p>I'm still doing the Góngora comment... <emoji class="books"></emoji>
+                    <p>...</p>
+                    <p>Cho tôi ăn với bro <emoji class="books"></emoji>
                     </p>
                     <p>Better other day</p>
                     <time>20:18</time>
@@ -37,22 +37,22 @@
             </li>
             <li class="other">
                 <div class="msg">
-                    <div class="user">Brotons</div>
-                    <p>What comment about Góngora? <emoji class="suffocated"></emoji>
+                    <div class="user">Dragon</div>
+                    <p>What comment about Long Bg? <emoji class="suffocated"></emoji>
                     </p>
                     <time>20:18</time>
                 </div>
             </li>
             <li class="self">
                 <div class="msg">
-                    <p>The comment sent Marialu</p>
+                    <p>oh...</p>
                     <p>It's for tomorrow</p>
                     <time>20:18</time>
                 </div>
             </li>
             <li class="other">
                 <div class="msg">
-                    <div class="user">Brotons</div>
+                    <div class="user">Dragon</div>
                     <p>
                         <emoji class="scream"></emoji>
                     </p>
@@ -69,7 +69,7 @@
             </li>
             <li class="other">
                 <div class="msg">
-                    <div class="user">Brotons</div>
+                    <div class="user">Long Bg</div>
                     <p>Thank you! <emoji class="hearth_blue"></emoji>
                     </p>
                     <time>20:20</time>
@@ -84,7 +84,7 @@
             </li>
             <li class="other">
                 <div class="msg">
-                    <div class="user">Charo</div>
+                    <div class="user">OK</div>
                     <p>Come on, I didn't play it for four months</p>
                     <time>18:07</time>
                 </div>
@@ -152,14 +152,14 @@
             <p class="notification">David left the group <time>18:11</time></p>
             <li class="other">
                 <div class="msg">
-                    <div class="user">Brotons</div>
+                    <div class="user">Dragon</div>
                     <p>Lol?</p>
                     <time>18:12</time>
                 </div>
             </li>
             <li class="other">
                 <div class="msg">
-                    <div class="user">Marga<span class="range admin">Admin</span></div>
+                    <div class="user">You<span class="range admin">Admin</span></div>
                     <p>I'm boring...</p>
                     <p>Who wants to do some logarithms? <emoji class="smile"></emoji>
                     </p>
@@ -170,7 +170,7 @@
         <div class="typezone">
             <form>
                 <textarea type="text" placeholder="Say something">
-                                                    </textarea>
+                                                                                                                    </textarea>
                 <input type="submit" class="send-chat" value=" " />
             </form>
             <div class="emojis"></div>

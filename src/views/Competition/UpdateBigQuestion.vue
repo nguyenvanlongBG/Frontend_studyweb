@@ -1,6 +1,6 @@
 <template>
     <div>
-        <BigQuestionComponent :type="1" />
+        <BigQuestionComponent :type="2" />
         <div class="list-button">
             <button class="button button-next" @click="back">Trở lại</button>
         </div>

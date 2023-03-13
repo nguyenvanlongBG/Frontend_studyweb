@@ -36,8 +36,8 @@
             <QuestionComponent v-for="(question, index) in  questions" :key="index" :question="question"
                 :ref="'question_' + question.question.question_id" @create="createQuestion" @update="updateQuestion()"
                 @delete="deleteQuestion" @addlistQuestionFollow="addlistQuestionFollow"
-                :id="'question_' + question.question.question_id" :index="startIndex + index" :type="2"
-                :isOwner="isOwner" @seeSolution="seeSolution" :listItemsSubject="listItemsSubject" />
+                :id="'question_' + question.question.question_id" :index="startIndex + index" :type="2" :isOwner="isOwner"
+                @seeSolution="seeSolution" :listItemsSubject="listItemsSubject" />
             <div class="end-action">
                 <div class="menu-create-end">
                     <div class="choice-type-create" v-if="displayTypeCreateEnd">
@@ -51,14 +51,12 @@
                             Tự luận
                         </div>
                     </div>
-                    <button class="update-create-question-button" @click="displayCreateQuestionTypeEnd"
-                        v-if="canUpdate">
+                    <button class="update-create-question-button" @click="displayCreateQuestionTypeEnd" v-if="canUpdate">
                         Thêm câu hỏi
                     </button>
                 </div>
 
-                <button class="update-create-question-button" @click="addPage"
-                    v-if="canUpdate && currentPage == totalPage">
+                <button class="update-create-question-button" @click="addPage" v-if="canUpdate && currentPage == totalPage">
                     Thêm trang
                 </button>
             </div>
@@ -68,7 +66,6 @@
             </paginate>
         </template>
     </div>
-
 </template>
 <script>
 import QuestionComponent from '../Question/QuestionComponent.vue';
@@ -90,8 +87,9 @@ export default {
         QuestionBankComponent,
         LoadingComponent,
     },
+    props: ['testId'],
     setup() {
-        const idTest = parseInt(useRoute().params.idTest)
+        const idTest = null
         const isLoading = ref(false)
         const canUpdate = ref(true)
         const questions = ref([])
@@ -150,7 +148,13 @@ export default {
             render
         }
     },
-
+    created() {
+        if (this.testId) {
+            this.idTest = this.testId
+        } else {
+            this.idTest = parseInt(useRoute().params.idTest)
+        }
+    },
     create() {
         this.$watch(
             () => this.$route.query,
