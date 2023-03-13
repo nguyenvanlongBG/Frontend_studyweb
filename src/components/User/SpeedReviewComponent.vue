@@ -336,10 +336,54 @@ body {
 
 @keyframes move-position {
     0% {
-        left: 60%;
+        left: 120%;
         border-color: #008;
     }
 
+    1% {
+        left: 115%;
+        border-color: #008;
+    }
+
+    2% {
+        left: 110%;
+        border-color: #008;
+    }
+
+    3% {
+        left: 100%;
+        border-color: #008;
+    }
+
+    4% {
+        left: 90%;
+        border-color: #008;
+    }
+
+    5% {
+        left: 80%;
+        border-color: #008;
+    }
+
+    6% {
+        left: 75%;
+        border-color: #008;
+    }
+
+    7% {
+        left: 70%;
+        border-color: #008;
+    }
+
+    8% {
+        left: 65%;
+        border-color: #008;
+    }
+
+    9% {
+        left: 60%;
+        border-color: #008;
+    }
 
     100% {
         left: -71%;
