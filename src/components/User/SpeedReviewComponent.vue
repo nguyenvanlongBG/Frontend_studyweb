@@ -35,17 +35,18 @@
     </template>
     <template v-else>
         <div>
-            <BackgroudReviewSpeed :speed="speed">
+            <BackgroudReviewSpeed :speed="speed" :stop="stop">
                 <template v-slot:navlist>
                     <NavbarListComponent :numericalQuestion="numericalQuestion" @moveQuestion="moveQuestion" />
                 </template>
                 <template v-slot:vehicles>
-                    <div class="select-vehicle">
-                        <component :is="Component"></component>
+                    <div class="select-vehicle stop-run-vehicle" @click="statusMove">
+                        <component :is="Component" :stop="stop"></component>
                     </div>
                 </template>
                 <template v-slot:slot-board>
-                    <div :class="'notice-board board-even' + ' ' + ' side-move-speed-' + speed" v-if="refresh">
+                    <div :class="'notice-board board-even' + ' ' + ' side-move-speed-' + speed + (stop ? ' pause' : ' run')"
+                        v-if="refresh">
                         <div class="board">
                             <QuestionComponent :question="question" type="2" />
                         </div>
@@ -93,6 +94,7 @@ export default {
     data() {
 
         return {
+            stop: false,
             speed: 4,
             Component: null,
             indexBoard: -2,
@@ -138,7 +140,10 @@ export default {
                         suggest: null
                     },
                     choices: [
-
+                        {
+                            id: 1,
+                            content: 'OK1'
+                        }
                     ],
                     page: 1
                 },
@@ -150,7 +155,22 @@ export default {
                         suggest: null
                     },
                     choices: [
-
+                        {
+                            id: 1,
+                            content: 'OK1'
+                        },
+                        {
+                            id: 2,
+                            content: 'OK2'
+                        },
+                        {
+                            id: 3,
+                            content: 'OK3'
+                        },
+                        {
+                            id: 4,
+                            content: 'OK4'
+                        }
                     ],
                     page: 1
                 },
@@ -170,12 +190,20 @@ export default {
         }
     },
     methods: {
+        statusMove() {
+            if (this.stop) {
+                this.stop = false
+            } else {
+                this.stop = true
+            }
+        },
         moveQuestion(page, id) {
             console.log(page + id)
             this.question = this.questions[1]
             this.refresh = false
             this.$nextTick(() => {
                 this.refresh = true
+                this.stop = false
             })
         },
         moveBoard() {
@@ -288,6 +316,10 @@ body {
 .button-select:active {
     box-shadow: 0 5px #666;
     transform: translateY(4px);
+}
+
+.stop-run-vehicle {
+    cursor: pointer;
 }
 
 .side-move-speed-1 {
@@ -411,7 +443,6 @@ body {
     overflow-y: hidden scroll;
     min-height: 200px;
     top: 15px;
-    z-index: 10;
 }
 
 .board-even {
@@ -425,16 +456,14 @@ body {
 }
 
 .board {
-    min-height: 200px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 100%;
     background-color: #69b4dc;
-    border: 5px solid #222;
-    overflow-y: auto;
-    z-index: 10;
+    overflow-y: visible;
+    z-index: 15;
 }
 
 .name-test {
@@ -918,6 +947,14 @@ body {
 /* end of background */
 
 /* start of road */
+.run {
+    animation-play-state: running;
+}
+
+.pause {
+    /* animation-play-state: paused; */
+    animation-play-state: paused;
+}
 
 .vehicle {
     position: absolute;

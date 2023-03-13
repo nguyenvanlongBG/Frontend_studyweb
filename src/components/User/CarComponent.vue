@@ -1,11 +1,11 @@
 <template>
     <div class="container-car">
-        <div id="wheelfront">
+        <div id="wheelfront" :class="(stop ? ' pause' : ' run')">
             <div id="front-spinner1"></div>
             <div id="front-spinner2"></div>
             <div id="front-spinner3"></div>
         </div>
-        <div id="wheelrear">
+        <div id="wheelrear" :class="(stop ? ' pause' : ' run')">
             <div id="front-spinner1"></div>
             <div id="front-spinner2"></div>
             <div id="front-spinner3"></div>
@@ -25,7 +25,8 @@
 </template>
 <script>
 export default {
-    name: "CarComponent"
+    name: "CarComponent",
+    props: ['stop']
 }
 </script>
 <style>
@@ -386,5 +387,14 @@ export default {
         border-radius: 0px 0px 70% 30%;
         opacity: 0.02;
     }
+}
+
+.run {
+    animation-play-state: running;
+}
+
+.pause {
+    /* animation-play-state: paused; */
+    animation-play-state: paused;
 }
 </style>

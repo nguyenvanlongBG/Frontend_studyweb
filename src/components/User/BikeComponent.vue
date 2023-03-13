@@ -9,12 +9,12 @@
                 <div class="frame-bike five"></div>
                 <div class="frame-bike six"></div>
                 <div class="frame-bike seat"></div>
-                <div class="frame-bike pedal"></div>
+                <div :class="'frame-bike pedal' + (stop ? ' pause' : ' run')"></div>
                 <div class="frame-bike handle"></div>
             </div>
             <div class="wheel">
                 <div class="wheel left">
-                    <div class="spokes">
+                    <div class="spokes" :class="(stop ? ' pause' : ' run')">
                         <div class="spoke"></div>
                         <div class="spoke"></div>
                         <div class="spoke"></div>
@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="wheel right">
-                    <div class="spokes">
+                    <div class="spokes" :class="(stop ? ' pause' : ' run')">
                         <div class="spoke"></div>
                         <div class="spoke"></div>
                         <div class="spoke"></div>
@@ -39,7 +39,8 @@
 </template>
 <script>
 export default {
-    name: "BikeComponent"
+    name: "BikeComponent",
+    props: ['stop']
 }
 </script>
 <style scoped>
@@ -170,8 +171,10 @@ body {
     background: transparent;
     border: 0.5rem solid #a59c85;
     border-radius: 100%;
-    -webkit-animation: wheelSpin 2s linear infinite;
-    animation: wheelSpin 2s linear infinite;
+    animation-name: wheelSpin;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
 }
 
 .frame-bike.pedal:before {
@@ -265,8 +268,10 @@ body {
     left: 2.85rem;
     width: 0.3rem;
     height: 5.5rem;
-    -webkit-animation: wheelSpin 2.5s linear infinite;
-    animation: wheelSpin 2.5s linear infinite;
+    animation-name: wheelSpin;
+    animation-duration: 2.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
 }
 
 .spoke {

@@ -2,24 +2,24 @@
     <div id="carblock">
         <slot name="navlist"></slot>
         <div id="background">
-            <div>100 ngày cho Kỳ thi THPT</div>
+
             <slot name="slot-board">
             </slot>
             <div id="stars">
             </div>
-            <div id="sun" :class="'time-speed-move-' + speed"></div>
-            <div id="moon" :class="'time-speed-move-' + speed">
+            <div id="sun"></div>
+            <div id="moon">
                 <div id="mooncurve"></div>
             </div>
-            <div id="cloud-back" :class="'time-speed-move-' + speed"></div>
-            <div id="hill2" :class="'time-speed-move-' + speed">
+            <div id="cloud-back" :class="'time-speed-move-' + speed + (stop ? ' pause' : ' run')"></div>
+            <div id="hill2" :class="'time-speed-move-' + speed + (stop ? ' pause' : ' run')">
                 <div id="h2peak1"></div>
                 <div id="h2peak2"></div>
                 <div id="h2top"></div>
                 <div id="h2baseleft"></div>
                 <div id="h2baseright"></div>
             </div>
-            <div id="hill1" :class="'time-speed-move-' + speed">
+            <div id="hill1" :class="'time-speed-move-' + speed + (stop ? ' pause' : ' run')">
                 <div id="h1top"></div>
                 <div id="h1baseleft"></div>
                 <div id="h1baseright"></div>
@@ -33,7 +33,7 @@
             </slot>
         </div>
         <div id="road">
-            <div :class="'road-lane speed-road-' + speed"></div>
+            <div :class="'road-lane speed-road-' + speed + (stop ? ' pause' : ' run')"></div>
         </div>
     </div>
 </template>
@@ -47,10 +47,15 @@ import router from '@/router'
 export default {
     name: "BackgroudReviewSpeed",
     components: {},
+    watch: {
+        stop() {
+            console.log(this.stop == true)
+        }
+    },
     mounted() {
         this.moveBoard()
     },
-    props: ['speed'],
+    props: ['speed', 'stop'],
     data() {
         return {
             indexBoard: -2,
@@ -379,6 +384,10 @@ body {
     }
 }
 
+.time-speed-move-0 {
+    animation-duration: 0s;
+}
+
 .time-speed-move-1 {
     animation-duration: 160s;
 }
@@ -539,7 +548,7 @@ body {
     animation-direction: normal;
     animation-delay: 3s;
     animation-timing-function: linear;
-    animation-play-state: running;
+    /* animation-play-state: running; */
     animation-iteration-count: infinite;
 }
 
@@ -615,7 +624,7 @@ body {
     animation-direction: normal;
     animation-delay: 0s;
     animation-timing-function: linear;
-    animation-play-state: running;
+    /* animation-play-state: running; */
     animation-iteration-count: infinite;
 }
 
@@ -730,6 +739,15 @@ body {
     }
 }
 
+.run {
+    animation-play-state: running;
+}
+
+.pause {
+    /* animation-play-state: paused; */
+    animation-play-state: paused;
+}
+
 .speed-road-1 {
     animation-duration: 64s;
 }
@@ -743,6 +761,7 @@ body {
 }
 
 .speed-road-4 {
+    animation-name: road;
     animation-duration: 1s;
 }
 
@@ -757,7 +776,6 @@ body {
     animation-name: road-lane;
     animation-delay: 0s;
     animation-direction: normal;
-    animation-play-state: running;
     animation-iteration-count: infinite;
     animation-fill-mode: forwards;
     animation-timing-function: linear;

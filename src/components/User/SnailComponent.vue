@@ -11,7 +11,8 @@
 </template>
 <script>
 export default {
-    name: "SnailComponent"
+    name: "SnailComponent",
+    props: ['stop']
 }
 </script>
 <style scoped>

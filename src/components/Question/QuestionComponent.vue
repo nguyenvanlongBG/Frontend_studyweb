@@ -448,6 +448,7 @@ export default {
     display: flex;
     width: 100%;
     box-sizing: border-box;
+    overflow-y: hidden scroll;
 }
 
 .question-not-note {
