@@ -1,27 +1,25 @@
 <template>
     <template v-if="step == 1">
         <div>
-            <BackgroudReviewSpeed>
+            <BackgroudReviewSpeed :speed="speed">
                 <template v-slot:vehicles>
                     <div class="select-vehicle">
-                        <div @click="selectSpeed(1)" class="box-vehicle">
-                            <SnailComponent />
+                        <div class="box-select-vehicle">
+                            <i class="fa-solid fa-caret-left icon-move-select-vehicle" @click="selectSpeed(-1)"></i>
+                            <div class="box-vehicle">
+                                <component :is="selectedVehicleComponent"></component>
+                            </div>
+                            <i class="fa-solid fa-caret-right icon-move-select-vehicle" @click="selectSpeed(1)"></i>
                         </div>
-                        <div @click="selectSpeed(2)" class="box-vehicle">
-                            <TurtleComponent />
-                        </div>
-                        <div @click="selectSpeed(3)" class="box-vehicle">
-                            <BikeComponent />
-                        </div>
-                        <div @click="selectSpeed(4)" class="box-vehicle">
-                            <CarComponent />
+                        <div class="box-button-select">
+                            <button class="button-select" @click="nextStep">Chọn</button>
                         </div>
 
                     </div>
 
                 </template>
                 <template v-slot:slot-board>
-                    <div class="notice-board board-even side-move">
+                    <div :class="'notice-board board-even' + ' side-move-speed-' + speed">
                         <div class=" board">
                             <QuestionComponent :question="question" type="2" />
                         </div>
@@ -31,20 +29,23 @@
                         </div>
                     </div>
                 </template>
-                <template v-slot:road-lane>
-                    <div class="road-lane speed-road-2"></div>
-                </template>
+
             </BackgroudReviewSpeed>
         </div>
     </template>
     <template v-else>
         <div>
-            <BackgroudReviewSpeed>
+            <BackgroudReviewSpeed :speed="speed">
+                <template v-slot:navlist>
+                    <NavbarListComponent :numericalQuestion="numericalQuestion" @moveQuestion="moveQuestion" />
+                </template>
                 <template v-slot:vehicles>
-                    <component :is="Component"></component>
+                    <div class="select-vehicle">
+                        <component :is="Component"></component>
+                    </div>
                 </template>
                 <template v-slot:slot-board>
-                    <div class="notice-board board-even side-move">
+                    <div :class="'notice-board board-even' + ' ' + ' side-move-speed-' + speed" v-if="refresh">
                         <div class="board">
                             <QuestionComponent :question="question" type="2" />
                         </div>
@@ -54,9 +55,7 @@
                         </div>
                     </div>
                 </template>
-                <template v-slot:road-lane>
-                    <div :class="'road-lane' + ' speed-road-' + speed"></div>
-                </template>
+
             </BackgroudReviewSpeed>
         </div>
 
@@ -70,16 +69,21 @@ import SnailComponent from './SnailComponent.vue'
 import TurtleComponent from './TurtleComponent.vue'
 import BackgroudReviewSpeed from './BackgroundReviewSpeed.vue'
 import QuestionComponent from '../Question/QuestionComponent.vue'
+import NavbarListComponent from '../Test/NavbarListComponent.vue'
 import { ref } from 'vue'
 
 
 export default {
     name: "SpeedReviewComponent",
-    components: { QuestionComponent, BackgroudReviewSpeed, CarComponent, BikeComponent, TurtleComponent, SnailComponent },
+    components: { NavbarListComponent, QuestionComponent, BackgroudReviewSpeed, CarComponent, BikeComponent, TurtleComponent, SnailComponent },
     setup() {
+        const selectedVehicleComponent = ref(CarComponent)
         const step = ref(1)
+        const refresh = ref(true)
         return {
-            step
+            selectedVehicleComponent,
+            step,
+            refresh
         }
     },
     mounted() {
@@ -89,7 +93,7 @@ export default {
     data() {
 
         return {
-            speed: 2,
+            speed: 4,
             Component: null,
             indexBoard: -2,
             boards: [
@@ -119,10 +123,38 @@ export default {
                 }
             ],
             numericalQuestion: {
-                data: {
-
-                }
+                data: [{
+                    id: 1,
+                    type: 1,
+                    page: 1
+                }]
             },
+            questions: [
+                {
+                    question: {
+                        question_id: 1,
+                        type: 2,
+                        content: 'OK1',
+                        suggest: null
+                    },
+                    choices: [
+
+                    ],
+                    page: 1
+                },
+                {
+                    question: {
+                        question_id: 1,
+                        type: 2,
+                        content: 'OK2',
+                        suggest: null
+                    },
+                    choices: [
+
+                    ],
+                    page: 1
+                },
+            ],
             question: {
                 question: {
                     question_id: 1,
@@ -138,6 +170,14 @@ export default {
         }
     },
     methods: {
+        moveQuestion(page, id) {
+            console.log(page + id)
+            this.question = this.questions[1]
+            this.refresh = false
+            this.$nextTick(() => {
+                this.refresh = true
+            })
+        },
         moveBoard() {
             if (this.indexBoard < this.boards.length - 2) {
                 this.indexBoard += 2
@@ -151,20 +191,40 @@ export default {
         moveTest() {
             router.push({ name: "detailTest", params: { idTest: 1 } })
         },
-        selectSpeed(speed) {
-            if (speed == 1) {
-                this.Component = SnailComponent
+        selectSpeed(move) {
+            this.speed += move
+            switch (this.speed) {
+                case 5: {
+                    this.selectedVehicleComponent = SnailComponent
+                    this.speed = 1
+                    break
+                }
+                case 4: {
+                    this.selectedVehicleComponent = CarComponent
+                    break
+                }
+                case 3: {
+                    this.selectedVehicleComponent = BikeComponent
+                    break
+                }
+                case 2: {
+                    this.selectedVehicleComponent = TurtleComponent
+                    break
+                }
+                case 1: {
+                    this.selectedVehicleComponent = SnailComponent
+                    break
+                }
+                case 0: {
+                    this.selectedVehicleComponent = CarComponent
+                    this.speed = 4
+                    break
+                }
             }
-            if (speed == 2) {
-                this.Component = TurtleComponent
-            }
-            if (speed == 3) {
-                this.Component = BikeComponent
-            }
-            if (speed == 4) {
-                this.Component = CarComponent
-            }
-            this.speed = speed
+
+        },
+        nextStep() {
+            this.Component = this.selectedVehicleComponent
             this.step = 2
         }
     }
@@ -176,17 +236,63 @@ body {
     margin: 0;
 }
 
+.box-select-vehicle {
+    display: flex;
+    align-items: center;
+}
+
+.icon-move-select-vehicle {
+    font-size: 35px;
+    cursor: pointer;
+}
+
+.icon-move-select-vehicle:hover {
+    color: white;
+}
+
 .box-vehicle {
     cursor: pointer;
 }
 
 .select-vehicle {
+    position: relative;
+    width: 100%;
     display: flex;
+    justify-content: center;
 }
 
-.side-move {
+.box-button-select {
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.button-select {
+    margin-left: 2px;
+    font-family: 'Kalam', cursive;
+    margin-top: 2px;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    height: 35px;
+    box-shadow: 0 8px #999;
+    border-radius: 5px;
+    border: 2px solid #ea4f4c;
+    background-color: #222;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.button-select:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+.side-move-speed-1 {
     bottom: -100px;
-    animation-name: move-even;
+    animation-name: move-position;
     animation-direction: normal;
     animation-delay: 0s;
     animation-duration: 120s;
@@ -195,8 +301,40 @@ body {
     animation-iteration-count: infinite;
 }
 
+.side-move-speed-2 {
+    bottom: -100px;
+    animation-name: move-position;
+    animation-direction: normal;
+    animation-delay: 0s;
+    animation-duration: 60s;
+    animation-timing-function: linear;
+    animation-play-state: running;
+    animation-iteration-count: infinite;
+}
 
-@keyframes move-even {
+.side-move-speed-3 {
+    bottom: -100px;
+    animation-name: move-position;
+    animation-direction: normal;
+    animation-delay: 0s;
+    animation-duration: 40s;
+    animation-timing-function: linear;
+    animation-play-state: running;
+    animation-iteration-count: infinite;
+}
+
+.side-move-speed-4 {
+    bottom: -100px;
+    animation-name: move-position;
+    animation-direction: normal;
+    animation-delay: 0s;
+    animation-duration: 20s;
+    animation-timing-function: linear;
+    animation-play-state: running;
+    animation-iteration-count: infinite;
+}
+
+@keyframes move-position {
     0% {
         left: 60%;
         border-color: #008;
@@ -736,108 +874,6 @@ body {
 /* end of background */
 
 /* start of road */
-#road {
-    position: absolute;
-    background-color: #555;
-    width: 100%;
-    height: 100px;
-    bottom: 0px;
-    overflow: hidden;
-    animation-name: road;
-    animation-duration: 60s;
-    animation-direction: normal;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-    z-index: 11;
-}
-
-@keyframes road {
-    0% {
-        background-color: #555;
-    }
-
-    10% {
-        background-color: #555;
-    }
-
-    20% {
-        background-color: #555;
-    }
-
-    30% {
-        background-color: #aaa;
-    }
-
-    40% {
-        background-color: #555;
-    }
-
-    50% {
-        background-color: #555;
-    }
-
-    60% {
-        background-color: #333;
-    }
-
-    70% {
-        background-color: #333;
-    }
-
-    80% {
-        background-color: #333;
-    }
-
-    /* //90% {background-color: #444;} */
-    100% {
-        background-color: #555;
-    }
-}
-
-.speed-road-1 {
-    animation-duration: 64s;
-}
-
-.speed-road-2 {
-    animation-duration: 32s;
-}
-
-.speed-road-3 {
-    animation-duration: 16s;
-}
-
-.speed-road-4 {
-    animation-duration: 1s;
-}
-
-.road-lane {
-    position: relative;
-    width: 50%;
-    height: 10px;
-    float: right;
-    top: 35%;
-    background-color: #fff;
-    opacity: 0.8;
-    animation-name: road-lane;
-    animation-delay: 0s;
-    animation-direction: normal;
-    animation-play-state: running;
-    animation-iteration-count: infinite;
-    animation-fill-mode: forwards;
-    animation-timing-function: linear;
-}
-
-@keyframes road-lane {
-    0% {
-        right: -50%;
-        transform: skewX(45deg);
-    }
-
-    100% {
-        right: 100%;
-        transform: skewX(-45deg);
-    }
-}
 
 .vehicle {
     position: absolute;

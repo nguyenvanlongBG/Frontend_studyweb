@@ -1,25 +1,25 @@
 <template>
     <div id="carblock">
-        <NavbarListComponent :numericalQuestion="numericalQuestion" />
+        <slot name="navlist"></slot>
         <div id="background">
             <div>100 ngày cho Kỳ thi THPT</div>
             <slot name="slot-board">
             </slot>
             <div id="stars">
             </div>
-            <div id="sun"></div>
-            <div id="moon">
+            <div id="sun" :class="'time-speed-move-' + speed"></div>
+            <div id="moon" :class="'time-speed-move-' + speed">
                 <div id="mooncurve"></div>
             </div>
-            <div id="cloud-back"></div>
-            <div id="hill2">
+            <div id="cloud-back" :class="'time-speed-move-' + speed"></div>
+            <div id="hill2" :class="'time-speed-move-' + speed">
                 <div id="h2peak1"></div>
                 <div id="h2peak2"></div>
                 <div id="h2top"></div>
                 <div id="h2baseleft"></div>
                 <div id="h2baseright"></div>
             </div>
-            <div id="hill1">
+            <div id="hill1" :class="'time-speed-move-' + speed">
                 <div id="h1top"></div>
                 <div id="h1baseleft"></div>
                 <div id="h1baseright"></div>
@@ -33,24 +33,24 @@
             </slot>
         </div>
         <div id="road">
-            <slot name="road-lane"></slot>
+            <div :class="'road-lane speed-road-' + speed"></div>
         </div>
     </div>
 </template>
 <script>
 import router from '@/router'
-import NavbarListComponent from '../Test/NavbarListComponent.vue'
+
 // import SnailComponent from './SnailComponent.vue'
 
 
 
 export default {
     name: "BackgroudReviewSpeed",
-    components: { NavbarListComponent },
+    components: {},
     mounted() {
         this.moveBoard()
     },
-
+    props: ['speed'],
     data() {
         return {
             indexBoard: -2,
@@ -80,11 +80,6 @@ export default {
                     content: "Biển 8"
                 }
             ],
-            numericalQuestion: {
-                data: {
-
-                }
-            },
 
         }
     },
@@ -384,6 +379,22 @@ body {
     }
 }
 
+.time-speed-move-1 {
+    animation-duration: 160s;
+}
+
+.time-speed-move-2 {
+    animation-duration: 80s;
+}
+
+.time-speed-move-3 {
+    animation-duration: 40s;
+}
+
+.time-speed-move-4 {
+    animation-duration: 20s;
+}
+
 #sun {
     position: relative;
     height: 50px;
@@ -527,7 +538,6 @@ body {
     animation-name: hill2;
     animation-direction: normal;
     animation-delay: 3s;
-    animation-duration: 35s;
     animation-timing-function: linear;
     animation-play-state: running;
     animation-iteration-count: infinite;
@@ -604,7 +614,6 @@ body {
     animation-name: hill1;
     animation-direction: normal;
     animation-delay: 0s;
-    animation-duration: 20s;
     animation-timing-function: linear;
     animation-play-state: running;
     animation-iteration-count: infinite;
@@ -721,6 +730,22 @@ body {
     }
 }
 
+.speed-road-1 {
+    animation-duration: 64s;
+}
+
+.speed-road-2 {
+    animation-duration: 32s;
+}
+
+.speed-road-3 {
+    animation-duration: 16s;
+}
+
+.speed-road-4 {
+    animation-duration: 1s;
+}
+
 .road-lane {
     position: relative;
     width: 50%;
@@ -730,7 +755,6 @@ body {
     background-color: #fff;
     opacity: 0.8;
     animation-name: road-lane;
-    animation-duration: 1s;
     animation-delay: 0s;
     animation-direction: normal;
     animation-play-state: running;
@@ -753,6 +777,7 @@ body {
 
 .vehicle {
     position: absolute;
+    width: 100%;
     bottom: 10px;
     z-index: 12;
 }

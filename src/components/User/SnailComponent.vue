@@ -18,6 +18,8 @@ export default {
 .container-snail {
     width: 200px;
     height: 200px;
+    display: flex;
+    justify-content: center;
 }
 
 body {

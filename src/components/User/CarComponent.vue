@@ -261,9 +261,9 @@ export default {
     position: relative;
     width: 10px;
     height: 20px;
-    background-color: #f00;
+    background-color: rgb(255, 208, 0);
     top: 60px;
-    left: 155px;
+    left: 23px;
     border: 1px solid silver;
     border-radius: 100% 10% 10% 10%;
     box-shadow: -5px 0 10px 10px rgba(255, 0, 0, 0);
@@ -309,7 +309,7 @@ export default {
     border-top-right-radius: 15px;
     border-bottom-left-radius: 10px;
     top: 30px;
-    left: 380px;
+    left: 248px;
 }
 
 #carshadow {
