@@ -72,6 +72,7 @@ import 'cropperjs/dist/cropper.css';
 import QuestionComponent from "./QuestionComponent.vue";
 import BigQuestion from '../Question/QuestionComponent.vue'
 import { ref } from "vue";
+import { useRoute } from 'vue-router';
 export default {
     name: "BigQuestionComponent",
     props: ['type'],
@@ -89,6 +90,11 @@ export default {
         }
     },
     created() {
+        // Test khi chạy thật thì xóa
+        if (useRoute().params.id == 4) {
+            this.bigQuestion2 = this.bigQuestion1
+        }
+        // Phần này để end test
         if (this.type == 1) {
             // status=1 Update
             this.status = 1
@@ -123,45 +129,137 @@ export default {
                 page: 1
             },
             bigQuestion1: {
-                type: 1, // Ảnh
-                width: 2,
-                height: 2,
+                type: 2, // Ô chữ
+                bigQuestion: {
+                    question: {
+                        question_id: 1,
+                        type: 2,
+                        content: 'OK',
+                        suggest: null
+
+                    },
+                    page: 1
+                },
+
                 questions: [{
                     question: {
                         question_id: 1,
-                        type: 4,
+                        type: 2,
                         content: 'OK',
                         suggest: null
+
                     },
+                    choices: [
+                        {
+                            id: 1,
+                            content: 'Đáp án 1'
+                        },
+                        {
+                            id: 2,
+                            content: 'Đáp án 2'
+                        }
+                    ],
                     page: 1
                 }, {
                     question: {
-                        question_id: 1,
+                        question_id: 2,
+                        type: 3,
+                        content: 'OK',
+                        suggest: null
+
+                    },
+                    choices: [
+                        {
+                            id: 3,
+                            content: 'Đáp án 1'
+                        },
+                        {
+                            id: 4,
+                            content: 'Đáp án 2'
+                        }
+                    ],
+                    page: 1
+                },
+                {
+                    question: {
+                        question_id: 3,
+                        type: 2,
+                        content: 'OK',
+                        suggest: null
+
+                    },
+                    choices: [
+                        {
+                            id: 5,
+                            content: 'Đáp án 1'
+                        },
+                        {
+                            id: 6,
+                            content: 'Đáp án 2'
+                        }
+                    ],
+                    page: 1
+                }, {
+                    question: {
+                        question_id: 4,
                         type: 3,
                         content: 'OK',
                         suggest: null
 
                     },
                     page: 1
-                }, {
+                },
+                {
                     question: {
-                        question_id: 1,
-                        type: 4,
-                        content: 'OK',
-                        suggest: null
-
-                    },
-                    page: 1
-                }, {
-                    question: {
-                        question_id: 1,
+                        question_id: 5,
                         type: 3,
                         content: 'OK',
                         suggest: null
 
                     },
                     page: 1
-                }]
+                },
+                {
+                    question: {
+                        question_id: 6,
+                        type: 3,
+                        content: 'OK',
+                        suggest: null
+
+                    },
+                    page: 1
+                },
+                {
+                    question: {
+                        question_id: 7,
+                        type: 3,
+                        content: 'OK',
+                        suggest: null
+
+                    },
+                    page: 1
+                },
+                {
+                    question: {
+                        question_id: 8,
+                        type: 2,
+                        content: 'OK',
+                        suggest: null
+
+                    },
+                    choices: [
+                        {
+                            id: 7,
+                            content: 'Đáp án 1'
+                        },
+                        {
+                            id: 8,
+                            content: 'Đáp án 2'
+                        }
+                    ],
+                    page: 1
+                }
+                ]
             },
             bigQuestion2: {
                 type: 1, // Ảnh

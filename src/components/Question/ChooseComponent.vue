@@ -11,8 +11,7 @@
                     <!-- <LatexComponent :content="choice.content" :isUpdate="isUpdate"
                     @update="data => updateChoose(index, data)" /> -->
                     <!-- Fix lỗi dấu cách -->
-                    <LatexComponent :content="choice.content" :isUpdate="isUpdate"
-                        @update="updateChoose($event, index)" />
+                    <LatexComponent :content="choice.content" :isUpdate="isUpdate" @update="updateChoose($event, index)" />
                 </span>
             </label>
         </template>
@@ -125,7 +124,6 @@ export default {
     position: relative;
     width: 48%;
     font-weight: bold;
-    margin-left: 5px;
     margin-top: 5px;
     min-height: 60px;
     background-color: #222;
@@ -161,7 +159,7 @@ export default {
     min-height: 60px;
     border: 4px solid #6108f2;
     border-radius: 2px;
-    background-color: rgb(166, 172, 172);
+    background-color: white;
     box-sizing: border-box;
 }
 
@@ -190,7 +188,7 @@ input.hidden-radio {
     min-height: 60px;
     border: 4px solid #6108f2;
     border-radius: 5px;
-    background-color: rgb(166, 172, 172);
+    background-color: white;
     box-sizing: border-box;
 }
 </style>

@@ -41,6 +41,12 @@ export default {
         }
 
     },
+    mounted() {
+        // Test khi chạy thật thì xóa
+        if (this.id == 4) {
+            this.type = 2
+        }
+    },
     data() {
         return {
             type: this.id,

@@ -1,4 +1,5 @@
 <template>
+    <ModalAddQuestionBank v-if="visibleModal" @close="closeModalAdd" />
     <div class="container-user-bank">
         <div class="bank">
             <div class="navbar-folder">
@@ -19,14 +20,12 @@
                                 <VueMultiselect :class="colorSelect" v-model="filterChapters" open-direction="bottom"
                                     :options="chapters ? chapters : []" :multiple="true" :close-on-select="false"
                                     :clear-on-select="false" :preserve-search="true" placeholder="Chương" label="name"
-                                    track-by="name" :preselect-first="false" @select="selectItems"
-                                    @remove="removeItems">
+                                    track-by="name" :preselect-first="false" @select="selectItems" @remove="removeItems">
                                 </VueMultiselect>
                                 <VueMultiselect :class="colorSelect" v-model="filterLevels" open-direction="bottom"
                                     :options="levels ? levels : []" :multiple="true" :close-on-select="false"
                                     :clear-on-select="false" :preserve-search="true" placeholder="Mức độ" label="name"
-                                    track-by="name" :preselect-first="false" @select="selectItems"
-                                    @remove="removeItems">
+                                    track-by="name" :preselect-first="false" @select="selectItems" @remove="removeItems">
                                 </VueMultiselect>
                             </div>
                         </div>
@@ -40,12 +39,15 @@
                         <i class="fa-sharp fa-solid fa-caret-down icon-visible-filter" v-if="!displayBox"></i>
                     </div>
                 </div>
+                <div class="list-action">
+                    <button class="button" @click="openModalAdd">Tạo câu hỏi</button>
+                </div>
                 <div class="list-question">
                     <QuestionComponent :type="4" :isOwner="false" v-for="(question, index) in questions" :key="index"
                         :question="question" />
                     <paginate :page-count="2" :page-range="3" :margin-pages="2" :click-handler="clickCallback"
-                        :prev-text="'Prev'" :next-text="'Next'" :container-class="'pagination'"
-                        :page-class="'page-item'" :active-class="'active-class'">
+                        :prev-text="'Prev'" :next-text="'Next'" :container-class="'pagination'" :page-class="'page-item'"
+                        :active-class="'active-class'">
                     </paginate>
                 </div>
 
@@ -59,10 +61,12 @@ import VueMultiselect from 'vue-multiselect'
 import LatexComponent from '../LatexComponent.vue';
 import Paginate from 'vuejs-paginate-next';
 import { ref } from 'vue';
+import ModalAddQuestionBank from '../Question/ModalAddQuestionBank.vue';
 export default {
     name: "QuestionsBankComponent",
-    components: { QuestionComponent, VueMultiselect, LatexComponent, paginate: Paginate, },
+    components: { QuestionComponent, VueMultiselect, LatexComponent, paginate: Paginate, ModalAddQuestionBank },
     setup() {
+        const visibleModal = ref(false)
         const displayBox = ref(false)
         const levels = ref([
             {
@@ -88,7 +92,7 @@ export default {
             "transform": "translateY(4px)"
         })
         return {
-            displayBox, levels, filterChapters, filterLevels, styleObject
+            visibleModal, displayBox, levels, filterChapters, filterLevels, styleObject
         }
     },
     data() {
@@ -131,6 +135,12 @@ export default {
     methods: {
         displayBoxSearch() {
             this.displayBox = !this.displayBox
+        },
+        openModalAdd() {
+            this.visibleModal = true
+        },
+        closeModalAdd() {
+            this.visibleModal = false
         }
     }
 }
@@ -284,6 +294,30 @@ export default {
     padding-bottom: 10px;
     background-color: #dfdcdc;
 
+}
+
+.list-action {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.button {
+    margin-left: 2px;
+    margin-top: 2px;
+    height: 35px;
+    box-shadow: 0 8px #999;
+    border-radius: 5px;
+    border: 2px solid #ea4f4c;
+    background-color: #222;
+    color: white;
+    text-align: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.button:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
 }
 
 .list-question {

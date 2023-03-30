@@ -25,6 +25,15 @@ export function updateQuestionTest(id, data) { // console.log(params)
         data: data
     })
 }
+export function importTest(id, data) {
+    return request({
+        url: '/test/' + id + '/import',
+        method: 'post',
+        data: data
+    })
+
+}
+
 export function markTest(id, data) { // console.log(params)
 
     return request({

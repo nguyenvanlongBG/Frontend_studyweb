@@ -266,7 +266,8 @@ const routes = [{
                             }, {
                                 path: ':id',
                                 name: "detail-review",
-                                component: () => import ("../components/User/ReviewDetailComponent")
+                                component: () => import ("../components/User/SpeedReviewComponent")
+
                             }
                         ]
                     }

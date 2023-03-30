@@ -12,7 +12,14 @@
                             <i class="fa-solid fa-caret-right icon-move-select-vehicle" @click="selectSpeed(1)"></i>
                         </div>
                         <div class="box-button-select">
-                            <button class="button-select" @click="nextStep">Chọn</button>
+                            <VueMultiselect class="select-mode" v-model="mode" open-direction="bottom" :options="modes"
+                                :multiple="false" :close-on-select="true" :clear-on-select="false" :preserve-search="true"
+                                placeholder="Chế độ" label="name" track-by="name" :preselect-first="false"
+                                @select="selectItems" @remove="removeItems" select-label="" deselect-label="">
+                            </VueMultiselect>
+                        </div>
+                        <div class="box-button-select">
+                            <button class="button-select" @click="nextStep"> OK </button>
                         </div>
 
                     </div>
@@ -25,6 +32,7 @@
                         </div>
                         <div class="bottom-board">
                             <div class="scape">
+
                             </div>
                         </div>
                     </div>
@@ -36,7 +44,7 @@
     <template v-else>
         <div>
             <BackgroudReviewSpeed :speed="speed" :stop="stop">
-                <template v-slot:navlist>
+                <template v-slot:navlist v-if="render">
                     <NavbarListComponent :numericalQuestion="numericalQuestion" @moveQuestion="moveQuestion" />
                 </template>
                 <template v-slot:vehicles>
@@ -48,7 +56,7 @@
                     <div :class="'notice-board board-even' + ' ' + ' side-move-speed-' + speed + (stop ? ' pause' : ' run')"
                         v-if="refresh">
                         <div class="board">
-                            <QuestionComponent :question="question" type="2" />
+                            <QuestionComponent :question="question" type="4" @submit="submit" />
                         </div>
                         <div class="bottom-board">
                             <div class="scape">
@@ -68,36 +76,46 @@ import CarComponent from './CarComponent.vue'
 import BikeComponent from './BikeComponent.vue'
 import SnailComponent from './SnailComponent.vue'
 import TurtleComponent from './TurtleComponent.vue'
+import ReviewUniversalComponent from './ReviewUniversalComponent.vue'
 import BackgroudReviewSpeed from './BackgroundReviewSpeed.vue'
 import QuestionComponent from '../Question/QuestionComponent.vue'
 import NavbarListComponent from '../Test/NavbarListComponent.vue'
 import { ref } from 'vue'
+import VueMultiselect from 'vue-multiselect'
 
 
 export default {
     name: "SpeedReviewComponent",
-    components: { NavbarListComponent, QuestionComponent, BackgroudReviewSpeed, CarComponent, BikeComponent, TurtleComponent, SnailComponent },
+    components: { NavbarListComponent, QuestionComponent, BackgroudReviewSpeed, CarComponent, BikeComponent, TurtleComponent, SnailComponent, ReviewUniversalComponent, VueMultiselect },
     setup() {
         const selectedVehicleComponent = ref(CarComponent)
         const step = ref(1)
         const refresh = ref(true)
+        const render = ref(true)
         return {
             selectedVehicleComponent,
             step,
-            refresh
+            refresh,
+            render
         }
     },
     mounted() {
+        this.listSee = Array.from({ length: this.questions.length }, (_, index) => index)
         this.moveBoard()
     },
-
+    watch: {
+        mode() {
+            console.log(this.mode)
+        }
+    },
     data() {
-
         return {
+            modes: [{ id: 1, name: "Lần lượt" }, { id: 2, name: "Ngẫu nhiên" }],
+            mode: { id: 1, name: "Lần lượt" },
             stop: false,
             speed: 4,
             Component: null,
-            indexBoard: -2,
+            indexBoard: -1,
             boards: [
                 {
                     content: "Biển 1"
@@ -127,6 +145,11 @@ export default {
             numericalQuestion: {
                 data: [{
                     id: 1,
+                    type: 1,
+                    page: 1
+                },
+                {
+                    id: 2,
                     type: 1,
                     page: 1
                 }]
@@ -175,6 +198,8 @@ export default {
                     page: 1
                 },
             ],
+            done: [],
+            listSee: [],
             question: {
                 question: {
                     question_id: 1,
@@ -199,7 +224,7 @@ export default {
         },
         moveQuestion(page, id) {
             console.log(page + id)
-            this.question = this.questions[1]
+            this.question = this.questions[0]
             this.refresh = false
             this.$nextTick(() => {
                 this.refresh = true
@@ -207,13 +232,41 @@ export default {
             })
         },
         moveBoard() {
-            if (this.indexBoard < this.boards.length - 2) {
-                this.indexBoard += 2
-
+            if (this.mode.id == 1) {
+                if (this.indexBoard < this.questions.length - 1) {
+                    this.indexBoard += 1
+                } else {
+                    this.indexBoard = 0
+                }
             } else {
-                this.indexBoard = 0
-
+                if (this.listSee.length >= 1) {
+                    let indexRandom = Math.floor(Math.random() * this.listSee.length);
+                    this.indexBoard = this.listSee[indexRandom]
+                    this.question = this.questions[this.indexBoard]
+                    this.listSee.splice(indexRandom, 1)
+                } else {
+                    let sizeQuestions = this.questions.length
+                    let sizeDone = this.done.length
+                    if (sizeQuestions == sizeDone) {
+                        for (let index = 0; index < this.questions.length; index++) {
+                            this.listSee.push(index);
+                        }
+                    } else {
+                        for (let index = 0; index < this.questions.length; index++) {
+                            if (!this.done.includes(index)) {
+                                this.listSee.push(index);
+                            }
+                        }
+                    }
+                    let indexRandom = Math.floor(Math.random() * this.listSee.length);
+                    this.indexBoard = this.listSee[indexRandom]
+                    this.question = this.questions[this.indexBoard]
+                }
             }
+            this.refresh = false
+            this.$nextTick(() => {
+                this.refresh = true
+            })
             setTimeout(this.moveBoard, 20000)
         },
         moveTest() {
@@ -222,9 +275,13 @@ export default {
         selectSpeed(move) {
             this.speed += move
             switch (this.speed) {
-                case 5: {
+                case 6: {
                     this.selectedVehicleComponent = SnailComponent
                     this.speed = 1
+                    break
+                }
+                case 5: {
+                    this.selectedVehicleComponent = ReviewUniversalComponent
                     break
                 }
                 case 4: {
@@ -254,6 +311,20 @@ export default {
         nextStep() {
             this.Component = this.selectedVehicleComponent
             this.step = 2
+        },
+        submit(status) {
+            console.log(status)
+            if (status) {
+                this.numericalQuestion.data[this.indexBoard].type = 2
+            } else {
+                this.numericalQuestion.data[this.indexBoard].type = 3
+            }
+            console.log(this.numericalQuestion.data)
+            this.render = false
+            this.$nextTick(() => {
+                this.render = true
+            })
+            this.done.push(this.indexBoard)
         }
     }
 }
@@ -267,6 +338,10 @@ body {
 .box-select-vehicle {
     display: flex;
     align-items: center;
+}
+
+.select-mode {
+    width: 150px;
 }
 
 .icon-move-select-vehicle {
@@ -356,6 +431,17 @@ body {
 }
 
 .side-move-speed-4 {
+    bottom: -100px;
+    animation-name: move-position;
+    animation-direction: normal;
+    animation-delay: 0s;
+    animation-duration: 20s;
+    animation-timing-function: linear;
+    animation-play-state: running;
+    animation-iteration-count: infinite;
+}
+
+.side-move-speed-5 {
     bottom: -100px;
     animation-name: move-position;
     animation-direction: normal;

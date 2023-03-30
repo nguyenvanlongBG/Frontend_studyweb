@@ -22,15 +22,17 @@ export default {
             this.render = false
             this.editorConfig.toolbar = this.disabled ? { items: [] } : {
                 items: ['Mathtype', "bold",
-                    "italic", "imageUpload", "insertTable", 'link',
+                    "italic", "imageUpload", "insertTable", 'link', 'fontColor',
                     'bulletedList',
-                    'numberedList',]
+                    'numberedList',
+                ]
             };
             this.$nextTick(() => {
                 this.render = true
             })
         },
         editorData() {
+            console.log(this.editorData)
             this.$emit('update', this.editorData)
         }
 
@@ -48,15 +50,15 @@ export default {
     data() {
 
         return {
-            editorData: this.content,
+            editorData: this.content ? this.content : '',
             // editorData: "<a href='#' onclick='alert('XSS')'>Test</a>",
             editorConfig: {
                 toolbar: [],
-                ckfinder: {
-                    // Upload the images to the server using the CKFinder QuickUpload command.
-                    uploadUrl: 'http://127.0.0.1:8000/api/post/upload-file',
-                    // Define the CKFinder configuration (if necessary).
-                },
+                // Khi nào cần up ảnh thì xóa comment
+                // ckfinder: {
+                //     uploadUrl: 'http://127.0.0.1:8000/api/post/upload-file',
+                // },
+                //End comment
             },
             disabled: true,
             render: true

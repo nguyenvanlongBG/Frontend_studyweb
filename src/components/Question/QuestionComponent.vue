@@ -66,6 +66,11 @@
                     Lưu
                 </button>
             </div>
+            <div class="action-question" v-if="type == 4">
+                <button class="tool-button-test margin-bottom6px" @click="submitAnswer">
+                    Gửi
+                </button>
+            </div>
             <ConfirmComponent v-if="confirmModal" content="Bạn có chắc chắn muốn xóa?" @close="confirmModal = false"
                 @confirm="confirmDelete" />
             <CommentQuestionComponent v-if="this.infoQuestion.question.scope == 0 && type != 4 && type != 1"
@@ -146,7 +151,7 @@ export default {
         NoteComponent,
         VueMultiselect
     },
-    props: ['question', 'index', 'type', 'isOwner', 'listItemsSubject'],
+    props: ['question', 'index', 'type', 'isOwner'],
     setup() {
         const render = ref(true)
         const confirmModal = ref(false)
@@ -175,7 +180,7 @@ export default {
             render, result, writeResult, handleQuestion, essayAnswer, answerUpdate, answerDelete, answerCreate, styleQuestion, confirmModal, pressUpdate, page, styleObject, infoQuestion, canEssay, canUpdate, canChoose, answer, displayNote, typeQuestion
         }
     },
-
+    inject: ['listItemsSubject'],
     created() {
         // Câu hỏi thường
         if (this.type == 0) {
@@ -192,7 +197,7 @@ export default {
         if (this.type == 2) {
             this.canUpdate = true
             this.canEssay = false
-            this.canChoose = true;
+            this.canChoose = false;
             this.handleQuestion.question = this.question.question
         }
         // Câu hỏi lịch sử làm bài
@@ -201,8 +206,9 @@ export default {
             this.canChoose = false
         }
         if (this.type == 4) {
-            this.canEssay = false
-            this.canChoose = false
+            this.canUpdate = false
+            this.canEssay = true
+            this.canChoose = true;
         }
         if (this.type == 5) {
             this.canEssay = false
@@ -225,7 +231,7 @@ export default {
 
         if (this.type == 2) {
             if (this.question.question.type == 2) {
-                if (this.question.question?.result_id != null && this.question.question?.result_id != "") {
+                if (this.question.solutions.length != 0) {
                     let choose = document.getElementById(this.question.question.question_id + '_choose_' + this.question.question.result_id)
                     choose.click()
                 }
@@ -233,7 +239,7 @@ export default {
         }
 
         if (this.type == 3) {
-            if (this.question.question?.result_id != null) {
+            if (this.question.solutions.length != 0) {
                 if (this.question.question.type == 2) {
                     if (this.question.question.answer != null) {
                         console.log("OK")
@@ -281,7 +287,6 @@ export default {
         back() {
             this.pressUpdate = false
             this.canEssay = false
-            this.render = false
             this.canChoose = false
             this.handleQuestion = ref({})
             this.writeResult = ref({})
@@ -290,6 +295,8 @@ export default {
             this.answerDelete = ref(new Set())
             this.answerCreate = ref(new Map())
             this.answer = ref(-1)
+            this.infoQuestion = JSON.parse(JSON.stringify(this.question));
+            this.render = false
             this.$nextTick(() => {
                 this.render = true
             })
@@ -389,10 +396,7 @@ export default {
             }
             this.handleQuestion.answer.create = Array.from(this.answerCreate.values())
             this.handleQuestion.answer.update = Array.from(this.answerUpdate.values())
-            console.log("Update choose")
-            console.log(this.handleQuestion.answer.update)
             this.handleQuestion.answer.delete = Array.from(this.answerDelete.values())
-            console.log("Send Data")
             this.infoQuestion.items.forEach(item => {
                 let check = false
                 this.question.items.forEach(oldItem => {
@@ -405,6 +409,7 @@ export default {
                     this.handleQuestion.items.create.push(item)
                 }
             })
+            console.log(this.question.items)
             this.question.items.forEach(item => {
                 let check = false
                 this.infoQuestion.items.forEach(oldItem => {
@@ -424,6 +429,9 @@ export default {
             this.$nextTick(() => {
                 this.render = true
             })
+        },
+        submitAnswer() {
+            this.$emit('submit', true)
         }
     }
 }

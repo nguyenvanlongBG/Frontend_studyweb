@@ -1,7 +1,8 @@
 <template>
+    <ModalCreateReview v-if="visibleCreateReview" @close="visibleCreateReview = false" />
     <div class="container-review">
         <div class="action-group">
-            <div class="tool-button">
+            <div class="tool-button" @click="createReview">
                 + Tạo đề ôn
             </div>
             <div class="tool-button">
@@ -25,7 +26,8 @@
                         </div>
                     </div>
                     <div class="action-event">
-                        <button class="tool-button" @click="openTest">Làm đề</button>
+                        <button class="tool-button" @click="openTest">Làm thường</button>
+                        <button class="tool-button" @click="openTest">Làm tốc độ</button>
                         <button class="tool-button">Lịch sử</button>
                     </div>
                 </div>
@@ -56,9 +58,17 @@
 </template>
 <script>
 import router from '@/router';
-
+import ModalCreateReview from '../../views/Review/ModalCreateReview.vue'
 export default {
     name: "ReviewComponent",
+    components: {
+        ModalCreateReview
+    },
+    data() {
+        return {
+            visibleCreateReview: false
+        }
+    },
     methods: {
         openTest() {
             router.push({
@@ -66,6 +76,9 @@ export default {
                     type: 1,
                 }
             })
+        },
+        createReview() {
+            this.visibleCreateReview = true
         }
     }
 

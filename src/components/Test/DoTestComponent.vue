@@ -14,7 +14,6 @@
                 :ref="'question_' + question.question.question_id" :id="'question_' + question.question.question_id"
                 :index="startIndex + index" :type="1" :send="sendData" />
             <div class="end-action">
-
                 <button class="update-create-question-button" @click="save" v-if="canUpdate">
                     Lưu câu trả lời
                 </button>

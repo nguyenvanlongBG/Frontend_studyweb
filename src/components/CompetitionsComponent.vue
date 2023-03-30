@@ -65,7 +65,7 @@ export default {
     },
     data() {
         return {
-            events: [{ id: 1, name: "Cuộc thi ai là thiên tài" }, { id: 2, name: "Cuộc thi đoàn kết" }, { id: 3, name: "Cuộc thi con số may mắn" }],
+            events: [{ id: 1, name: "Cuộc thi ai là thiên tài" }, { id: 2, name: "Cuộc thi đoàn kết" }, { id: 3, name: "Cuộc thi con số may mắn" }, { id: 4, name: "Cuộc thi ô chữ bí ẩn" }],
             data: [],
             modalCreateTest: {
                 visible: false,

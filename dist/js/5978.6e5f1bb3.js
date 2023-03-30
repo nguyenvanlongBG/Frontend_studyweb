@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkstudyweb"]=self["webpackChunkstudyweb"]||[]).push([[5978],{5978:function(e,n,t){t.r(n),t.d(n,{default:function(){return d}});var u=t(3396);const o={class:"container-test"};function s(e,n,t,s,r,c){const a=(0,u.up)("router-view");return(0,u.wg)(),(0,u.iD)("div",o,[(0,u.Wm)(a,null,{default:(0,u.w5)((({Component:e})=>[((0,u.wg)(),(0,u.j4)((0,u.LL)(e)))])),_:1})])}var r={name:"TestDetailComponent",components:{},mounted(){},methods:{}},c=t(89);const a=(0,c.Z)(r,[["render",s]]);var d=a}}]);
+//# sourceMappingURL=5978.6e5f1bb3.js.map

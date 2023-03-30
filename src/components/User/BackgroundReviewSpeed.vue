@@ -2,7 +2,6 @@
     <div id="carblock">
         <slot name="navlist"></slot>
         <div id="background">
-
             <slot name="slot-board">
             </slot>
             <div id="stars">
@@ -764,6 +763,12 @@ body {
     animation-name: road;
     animation-duration: 1s;
 }
+
+.speed-road-5 {
+    animation-name: road;
+    animation-duration: 20s;
+}
+
 
 .road-lane {
     position: relative;

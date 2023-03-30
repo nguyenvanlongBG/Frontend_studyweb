@@ -2,6 +2,7 @@
     <!-- <NavbarListComponent /> -->
     <NavbarListComponent :numericalQuestion="numericalQuestion" @moveQuestion="moveQuestion" />
     <QuestionBankComponent v-if="isDisplayBank" @close="closeBank" />
+    <ModalImportTest v-if="displayImport" @close="displayImport = false" />
     <div class="info-list-question">
         <h1>Chỉnh sửa đề thi</h1>
         <LoadingComponent v-if="isLoading"></LoadingComponent>
@@ -28,7 +29,7 @@
                     <button class="create-button-first" @click="displayBank" v-if="canUpdate">
                         + Ngân hàng
                     </button>
-                    <button class="create-button-first" @click="displayCreateQuestionTypeFirst" v-if="canUpdate">
+                    <button class="create-button-first" @click="displayImport = true" v-if="canUpdate">
                         Import
                     </button>
                 </div>
@@ -37,7 +38,7 @@
                 :ref="'question_' + question.question.question_id" @create="createQuestion" @update="updateQuestion()"
                 @delete="deleteQuestion" @addlistQuestionFollow="addlistQuestionFollow"
                 :id="'question_' + question.question.question_id" :index="startIndex + index" :type="2" :isOwner="isOwner"
-                @seeSolution="seeSolution" :listItemsSubject="listItemsSubject" />
+                @seeSolution="seeSolution" />
             <div class="end-action">
                 <div class="menu-create-end">
                     <div class="choice-type-create" v-if="displayTypeCreateEnd">
@@ -78,6 +79,7 @@ import { useRoute } from 'vue-router';
 import LoadingComponent from '../common/LoadingComponent.vue';
 import NavbarListComponent from "../Test/NavbarListComponent.vue"
 import QuestionBankComponent from "../Test/QuestionBankComponent.vue"
+import ModalImportTest from './ModalImportTest.vue';
 export default {
     name: "UpdateTestComponent",
     components: {
@@ -86,8 +88,14 @@ export default {
         NavbarListComponent,
         QuestionBankComponent,
         LoadingComponent,
+        ModalImportTest
     },
     props: ['testId'],
+    provide() {
+        return {
+            listItemsSubject: []
+        }
+    },
     setup() {
         const idTest = null
         const isLoading = ref(false)
@@ -105,6 +113,7 @@ export default {
         const displayTypeCreateFirst = ref(false)
         const displayTypeCreateEnd = ref(false)
         const displaySolution = ref(false)
+        const displayImport = ref(false)
         const isOwner = ref(false)
         const test = ref(null)
         const isDisplayBank = ref(false)
@@ -123,7 +132,6 @@ export default {
                 'delete': [],
             }
         })
-        const listItemsSubject = ref([])
         return {
             idTest,
             test,
@@ -142,8 +150,8 @@ export default {
             displayTypeCreateFirst,
             displayTypeCreateEnd,
             displaySolution,
+            displayImport,
             isOwner,
-            listItemsSubject,
             isDisplayBank,
             render
         }
@@ -166,6 +174,8 @@ export default {
     mounted() {
         this.handleGetData()
         this.getItems()
+        console.log("Mounted")
+        console.log(this.listItemsSubject)
     },
     methods: {
         refreshData() {
@@ -220,7 +230,6 @@ export default {
             this.test = response.data
             const responseItems = await getItems(this.test.subject_id)
             this.listItemsSubject = responseItems.data
-            console.log("List items")
             console.log(this.listItemsSubject)
         },
         addlistQuestionFollow(id) {
@@ -276,8 +285,9 @@ export default {
         },
         createQuestion(type) {
             let newQuestion = {
+                items: []
             }
-            newQuestion.question = { 'question_id': 'new_' + this.indexNewQuestion, 'page': this.currentPage, "type": type, 'index': this.questions.length, 'result_id': "", 'contentResult': "", 'scope': 1, 'dependence_id': this.idTest }
+            newQuestion.question = { 'question_id': 'new_' + this.indexNewQuestion, 'page': this.currentPage, "type": type, 'index': this.questions.length, 'result_id': -1, 'contentResult': "", 'scope': 1, 'dependence_id': this.idTest }
             if (type == 1 || type == 3) {
                 newQuestion.question.result_id = "new"
             }
