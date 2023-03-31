@@ -31,14 +31,14 @@
                 :id="'question_' + infoQuestion.question.question_id" />
             <!-- <CommentQuestionComponent :answers="question.answers" /> -->
             <slot name="contentBigQuestion"></slot>
-            <h4 v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 3 || type == 2)">
+            <h4 v-if="(infoQuestion.question.type == 3) && (type == 3 || type == 2)">
                 Đáp
                 án câu hỏi:</h4>
-            <LatexComponent :isUpdate="canEssay" @update="answerQuestion"
-                :content="infoQuestion.question.contentResult != null ? infoQuestion.question.contentResult : ''"
-                :id="infoQuestion.question.question_id + '_result_' + infoQuestion.question.result_id"
-                v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 3 || type == 2)"
-                class="border-green" />
+            <h4 v-if="(infoQuestion.question.type == 1) && (type == 3 || type == 2)">
+                Các đáp án câu hỏi điền đáp án</h4>
+            <FillAnswerComponent :isUpdate="canEssay" @update="updateFillAnswer" @create="createFillAnswer"
+                @delete="deleteFillAnswer" :answers="infoQuestion.answers" :question="infoQuestion.question.question_id"
+                v-if="(infoQuestion.question.type == 1) && (type == 3 || type == 2)" />
             <div v-if="(type == 1 || type == 3 || type == 4 || type == 5)">
                 <h4>Đáp án của bạn là:</h4>
                 <span v-if="question.question.type == 2">Lựa chọn phương án đúng nhất</span>
@@ -49,8 +49,8 @@
             <LatexComponent :isUpdate="canEssay" @update="answerQuestion"
                 :content="infoQuestion.question.answer != null ? infoQuestion.question.answer : ''"
                 :id="infoQuestion.question.question_id + '_answer'"
-                v-if="(infoQuestion.question.type == 1 || infoQuestion.question.type == 3) && (type == 1 || type == 3 || type == 5)" />
-            <ChooseComponent :ref="'chooses_' + infoQuestion.question.question_id" :choices="infoQuestion.choices"
+                v-if="(infoQuestion.question.type == 1) && (type == 1 || type == 3 || type == 5)" />
+            <ChooseComponent :ref="'chooses_' + infoQuestion.question.question_id" :choices="infoQuestion.answers"
                 :isUpdate="pressUpdate" doTest="true" @update="updateChoose" @create="createChoose" @delete="deleteAnswer"
                 @chooseAnswer="answerQuestion" v-if="(infoQuestion.question.type == 2)" :type="type"
                 :linkNavbar="'page_' + infoQuestion.question.page + '_' + index"
@@ -140,6 +140,7 @@ import { handleQuestionTest } from '../../services/question'
 import { Transition } from "vue";
 import NoteComponent from "../common/NoteComponent.vue";
 import VueMultiselect from 'vue-multiselect'
+import FillAnswerComponent from "./FillAnswerComponent.vue";
 export default {
     name: "QuestionComponent",
     components: {
@@ -149,7 +150,8 @@ export default {
         CommentQuestionComponent,
         Transition,
         NoteComponent,
-        VueMultiselect
+        VueMultiselect,
+        FillAnswerComponent
     },
     props: ['question', 'index', 'type', 'isOwner'],
     setup() {
@@ -159,13 +161,14 @@ export default {
         const pressUpdate = ref(false)
         const canEssay = ref(false)
         const canUpdate = ref(false)
-        const handleQuestion = ref({ 'question': {}, 'answer': {}, 'items': { 'create': [], 'remove': [] } })
+        const handleQuestion = ref({ 'question': {}, 'answer': {}, 'solutions': { 'create': [], 'delete': [] }, 'items': { 'create': [], 'remove': [] } })
         const writeResult = ref({})
         const result = ref(-1)
         const essayAnswer = ref({})
         const answerUpdate = ref(new Map())
         const answerDelete = ref(new Set())
         const answerCreate = ref(new Map())
+        const solutions = ref(new Set())
         const page = ref(1)
         const canChoose = ref(false)
         const answer = ref(-1)
@@ -177,7 +180,7 @@ export default {
         const styleQuestion = ref("info-question")
         const typeQuestion = ['', 'Điền đáp án', ' Trắc nghiệm', ' Tự luận']
         return {
-            render, result, writeResult, handleQuestion, essayAnswer, answerUpdate, answerDelete, answerCreate, styleQuestion, confirmModal, pressUpdate, page, styleObject, infoQuestion, canEssay, canUpdate, canChoose, answer, displayNote, typeQuestion
+            render, result, writeResult, handleQuestion, essayAnswer, answerUpdate, answerDelete, answerCreate, solutions, styleQuestion, confirmModal, pressUpdate, page, styleObject, infoQuestion, canEssay, canUpdate, canChoose, answer, displayNote, typeQuestion
         }
     },
     inject: ['listItemsSubject'],
@@ -218,70 +221,11 @@ export default {
         this.infoQuestion = JSON.parse(JSON.stringify(this.question));
         this.page = this.question.page
     },
+    data() {
+
+    },
     mounted() {
-
-        if (this.type == 1) {
-            if (this.question.question.type == 2) {
-                if (this.question.question?.answer != null) {
-                    let choose = document.getElementById(this.question.question.question_id + '_choose_' + this.question.question.answer)
-                    choose.click()
-                }
-            }
-        }
-
-        if (this.type == 2) {
-            if (this.question.question.type == 2) {
-                if (this.question.solutions.length != 0) {
-                    let choose = document.getElementById(this.question.question.question_id + '_choose_' + this.question.question.result_id)
-                    choose.click()
-                }
-            }
-        }
-
-        if (this.type == 3) {
-            if (this.question.solutions.length != 0) {
-                if (this.question.question.type == 2) {
-                    if (this.question.question.answer != null) {
-                        console.log("OK")
-                        if (this.question.question.result_id == this.question.question.answer) {
-                            let choose = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.answer)
-                            choose.style.border = "4px solid rgb(16, 249, 4)"
-                            let question = document.getElementById("question_" + this.question.question.question_id)
-                            question.style.border = "4px solid rgb(16, 249, 4)"
-                        } else {
-                            let chooseCorrect = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.result_id)
-                            chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
-                            let chooseFalse = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.answer)
-                            chooseFalse.style.border = "4px solid red"
-
-                            let question = document.getElementById("question_" + this.question.question.question_id)
-                            question.style.border = "4px solid red"
-                        }
-                    } else {
-                        let chooseCorrect = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.result_id)
-                        chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
-                    }
-                }
-                if (this.question.question.type == 1) {
-                    if (this.question.question.contentResult == this.question.question.answer) {
-                        let chooseCorrect = document.getElementById(this.question.question.question_id + '_result_' + this.infoQuestion.question.result_id)
-                        chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
-                        let chooseAnswer = document.getElementById(this.question.question.question_id + '_answer')
-                        chooseAnswer.style.border = "4px solid rgb(16, 249, 4)"
-                        let question = document.getElementById("question_" + this.question.question.question_id)
-                        question.style.border = "4px solid rgb(16, 249, 4)"
-                    } else {
-                        let chooseCorrect = document.getElementById(this.question.question.question_id + '_result_' + this.infoQuestion.question.result_id)
-                        chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
-                        let chooseFalse = document.getElementById(this.question.question.question_id + '_answer')
-                        chooseFalse.style.border = "4px solid red"
-                        let question = document.getElementById("question_" + this.question.question.question_id)
-                        question.style.border = "4px solid red"
-                    }
-
-                }
-            }
-        }
+        this.statusChoiced()
     },
     methods: {
         back() {
@@ -296,15 +240,84 @@ export default {
             this.answerCreate = ref(new Map())
             this.answer = ref(-1)
             this.infoQuestion = JSON.parse(JSON.stringify(this.question));
-            this.render = false
-            this.$nextTick(() => {
-                this.render = true
-            })
+            this.statusChoiced()
+        },
+        statusChoiced() {
+            if (this.type == 1) {
+                if (this.question.question.type == 2) {
+                    if (this.question.question?.answer != null) {
+                        let choose = document.getElementById(this.question.question.question_id + '_choose_' + this.question.question.answer)
+                        choose.click()
+                    }
+                }
+            }
+
+            if (this.type == 2) {
+                if (this.question.question.type == 2) {
+                    if (this.question.solutions.length != 0) {
+                        this.question.solutions.forEach(solution => {
+                            let choose = document.getElementById('input_' + solution)
+                            choose.checked = true
+                        })
+                    }
+
+                }
+            }
+
+            if (this.type == 3) {
+                if (this.question.solutions.length != 0) {
+                    if (this.question.question.type == 2) {
+                        if (this.question.question.answer != null) {
+                            console.log("OK")
+                            if (this.question.question.result_id == this.question.question.answer) {
+                                let choose = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.answer)
+                                choose.style.border = "4px solid rgb(16, 249, 4)"
+                                let question = document.getElementById("question_" + this.question.question.question_id)
+                                question.style.border = "4px solid rgb(16, 249, 4)"
+                            } else {
+                                let chooseCorrect = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.result_id)
+                                chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
+                                let chooseFalse = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.answer)
+                                chooseFalse.style.border = "4px solid red"
+
+                                let question = document.getElementById("question_" + this.question.question.question_id)
+                                question.style.border = "4px solid red"
+                            }
+                        } else {
+                            let chooseCorrect = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.result_id)
+                            chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
+                        }
+                    }
+                    if (this.question.question.type == 1) {
+                        if (this.question.question.contentResult == this.question.question.answer) {
+                            let chooseCorrect = document.getElementById(this.question.question.question_id + '_result_' + this.infoQuestion.question.result_id)
+                            chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
+                            let chooseAnswer = document.getElementById(this.question.question.question_id + '_answer')
+                            chooseAnswer.style.border = "4px solid rgb(16, 249, 4)"
+                            let question = document.getElementById("question_" + this.question.question.question_id)
+                            question.style.border = "4px solid rgb(16, 249, 4)"
+                        } else {
+                            let chooseCorrect = document.getElementById(this.question.question.question_id + '_result_' + this.infoQuestion.question.result_id)
+                            chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
+                            let chooseFalse = document.getElementById(this.question.question.question_id + '_answer')
+                            chooseFalse.style.border = "4px solid red"
+                            let question = document.getElementById("question_" + this.question.question.question_id)
+                            question.style.border = "4px solid red"
+                        }
+
+                    }
+                }
+            }
         },
         answerQuestion(answer) {
-            this.answer = answer
+            if (this.infoQuestion.question.type == 2) {
+                if (!this.solutions.has(answer)) {
+                    this.solutions.add(answer)
+                }
+            } else {
+                this.solutions.add(answer)
+            }
         },
-
         publicQuestion() {
 
         },
@@ -335,7 +348,7 @@ export default {
         deleteAnswer(id) {
             if (this.infoQuestion.question.type == 2) {
                 if (id == this.infoQuestion.question.result_id || this.infoQuestion.question.result_id == null) {
-                    this.answer = null
+                    this.solutions.delete(id)
                 }
             }
             if (('' + id).includes('new')) {
@@ -348,6 +361,32 @@ export default {
                 this.answerDelete.add(id)
             }
 
+        },
+        updateFillAnswer(answer) {
+            if (('' + answer.id).includes('new')) {
+                answer.question_id = this.infoQuestion.question.question_id
+                this.answerCreate.set(answer.id, answer)
+            } else {
+                answer.question_id = this.infoQuestion.question.question_id
+                this.answerUpdate.set(answer.id, answer)
+            }
+        },
+
+        createFillAnswer(data) {
+            data.question_id = this.infoQuestion.question.question_id
+            this.answerCreate.set(data.id, data)
+            this.solutions.add(data.id)
+        },
+        deleteFillAnswer(id) {
+            if (('' + id).includes('new')) {
+                this.answerCreate.delete(id)
+            } else {
+                if (this.answerUpdate.get(id) != undefined) {
+                    this.answerUpdate.delete(id)
+                }
+                this.answerDelete.add(id)
+            }
+            this.solutions.delete(id)
         },
         deleteQuestion() {
             this.pressUpdate = false;
@@ -374,26 +413,28 @@ export default {
             this.pressUpdate = false
             this.canEssay = false
             this.canChoose = false
-            if (this.infoQuestion.question.type == 2) {
-                this.handleQuestion.question.result_id = this.answer
-            } else {
-                this.handleQuestion.question.contentResult = this.answer
-                if (Number.isInteger(this.infoQuestion.question.result_id)) {
-                    let data = {
-                        question_id: this.infoQuestion.question.question_id,
-                        id: this.infoQuestion.question.result_id,
-                        content: this.answer
+            this.solutions.forEach(solution => {
+                let check = false
+                this.infoQuestion.solutions.forEach(oldSolution => {
+                    if (oldSolution.answer_question_test_id == solution) {
+                        check = true
                     }
-                    this.answerUpdate.set(this.infoQuestion.question.result_id, data)
-                } else {
-                    let data = {
-                        question_id: this.infoQuestion.question.question_id,
-                        id: this.infoQuestion.question.result_id,
-                        content: this.answer
-                    }
-                    this.answerCreate.set(this.infoQuestion.question.result_id, data)
+                });
+                if (!check) {
+                    this.handleQuestion.solutions.create.push(solution)
                 }
-            }
+            });
+            this.infoQuestion.solutions.forEach(oldSolution => {
+                let check = false
+                this.solutions.forEach(solution => {
+                    if (oldSolution.answer_question_test_id == solution) {
+                        check = true
+                    }
+                });
+                if (!check) {
+                    this.handleQuestion.solutions.delete.push(oldSolution)
+                }
+            });
             this.handleQuestion.answer.create = Array.from(this.answerCreate.values())
             this.handleQuestion.answer.update = Array.from(this.answerUpdate.values())
             this.handleQuestion.answer.delete = Array.from(this.answerDelete.values())
@@ -409,7 +450,6 @@ export default {
                     this.handleQuestion.items.create.push(item)
                 }
             })
-            console.log(this.question.items)
             this.question.items.forEach(item => {
                 let check = false
                 this.infoQuestion.items.forEach(oldItem => {

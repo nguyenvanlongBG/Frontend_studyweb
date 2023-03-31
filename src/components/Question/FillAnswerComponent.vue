@@ -1,25 +1,14 @@
 <template>
-    <div class="list-choice" v-if="render">
-        <template v-for="(choice, index) in choiceQuestion" :key="index">
-            <input type="radio" class="hidden-radio" :id="'input_' + choice.id" :name="'choices_question_' + question"
-                :value="choice.id" :disabled="!canChoose" />
-            <label :class="canChoose ? 'choice' : 'choice nohover'" :id="question + '_choose_' + choice.id"
-                @click="canChoose ? choiceAnswer(choice.id) : ''" :for="'input_' + choice.id">
-                <span class="closeChoice" v-if="isUpdate" @click="deleteChoose($event, index)">X</span>
-                <span :class="isUpdate || doTest ? 'choice-label' : ''">
-                    <!-- Lỗi dấu cách -->
-                    <!-- <LatexComponent :content="choice.content" :isUpdate="isUpdate"
-                    @update="data => updateChoose(index, data)" /> -->
-                    <!-- Fix lỗi dấu cách -->
-                    <LatexComponent :content="choice.content" :isUpdate="isUpdate" @update="updateChoose($event, index)" />
+    <div class="list-answer" v-if="render">
+        <template v-for="(answer, index) in answersLocal" :key="index">
+            <div class="answer" @click="canChoose ? choiceAnswer(choice.id) : ''">
+                <span class="closeChoice" v-if="isUpdate" @click="deleteAnswer($event, index)">X</span>
+                <span>
+                    <LatexComponent :content="answer.content" :isUpdate="isUpdate" @update="updateAnswer($event, index)" />
                 </span>
-            </label>
+            </div>
         </template>
-
-        <!-- List câu trả lời mới tạo -->
-
-
-        <button class="create-answer" v-if="isUpdate" @click="createChoose">
+        <button class="create-answer" v-if="isUpdate" @click="createAnswer">
             <span class="content-create">+</span>
             <span class="content-create"> Thêm câu trả lời</span>
         </button>
@@ -29,24 +18,21 @@
 import { ref } from 'vue';
 import LatexComponent from '../LatexComponent.vue'
 export default {
-    name: "ChooseComponent",
-    props: ['choices', 'isUpdate', 'linkNavbar', 'doTest', 'canChoose', 'question', 'type'],
+    name: "FillAnswerComponent",
+    props: ['answers', 'isUpdate', 'linkNavbar', 'doTest', 'canChoose', 'question', 'type'],
     components: {
         LatexComponent
     },
     setup() {
-        const newAnswer = ref("")
-        const isCreate = ref(false)
         const render = ref(true)
         const indexNewChoose = ref(0)
-        const classChoose = ref("choice")
-        return { newAnswer, render, isCreate, indexNewChoose, classChoose }
+        return { render, indexNewChoose }
     },
     data() {
-        let choices = this.choices
+        // let answersLocal = this.answers2
         return {
             // copy data from array not reference
-            choiceQuestion: choices
+            answersLocal: this.answers
         }
     },
 
@@ -55,22 +41,21 @@ export default {
         choiceAnswer(id) {
             this.$emit('chooseAnswer', id)
         },
-        updateChoose(content, index) {
+        updateAnswer(content, index) {
 
-            this.choiceQuestion[index].content = content
+            this.answersLocal[index].content = content
             let data = {
-                'id': this.choiceQuestion[index].id,
+                'id': this.answersLocal[index].id,
                 'content': content
             }
             this.$emit('update', data)
-
         },
-        deleteChoose(event, index) {
+        deleteAnswer(event, index) {
 
             event.stopImmediatePropagation()
             // console.log("Click delete")
-            let id = this.choiceQuestion[index].id
-            this.choiceQuestion.splice(index, 1)
+            let id = this.answersLocal[index].id
+            this.answersLocal.splice(index, 1)
             // console.log(this.choiceQuestion)
             this.render = false
 
@@ -79,10 +64,10 @@ export default {
             })
             this.$emit('delete', id)
         },
-        createChoose() {
+        createAnswer() {
             let data = { 'id': this.question + '_new_choose_' + this.indexNewChoose, 'content': "" }
             this.indexNewChoose++
-            this.choiceQuestion.push(data)
+            this.answersLocal.push(data)
             this.$emit('create', data)
         }
 
@@ -92,7 +77,7 @@ export default {
 
 </script>
 <style>
-.list-choice {
+.list-answer {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -136,10 +121,10 @@ export default {
 
 }
 
-.choice {
+.answer {
     display: block;
     position: relative;
-    width: 48%;
+    width: 100%;
     margin-top: 5px;
     min-height: 60px;
     border: 4px solid white;
@@ -148,29 +133,6 @@ export default {
     box-sizing: border-box;
 }
 
-
-
-.choice:not(.nohover):hover {
-    display: block;
-    position: relative;
-    width: 48%;
-    margin-top: 5px;
-    min-height: 60px;
-    border: 4px solid #6108f2;
-    border-radius: 2px;
-    background-color: white;
-    box-sizing: border-box;
-}
-
-.choice-label {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: 5px;
-    border-style: solid;
-    border: 0px;
-    border-color: #e2d5d5;
-}
 
 
 
