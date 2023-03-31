@@ -107,6 +107,8 @@ export default {
             }
             console.log(data)
             await importTest(this.testId, data)
+            this.close()
+            this.$emit('submit')
         }
     }
 }

@@ -225,6 +225,7 @@ export default {
 
     },
     mounted() {
+        console.log(this.message)
         this.statusChoiced()
     },
     methods: {
@@ -462,13 +463,10 @@ export default {
                     this.handleQuestion.items.remove.push(item)
                 }
             })
+            console.log("Handle Question")
             console.log(this.handleQuestion)
             const response = await handleQuestionTest(this.handleQuestion)
             this.infoQuestion = response.data
-            this.render = false
-            this.$nextTick(() => {
-                this.render = true
-            })
         },
         submitAnswer() {
             this.$emit('submit', true)

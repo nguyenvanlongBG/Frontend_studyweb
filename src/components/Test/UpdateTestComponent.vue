@@ -2,7 +2,7 @@
     <!-- <NavbarListComponent /> -->
     <NavbarListComponent :numericalQuestion="numericalQuestion" @moveQuestion="moveQuestion" />
     <QuestionBankComponent v-if="isDisplayBank" @close="closeBank" />
-    <ModalImportTest v-if="displayImport" @close="displayImport = false" />
+    <ModalImportTest v-if="displayImport" @close="displayImport = false" @submit="reload()" />
     <div class="info-list-question">
         <h1>Chỉnh sửa đề thi</h1>
         <LoadingComponent v-if="isLoading"></LoadingComponent>
@@ -91,10 +91,10 @@ export default {
         ModalImportTest
     },
     props: ['testId'],
-    provide() {
-        return {
-            listItemsSubject: []
-        }
+    provide: {
+        listItemsSubject: [
+            { id: 1, name: "Hàm số" }, { id: 2, name: "Bất đẳng thức" }
+        ],
     },
     setup() {
         const idTest = null
@@ -173,9 +173,6 @@ export default {
     },
     mounted() {
         this.handleGetData()
-        this.getItems()
-        console.log("Mounted")
-        console.log(this.listItemsSubject)
     },
     methods: {
         refreshData() {
@@ -345,6 +342,11 @@ export default {
 
 
             }
+        },
+        reload() {
+            this.questions = [];
+            this.refreshData()
+            this.handleGetData()
         }
     }
 }
