@@ -210,7 +210,7 @@ export default {
                 choices: [
 
                 ],
-                page: 1
+                solutions: []
             },
         }
     },

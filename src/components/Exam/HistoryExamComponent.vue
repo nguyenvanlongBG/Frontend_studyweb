@@ -86,9 +86,16 @@ export default {
             }
         )
     },
+    watch: {
+        $route(to, from) {
+            console.log(from)
+            this.examId = to.params.idExam;
+            this.handleGetData()
+        },
+    },
     data() {
         return {
-            examId: ""
+            examId: useRoute().params.idExam
         }
     },
     mounted() {

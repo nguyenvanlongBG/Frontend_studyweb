@@ -38,7 +38,7 @@
                 :ref="'question_' + question.question.question_id" @create="createQuestion" @update="updateQuestion()"
                 @delete="deleteQuestion" @addlistQuestionFollow="addlistQuestionFollow"
                 :id="'question_' + question.question.question_id" :index="startIndex + index" :type="2" :isOwner="isOwner"
-                @seeSolution="seeSolution" />
+                :chaptersSubject="chaptersSubject" @seeSolution="seeSolution" />
             <div class="end-action">
                 <div class="menu-create-end">
                     <div class="choice-type-create" v-if="displayTypeCreateEnd">
@@ -91,10 +91,10 @@ export default {
         ModalImportTest
     },
     props: ['testId'],
-    provide: {
-        listItemsSubject: [
-            { id: 1, name: "Hàm số" }, { id: 2, name: "Bất đẳng thức" }
-        ],
+    data() {
+        return {
+            chaptersSubject: []
+        }
     },
     setup() {
         const idTest = null
@@ -172,6 +172,7 @@ export default {
         )
     },
     mounted() {
+        this.getItems()
         this.handleGetData()
     },
     methods: {
@@ -226,8 +227,7 @@ export default {
             const response = await getTest(this.idTest)
             this.test = response.data
             const responseItems = await getItems(this.test.subject_id)
-            this.listItemsSubject = responseItems.data
-            console.log(this.listItemsSubject)
+            this.chaptersSubject = responseItems.data
         },
         addlistQuestionFollow(id) {
             // Add id question to list question update

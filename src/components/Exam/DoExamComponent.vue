@@ -28,7 +28,6 @@
             </paginate>
         </template>
     </div>
-
 </template>
 <script>
 import QuestionComponent from '../Question/QuestionComponent.vue';
@@ -179,7 +178,7 @@ export default {
                     this.sendData.answers.add(answer)
                 }
             });
-          
+            console.log(Array.from(this.sendData.answers))
             await doExam({ exam_id: this.examId, current_page: this.currentPage, answers: Array.from(this.sendData.answers) })
             this.handleGetData()
             this.refreshData()

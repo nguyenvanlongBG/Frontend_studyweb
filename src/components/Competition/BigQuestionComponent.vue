@@ -107,6 +107,7 @@ export default {
     },
     data() {
         return {
+            chaptersSubject: [[{ id: 1, name: "Hàm số" }, { id: 2, name: "Bất đẳng thức" }]],
             testQuestion: {
                 question: {
                     question_id: 1,

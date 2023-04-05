@@ -5,11 +5,11 @@
                 <div class="tabs-exam">
                     <div class="tab-exam" @click="getExam(1)">Bài thi 1
                     </div>
-                    <div class="tab-exam" @click="getExam(1)">Bài thi 2
+                    <div class="tab-exam" @click="getExam(2)">Bài thi 2
                     </div>
-                    <div class="tab-exam" @click="getExam(1)">Bài thi 3
+                    <div class="tab-exam" @click="getExam(3)">Bài thi 3
                     </div>
-                    <div class="tab-exam" @click="getExam(1)">Bài thi 4
+                    <div class="tab-exam" @click="getExam(4)">Bài thi 4
                     </div>
                 </div>
             </template>
@@ -28,8 +28,9 @@ export default {
     },
     setup() {
         const idTest = null
+        const render = true
         return {
-            idTest
+            idTest, render
         }
 
     },
@@ -61,8 +62,7 @@ export default {
         async handleGetData() {
             let condition = { idTest: this.idTest }
             console.log(condition)
-            router.push({ name: "historyTest", params: { idTest: this.idTest, idExam: 1 } })
-
+            router.push({ name: "historyTest", params: { idTest: this.idTest, idExam: 4 } })
             // const response = await getExams(condition)
             // console.log(response)
         }

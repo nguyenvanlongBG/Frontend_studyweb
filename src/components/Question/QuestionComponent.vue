@@ -18,10 +18,16 @@
             <div class="select-item-subject">
                 <h3 v-if="type != 0 && type != 5">Câu {{ index }}: </h3>
                 <div class="values-items-subject">
+                    <VueMultiselect :disabled="!pressUpdate" v-model="subject" :options="subjectTest ? subjectTest : []"
+                        :multiple="false" :close-on-select="false" :clear-on-select="false" select-label=''
+                        placeholder="Chương" label="name" track-by="id" :preselect="selectedSubject" @select="selectItems"
+                        @remove="removeItems" v-if="type == 2" deselect-label=''>
+                    </VueMultiselect>
                     <VueMultiselect :disabled="!pressUpdate" v-model="infoQuestion.items"
-                        :options="listItemsSubject ? listItemsSubject : []" :multiple="true" :close-on-select="false"
-                        :clear-on-select="false" :preserve-search="true" placeholder="Chương" label="name" track-by="name"
-                        :preselect-first="true" @select="selectItems" @remove="removeItems" v-if="type == 2">
+                        :options="chaptersSubject && chaptersSubject[0] ? chaptersSubject[0] : []" :multiple="true"
+                        :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Chương"
+                        label="name" track-by="name" :preselect-first="true" @select="selectItems" @remove="removeItems"
+                        v-if="type == 2" select-label='' deselect-label=''>
                     </VueMultiselect>
                 </div>
             </div>
@@ -37,7 +43,7 @@
             <h4 v-if="(infoQuestion.question.type == 1) && (type == 3 || type == 2)">
                 Các đáp án câu hỏi điền đáp án</h4>
             <FillAnswerComponent :isUpdate="canEssay" @update="updateFillAnswer" @create="createFillAnswer"
-                @delete="deleteFillAnswer" :answers="infoQuestion.answers" :question="infoQuestion.question.question_id"
+                @delete="deleteFillAnswer" :answers="infoQuestion.solutions" :question="infoQuestion.question.question_id"
                 v-if="(infoQuestion.question.type == 1) && (type == 3 || type == 2)" />
             <div v-if="(type == 1 || type == 3 || type == 4 || type == 5)">
                 <h4>Đáp án của bạn là:</h4>
@@ -47,10 +53,10 @@
                 <span v-if="canUpdate && type != 2 && type != 0">Bạn hãy nhập đáp án của câu hỏi</span>
             </div>
             <LatexComponent :isUpdate="canEssay" @update="answerQuestion"
-                :content="infoQuestion.question.answer != null ? infoQuestion.question.answer : ''"
+                :content="infoQuestion.history[0].answer != null ? infoQuestion.history[0].answer : ''"
                 :id="infoQuestion.question.question_id + '_answer'"
                 v-if="(infoQuestion.question.type == 1) && (type == 1 || type == 3 || type == 5)" />
-            <ChooseComponent :ref="'chooses_' + infoQuestion.question.question_id" :choices="infoQuestion.answers"
+            <ChooseComponent :ref="'chooses_' + infoQuestion.question.question_id" :choices="infoQuestion.choices"
                 :isUpdate="pressUpdate" doTest="true" @update="updateChoose" @create="createChoose" @delete="deleteAnswer"
                 @chooseAnswer="answerQuestion" v-if="(infoQuestion.question.type == 2)" :type="type"
                 :linkNavbar="'page_' + infoQuestion.question.page + '_' + index"
@@ -141,6 +147,7 @@ import { Transition } from "vue";
 import NoteComponent from "../common/NoteComponent.vue";
 import VueMultiselect from 'vue-multiselect'
 import FillAnswerComponent from "./FillAnswerComponent.vue";
+import { SUBJECTSTEST } from '../../configs/subject'
 export default {
     name: "QuestionComponent",
     components: {
@@ -153,11 +160,11 @@ export default {
         VueMultiselect,
         FillAnswerComponent
     },
-    props: ['question', 'index', 'type', 'isOwner'],
+    props: ['question', 'index', 'type', 'isOwner', 'chaptersSubject'],
     setup() {
         const render = ref(true)
         const confirmModal = ref(false)
-        const infoQuestion = ref([])
+
         const pressUpdate = ref(false)
         const canEssay = ref(false)
         const canUpdate = ref(false)
@@ -180,10 +187,10 @@ export default {
         const styleQuestion = ref("info-question")
         const typeQuestion = ['', 'Điền đáp án', ' Trắc nghiệm', ' Tự luận']
         return {
-            render, result, writeResult, handleQuestion, essayAnswer, answerUpdate, answerDelete, answerCreate, solutions, styleQuestion, confirmModal, pressUpdate, page, styleObject, infoQuestion, canEssay, canUpdate, canChoose, answer, displayNote, typeQuestion
+            render, result, writeResult, handleQuestion, essayAnswer, answerUpdate, answerDelete, answerCreate, solutions, styleQuestion, confirmModal, pressUpdate, page, styleObject, canEssay, canUpdate, canChoose, answer, displayNote, typeQuestion
         }
     },
-    inject: ['listItemsSubject'],
+
     created() {
         // Câu hỏi thường
         if (this.type == 0) {
@@ -202,6 +209,13 @@ export default {
             this.canEssay = false
             this.canChoose = false;
             this.handleQuestion.question = this.question.question
+            console.log('*************************')
+            SUBJECTSTEST.forEach(element => {
+                if (element.id == this.question.question.subject_id) {
+                    this.subject = element
+                }
+            });
+            console.log(this.subject)
         }
         // Câu hỏi lịch sử làm bài
         if (this.type == 3) {
@@ -222,10 +236,13 @@ export default {
         this.page = this.question.page
     },
     data() {
-
+        return {
+            subject: null,
+            infoQuestion: {},
+            subjectTest: SUBJECTSTEST
+        }
     },
     mounted() {
-        console.log(this.message)
         this.statusChoiced()
     },
     methods: {
@@ -266,57 +283,85 @@ export default {
             }
 
             if (this.type == 3) {
-                if (this.question.solutions.length != 0) {
-                    if (this.question.question.type == 2) {
-                        if (this.question.question.answer != null) {
-                            console.log("OK")
-                            if (this.question.question.result_id == this.question.question.answer) {
-                                let choose = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.answer)
-                                choose.style.border = "4px solid rgb(16, 249, 4)"
-                                let question = document.getElementById("question_" + this.question.question.question_id)
-                                question.style.border = "4px solid rgb(16, 249, 4)"
-                            } else {
-                                let chooseCorrect = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.result_id)
-                                chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
-                                let chooseFalse = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.answer)
-                                chooseFalse.style.border = "4px solid red"
-
-                                let question = document.getElementById("question_" + this.question.question.question_id)
-                                question.style.border = "4px solid red"
-                            }
-                        } else {
-                            let chooseCorrect = document.getElementById(this.question.question.question_id + '_choose_' + this.infoQuestion.question.result_id)
+                if (this.question.question.type == 2) {
+                    if (this.question.done == 1) {
+                        let choose = document.getElementById(this.question.question.question_id + '_choose_' + this.question.solutions[0].id)
+                        choose.style.border = "4px solid rgb(16, 249, 4)"
+                        let question = document.getElementById("question_" + this.question.question.question_id)
+                        question.style.border = "4px solid rgb(16, 249, 4)"
+                    } else {
+                        if (this.question.done == -1) {
+                            let chooseCorrect = document.getElementById(this.question.question.question_id + '_choose_' + this.question.solutions[0].id)
                             chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
+                            let chooseFalse = document.getElementById(this.question.question.question_id + '_choose_' + this.question.history[0].answer)
+                            chooseFalse.style.border = "4px solid red"
+                            let question = document.getElementById("question_" + this.question.question.question_id)
+                            question.style.border = "4px solid red"
+                        } else {
+                            if (this.question.done == 0) {
+                                if (this.question.solutions.length > 0) {
+                                    let chooseCorrect = document.getElementById(this.question.question.question_id + '_choose_' + this.question.solutions[0].id)
+                                    chooseCorrect.style.border = "4px solid rgb(15, 249, 4)"
+                                }
+                            } else {
+                                let historyAnswer = document.getElementById(this.question.question.question_id + '_choose_' + this.question.history[0].answer)
+                                historyAnswer.style.border = "4px solid #6108f2"
+                            }
                         }
                     }
-                    if (this.question.question.type == 1) {
-                        if (this.question.question.contentResult == this.question.question.answer) {
-                            let chooseCorrect = document.getElementById(this.question.question.question_id + '_result_' + this.infoQuestion.question.result_id)
-                            chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
-                            let chooseAnswer = document.getElementById(this.question.question.question_id + '_answer')
-                            chooseAnswer.style.border = "4px solid rgb(16, 249, 4)"
-                            let question = document.getElementById("question_" + this.question.question.question_id)
-                            question.style.border = "4px solid rgb(16, 249, 4)"
-                        } else {
+
+                }
+                if (this.question.question.type == 1) {
+                    if (this.question.done == 1) {
+                        this.question.solutions.forEach(solution => {
+                            let answerCorrect = document.getElementById('fill_answer_result_' + solution.id)
+                            answerCorrect.style.border = "4px solid rgb(16, 249, 4)"
+                        })
+                        let historyAnswer = document.getElementById(this.question.question.question_id + '_answer')
+                        historyAnswer.style.border = "4px solid rgb(16, 249, 4)"
+                        let question = document.getElementById("question_" + this.question.question.question_id)
+                        question.style.border = "4px solid rgb(16, 249, 4)"
+                    } else {
+                        if (this.question.done == -1) {
                             let chooseCorrect = document.getElementById(this.question.question.question_id + '_result_' + this.infoQuestion.question.result_id)
                             chooseCorrect.style.border = "4px solid rgb(16, 249, 4)"
                             let chooseFalse = document.getElementById(this.question.question.question_id + '_answer')
                             chooseFalse.style.border = "4px solid red"
                             let question = document.getElementById("question_" + this.question.question.question_id)
                             question.style.border = "4px solid red"
-                        }
+                        } else {
+                            if (this.question.done == 0) {
+                                this.question.solutions.forEach(solution => {
+                                    let answerCorrect = document.getElementById('fill_answer_result_' + solution.id)
+                                    console.log('fill_answer_result_' + solution.id)
+                                    answerCorrect.style.border = "4px solid rgb(16, 249, 4)"
+                                })
+                            } else {
+                                let historyAnswer = document.getElementById(this.question.question.question_id + '_answer')
+                                historyAnswer.style.border = "4px solid #6108f2"
+                            }
 
+                        }
                     }
                 }
             }
         },
+        selectedSubject() {
+            return this.subjectTest.find(option => option.id === this.infoQuestion.question.subject_id)
+        },
         answerQuestion(answer) {
-            if (this.infoQuestion.question.type == 2) {
-                if (!this.solutions.has(answer)) {
+            if (this.type == 2) {
+                if (this.infoQuestion.question.type == 2) {
+                    if (!this.solutions.has(answer)) {
+                        this.solutions.add(answer)
+                    }
+                } else {
                     this.solutions.add(answer)
                 }
             } else {
-                this.solutions.add(answer)
+                if (this.type == 1) {
+                    this.answer = answer
+                }
             }
         },
         publicQuestion() {
@@ -411,6 +456,7 @@ export default {
             this.confirmModal = false;
         },
         async confirmUpdate() {
+            this.handleQuestion.question = this.infoQuestion.question
             this.pressUpdate = false
             this.canEssay = false
             this.canChoose = false
@@ -480,6 +526,7 @@ export default {
 }
 
 .values-items-subject {
+    display: flex;
     margin-left: 5px;
     min-width: 300px;
 }

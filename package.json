@@ -5,13 +5,13 @@
     "scripts": {
         "serve": "vue-cli-service serve",
         "build": "webpack --mode production && vue-cli-service build",
-
         "lint": "vue-cli-service lint"
     },
     "dependencies": {
         "@ckeditor/ckeditor5-build-classic": "^36.0.1",
         "@ckeditor/ckeditor5-dev-utils": "^34.0.2",
         "@ckeditor/ckeditor5-dev-webpack-plugin": "^31.1.13",
+        "@ckeditor/ckeditor5-import-word": "^37.0.1",
         "@ckeditor/ckeditor5-theme-lark": "^36.0.1",
         "@ckeditor/ckeditor5-vue": "^4.0.1",
         "@coreui/coreui": "^4.2.1",
@@ -50,12 +50,18 @@
             "node": true
         },
         "extends": [
-            "plugin:vue/vue3-essential", "eslint:recommended"
+            "plugin:vue/vue3-essential",
+            "eslint:recommended"
         ],
         "parserOptions": {
             "parser": "@babel/eslint-parser"
         },
         "rules": {}
     },
-    "browserslist": ["> 1%", "last 2 versions", "not dead", "not ie 11"]
+    "browserslist": [
+        "> 1%",
+        "last 2 versions",
+        "not dead",
+        "not ie 11"
+    ]
 }

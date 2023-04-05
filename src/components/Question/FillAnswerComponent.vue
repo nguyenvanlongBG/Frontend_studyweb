@@ -1,7 +1,7 @@
 <template>
     <div class="list-answer" v-if="render">
         <template v-for="(answer, index) in answersLocal" :key="index">
-            <div class="answer" @click="canChoose ? choiceAnswer(choice.id) : ''">
+            <div class="answer" @click="canChoose ? choiceAnswer(choice.id) : ''" :id="'fill_answer_result_' + answer.id">
                 <span class="closeChoice" v-if="isUpdate" @click="deleteAnswer($event, index)">X</span>
                 <span>
                     <LatexComponent :content="answer.content" :isUpdate="isUpdate" @update="updateAnswer($event, index)" />
