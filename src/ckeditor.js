@@ -32,8 +32,10 @@ import Table from '@ckeditor/ckeditor5-table/src/table';
 import TableToolbar from '@ckeditor/ckeditor5-table/src/tabletoolbar';
 import TextTransformation from '@ckeditor/ckeditor5-typing/src/texttransformation';
 import Mathtype from '@wiris/mathtype-ckeditor5'
+import ImportWord from '@ckeditor/ckeditor5-import-word/src/importword';
 
 export default class ClassicEditor extends ClassicEditorBase {}
+
 
 // Plugins to include in the build.
 ClassicEditor.builtinPlugins = [
@@ -55,6 +57,7 @@ ClassicEditor.builtinPlugins = [
     ImageToolbar,
     ImageUpload,
     Indent,
+    ImportWord,
     Link,
     List,
     MediaEmbed,
@@ -87,6 +90,7 @@ ClassicEditor.defaultConfig = {
             'blockQuote',
             'insertTable',
             'mediaEmbed',
+            'importWord',
             'undo',
             'redo'
         ]
